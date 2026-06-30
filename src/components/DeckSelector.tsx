@@ -85,7 +85,7 @@ function DeckCard({
         </span>
       </div>
       {children}
-    </motion.button>
+    </motion.div>
   );
 }
 
