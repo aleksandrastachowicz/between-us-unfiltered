@@ -1,29 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly } from "@tanstack/react-router";
+import { BetweenUsApp } from "@/components/BetweenUsApp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Between Us — Intimate Conversation Card Game" },
+      {
+        name: "description",
+        content:
+          "Between Us is an intimate, relationship-driven conversation card game for couples and close connections. Draw, flip and connect.",
+      },
+      { property: "og:title", content: "Between Us — Intimate Conversation Card Game" },
+      {
+        property: "og:description",
+        content:
+          "A premium dual-language conversation game for couples and close connections.",
+      },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <ClientOnly fallback={<div style={{ minHeight: "100dvh", background: "#fcf7fb" }} />}>
+      <BetweenUsApp />
+    </ClientOnly>
   );
 }
