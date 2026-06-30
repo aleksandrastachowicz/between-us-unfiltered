@@ -52,11 +52,14 @@ function DeckCard({
   const active = useGame((s) => s.decks[id]);
   const toggleDeck = useGame((s) => s.toggleDeck);
   return (
-    <motion.button
+    <motion.div
       layout
+      role="button"
+      tabIndex={0}
       onClick={() => toggleDeck(id)}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggleDeck(id)}
       whileTap={{ scale: 0.985 }}
-      className="glass w-full rounded-3xl p-6 text-left transition-all"
+      className="glass w-full cursor-pointer rounded-3xl p-6 text-left transition-all"
       style={{
         outline: active ? "2px solid var(--accent)" : "2px solid transparent",
         boxShadow: active ? "0 18px 40px -22px var(--accent)" : "none",
