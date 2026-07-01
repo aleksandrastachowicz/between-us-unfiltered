@@ -16,6 +16,7 @@ const t = {
     unf: "Between Us: Unfiltered",
     unfD: "Progresywna, 3-poziomowa podróż, która dostosowuje się do poziomu intimności.",
     cats: "Kategorie",
+    levels: "Poziomy intymności",
     start: "Rozpocznij grę",
     none: "Wybierz przynajmniej jedną talię",
     adult: "18+",
