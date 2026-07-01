@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
 import { Heart } from "lucide-react";
 import { useGame } from "@/lib/store";
-import { CATEGORY_META, BASIC_CATEGORIES, type DeckId } from "@/data/questions";
+import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
+import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 
 const t = {
   pl: {
@@ -15,6 +16,7 @@ const t = {
     unf: "Between Us: Unfiltered",
     unfD: "Progresywna, 3-poziomowa podróż, która dostosowuje się do poziomu intimności.",
     cats: "Kategorie",
+    levels: "Poziomy intymności",
     start: "Rozpocznij grę",
     none: "Wybierz przynajmniej jedną talię",
     adult: "18+",
@@ -30,6 +32,7 @@ const t = {
     unf: "Between Us: Unfiltered",
     unfD: "A progressive 3-level journey that adapts to the intimacy of the players.",
     cats: "Categories",
+    levels: "Intimacy levels",
     start: "Start playing",
     none: "Select at least one deck",
     adult: "18+",
@@ -134,8 +137,50 @@ export function DeckSelector() {
           )}
         </DeckCard>
 
-        <DeckCard id="plus" title={c.plus} desc={c.plusD} />
-        <DeckCard id="unfiltered" title={c.unf} desc={c.unfD} badge={c.adult} />
+        <DeckCard id="plus" title={c.plus} desc={c.plusD}>
+          {decks.plus && (
+            <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
+              <div className="flex flex-wrap gap-2">
+                {PLUS_CATEGORIES.map((cat) => {
+                  const on = categories[cat];
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => toggleCategory(cat)}
+                      className="rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
+                      style={{
+                        background: on ? `var(--color-cat-${cat})` : "var(--panel-2)",
+                        color: on ? "#fff" : "var(--muted-text)",
+                        opacity: on ? 1 : 0.7,
+                      }}
+                    >
+                      {CATEGORY_META[cat].label[lang]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </DeckCard>
+        <DeckCard id="unfiltered" title={c.unf} desc={c.unfD} badge={c.adult}>
+          {decks.unfiltered && (
+            <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.levels}</p>
+              <div className="flex flex-wrap gap-2">
+                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl) => (
+                  <span
+                    key={lvl}
+                    className="rounded-full px-3 py-1.5 text-xs font-semibold"
+                    style={{ background: "var(--panel-2)", color: "var(--muted-text)" }}
+                  >
+                    {UNFILTERED_LEVELS[lvl].emoji} {UNFILTERED_LEVELS[lvl].label[lang]}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </DeckCard>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-20 px-5 pb-6 pt-3" style={{ background: "linear-gradient(to top, var(--bg), transparent)" }}>

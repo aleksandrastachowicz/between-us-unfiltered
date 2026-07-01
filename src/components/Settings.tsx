@@ -15,7 +15,7 @@ const t = {
     playersD: "Dodaj imiona, by śledzić tury",
     add: "Dodaj gracza",
     name: "Imię gracza",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet" },
+    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
   },
   en: {
     settings: "Settings",
@@ -27,14 +27,15 @@ const t = {
     playersD: "Add names to track turns",
     add: "Add player",
     name: "Player name",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet" },
+    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
   },
 };
 
 const themeSwatch: Record<ThemeId, string[]> = {
   acid: ["#ff3ea5", "#b59cff", "#cae774"],
-  solar: ["#d2652a", "#d4a72c", "#3f7e78"],
+  solar: ["#f2612e", "#ff5e7a", "#ffc24b"],
   velvet: ["#b673ff", "#00e0c6", "#b6ff3e"],
+  midnight: ["#8a7dff", "#7c3aed", "#1f6f8a"],
 };
 
 export function Settings({ open, onClose }: { open: boolean; onClose: () => void }) {

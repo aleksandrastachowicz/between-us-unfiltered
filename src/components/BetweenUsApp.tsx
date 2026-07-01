@@ -3,6 +3,7 @@ import { useGame } from "@/lib/store";
 import { AuraBackground } from "./AuraBackground";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
+import { MultiplayerPanel } from "./MultiplayerPanel";
 
 export function BetweenUsApp() {
   const [ready, setReady] = useState(false);
@@ -19,6 +20,7 @@ export function BetweenUsApp() {
   return (
     <div className={`theme-${theme} relative min-h-dvh w-full overflow-hidden`}>
       <AuraBackground />
+      <MultiplayerPanel />
       <main className="relative z-10">
         {screen === "deck" ? <DeckSelector /> : <GameScreen />}
       </main>

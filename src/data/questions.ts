@@ -379,3 +379,16 @@ export const BASIC_CATEGORIES: CategoryId[] = [
   "passions",
   "introspection",
 ];
+
+export const PLUS_CATEGORIES: CategoryId[] = ["plus_love", "plus_spice"];
+
+/** Short, display-friendly edition names per deck. */
+export const EDITION_META: Record<DeckId, QuestionText> = {
+  basic: { pl: "Podstawowa", en: "Basic" },
+  plus: { pl: "Plus", en: "Plus" },
+  unfiltered: { pl: "Unfiltered", en: "Unfiltered" },
+};
+
+export function editionForCategory(category: CategoryId | "unfiltered"): DeckId {
+  return category === "unfiltered" ? "unfiltered" : CATEGORY_META[category].deck;
+}

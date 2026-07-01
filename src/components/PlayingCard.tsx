@@ -1,6 +1,6 @@
 import { motion, type PanInfo } from "motion/react";
 import { useGame, type DrawnCard } from "@/lib/store";
-import { CATEGORY_META } from "@/data/questions";
+import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { CardArt, patternFor } from "./CardArt";
 
@@ -15,12 +15,17 @@ const accentVar: Record<string, string> = {
   unfiltered: "var(--color-cat-unfiltered)",
 };
 
-function labelFor(card: DrawnCard, lang: "pl" | "en") {
+function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
   if (card.category === "unfiltered") {
     const lvl = card.unfilteredLevel ?? "love_spice";
     return `${UNFILTERED_LEVELS[lvl].emoji} ${UNFILTERED_LEVELS[lvl].label[lang]}`;
   }
   return CATEGORY_META[card.category].label[lang];
+}
+
+function monogramFor(label: string) {
+  const letter = [...label].find((ch) => /\p{L}/u.test(ch));
+  return (letter ?? "•").toUpperCase();
 }
 
 export function PlayingCard({ card }: { card: DrawnCard }) {
@@ -29,6 +34,11 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   const primary = lang === "pl" ? card.pl : card.en;
   const secondary = lang === "pl" ? card.en : card.pl;
   const accent = accentVar[card.category];
+
+  const edition = EDITION_META[editionForCategory(card.category)][lang];
+  const categoryLabel = categoryLabelFor(card, lang);
+  const monogram = monogramFor(categoryLabel);
+  const hint = lang === "pl" ? "dotknij, aby odkryć" : "tap to reveal";
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (Math.abs(info.offset.x) > 70 || Math.abs(info.offset.y) > 70) {
@@ -58,16 +68,14 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           className="backface-hidden absolute inset-0 overflow-hidden rounded-[32px] shadow-2xl"
           style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.4)" }}
         >
-          <CardArt pattern={pattern} unfilteredLevel={card.unfilteredLevel} />
-          <span
-            className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-medium uppercase tracking-[0.32em]"
-            style={{ color: pattern === "aura" || pattern === "daisyGrid" ? "#3a2a18" : "#fff", opacity: 0.45 }}
-          >
-            {labelFor(card, lang)}
-          </span>
-          <span className="absolute right-4 top-4 text-[9px] font-semibold uppercase tracking-[0.3em] text-white/40">
-            tap to reveal
-          </span>
+          <CardArt
+            pattern={pattern}
+            monogram={monogram}
+            edition={edition}
+            category={categoryLabel}
+            hint={hint}
+            unfilteredLevel={card.unfilteredLevel}
+          />
         </div>
 
         {/* FRONT (facing) */}
@@ -80,15 +88,23 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
             boxShadow: "0 30px 60px -20px rgba(0,0,0,0.35)",
           }}
         >
-          <div className="flex items-center justify-between">
-            <span
-              className="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em]"
-              style={{ background: accent, color: "#fff" }}
-            >
-              {labelFor(card, lang)}
-            </span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-1.5">
+              <span
+                className="text-[9px] font-bold uppercase tracking-[0.34em]"
+                style={{ color: "var(--muted-text)" }}
+              >
+                {edition}
+              </span>
+              <span
+                className="w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
+                style={{ background: accent, color: "#fff" }}
+              >
+                {categoryLabel}
+              </span>
+            </div>
             {card.intensity ? (
-              <span className="flex gap-0.5">
+              <span className="mt-1 flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <span
                     key={i}

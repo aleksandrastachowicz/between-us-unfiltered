@@ -64,26 +64,26 @@
   --aura-5: #ffd76e;
 }
 
-/* ===== THEME: Solar Flare ===== */
+/* ===== THEME: Solar Flare (warm sunset) ===== */
 .theme-solar {
-  --bg: #f6eddc;
-  --panel: #fcf6ea;
-  --panel-2: #f0e2c9;
-  --text: #3a2a18;
-  --muted-text: #8a7355;
-  --border: #e4d3b2;
-  --accent: #d2652a;
-  --accent-ink: #fff6e9;
-  --card-surface: #fffaf0;
-  --card-ink: #3a2a18;
-  --aura-1: #e08a3c;
-  --aura-2: #d4a72c;
-  --aura-3: #c7a23a;
-  --aura-4: #3f7e78;
-  --aura-5: #e8c07a;
+  --bg: #fff3e9;
+  --panel: #fffaf4;
+  --panel-2: #ffe4d1;
+  --text: #3a1c10;
+  --muted-text: #a56a49;
+  --border: #f6d3b9;
+  --accent: #f2612e;
+  --accent-ink: #fff6ef;
+  --card-surface: #fffaf3;
+  --card-ink: #331708;
+  --aura-1: #ff8a3d;
+  --aura-2: #ff5e7a;
+  --aura-3: #ffc24b;
+  --aura-4: #ff6f3c;
+  --aura-5: #ffd9a0;
 }
 
-/* ===== THEME: Deep Velvet ===== */
+/* ===== THEME: Deep Velvet (neon cyber-dark) ===== */
 .theme-velvet {
   --bg: #060508;
   --panel: rgba(28, 24, 34, 0.6);
@@ -102,6 +102,27 @@
   --aura-5: #5a2ec9;
   --glow: 0 0 24px rgba(182, 115, 255, 0.55);
 }
+
+/* ===== THEME: Midnight (refined dark mode) ===== */
+.theme-midnight {
+  --bg: #0a0c13;
+  --panel: rgba(22, 26, 38, 0.72);
+  --panel-2: rgba(34, 40, 56, 0.6);
+  --text: #eef1f8;
+  --muted-text: #98a1ba;
+  --border: rgba(255, 255, 255, 0.09);
+  --accent: #8a7dff;
+  --accent-ink: #0a0c13;
+  --card-surface: #171b26;
+  --card-ink: #eef1f8;
+  --aura-1: #3d327f;
+  --aura-2: #7c3aed;
+  --aura-3: #1f6f8a;
+  --aura-4: #b83a72;
+  --aura-5: #2a3f8f;
+  --glow: 0 0 22px rgba(138, 125, 255, 0.45);
+}
+
 
 @layer base {
   * {

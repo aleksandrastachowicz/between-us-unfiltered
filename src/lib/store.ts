@@ -7,9 +7,10 @@ import {
   type Lang,
   type Question,
 } from "@/data/questions";
-import { generateUnfiltered, type UnfilteredQuestion } from "@/data/unfiltered";
+import { type UnfilteredQuestion } from "@/data/unfiltered";
+import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
 
-export type ThemeId = "acid" | "solar" | "velvet";
+export type ThemeId = "acid" | "solar" | "velvet" | "midnight";
 export type Screen = "deck" | "game";
 
 export interface DrawnCard {
@@ -56,7 +57,7 @@ interface State {
 function pickStatic(state: State): Question | null {
   const pool = QUESTIONS.filter((q) => {
     if (!state.decks[q.deck]) return false;
-    if (q.deck === "basic" && !state.categories[q.category]) return false;
+    if (!state.categories[q.category]) return false;
     return !state.discard.has(q.id);
   });
   if (pool.length === 0) return null;
@@ -98,6 +99,8 @@ export const useGame = create<State>()(
         set((s) => ({ categories: { ...s.categories, [c]: !s.categories[c] } })),
 
       startGame: () => {
+        const s = get();
+        if (s.decks.unfiltered) primeUnfiltered(s.progress);
         set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0 });
         get().drawCard();
       },
@@ -111,7 +114,7 @@ export const useGame = create<State>()(
 
         let card: DrawnCard | null = null;
         if (useUnfiltered) {
-          const q = generateUnfiltered(s.progress);
+          const q = nextUnfiltered(s.progress);
           card = {
             id: q.id,
             pl: q.pl,
@@ -125,7 +128,7 @@ export const useGame = create<State>()(
           if (q) {
             card = { id: q.id, pl: q.pl, en: q.en, category: q.category };
           } else if (s.decks.unfiltered) {
-            const u = generateUnfiltered(s.progress);
+            const u = nextUnfiltered(s.progress);
             card = { id: u.id, pl: u.pl, en: u.en, category: "unfiltered", unfilteredLevel: u.level, intensity: u.intensity };
           }
         }
@@ -152,6 +155,7 @@ export const useGame = create<State>()(
             currentPlayer: nextPlayer,
           };
         });
+        if (get().decks.unfiltered) primeUnfiltered(get().progress);
       },
 
       flip: () => set((s) => ({ flipped: !s.flipped })),
