@@ -32,6 +32,7 @@ const t = {
     unf: "Between Us: Unfiltered",
     unfD: "A progressive 3-level journey that adapts to the intimacy of the players.",
     cats: "Categories",
+    levels: "Intimacy levels",
     start: "Start playing",
     none: "Select at least one deck",
     adult: "18+",
