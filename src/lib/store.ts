@@ -126,7 +126,7 @@ export const useGame = create<State>()(
           if (q) {
             card = { id: q.id, pl: q.pl, en: q.en, category: q.category };
           } else if (s.decks.unfiltered) {
-            const u = generateUnfiltered(s.progress);
+            const u = nextUnfiltered(s.progress);
             card = { id: u.id, pl: u.pl, en: u.en, category: "unfiltered", unfilteredLevel: u.level, intensity: u.intensity };
           }
         }
