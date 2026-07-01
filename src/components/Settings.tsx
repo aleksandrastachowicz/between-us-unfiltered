@@ -27,7 +27,7 @@ const t = {
     playersD: "Add names to track turns",
     add: "Add player",
     name: "Player name",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet" },
+    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
   },
 };
 
