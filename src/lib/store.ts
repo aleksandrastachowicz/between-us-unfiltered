@@ -99,6 +99,8 @@ export const useGame = create<State>()(
         set((s) => ({ categories: { ...s.categories, [c]: !s.categories[c] } })),
 
       startGame: () => {
+        const s = get();
+        if (s.decks.unfiltered) primeUnfiltered(s.progress);
         set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0 });
         get().drawCard();
       },
