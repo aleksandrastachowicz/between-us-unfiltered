@@ -56,7 +56,7 @@ interface State {
 function pickStatic(state: State): Question | null {
   const pool = QUESTIONS.filter((q) => {
     if (!state.decks[q.deck]) return false;
-    if (q.deck === "basic" && !state.categories[q.category]) return false;
+    if (!state.categories[q.category]) return false;
     return !state.discard.has(q.id);
   });
   if (pool.length === 0) return null;
