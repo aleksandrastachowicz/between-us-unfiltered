@@ -109,7 +109,7 @@ async function pushNow(code: string) {
   lastPushed = serialized;
   const { error } = await supabase
     .from("game_sessions")
-    .update({ state: shared as unknown as Record<string, unknown> })
+    .update({ state: shared as unknown as never })
     .eq("code", code);
   if (error) console.warn("multiplayer push failed", error);
 }
@@ -155,7 +155,7 @@ export const useMultiplayer = create<MpState>((set) => ({
     lastPushed = JSON.stringify(shared);
     const { error } = await supabase
       .from("game_sessions")
-      .insert({ code, state: shared as unknown as Record<string, unknown> });
+      .insert({ code, state: shared as unknown as never });
     if (error) {
       set({ status: "error", error: error.message });
       return null;
@@ -181,7 +181,7 @@ export const useMultiplayer = create<MpState>((set) => ({
     }
     // Resume from persisted state.
     lastPushed = JSON.stringify(data.state);
-    applyShared(data.state as SharedState);
+    applyShared(data.state as unknown as SharedState);
     startSyncing(code);
     set({ code, status: "connected", isHost: false });
     return true;
