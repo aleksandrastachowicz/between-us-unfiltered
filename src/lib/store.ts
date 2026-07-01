@@ -7,7 +7,8 @@ import {
   type Lang,
   type Question,
 } from "@/data/questions";
-import { generateUnfiltered, type UnfilteredQuestion } from "@/data/unfiltered";
+import { type UnfilteredQuestion } from "@/data/unfiltered";
+import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
 
 export type ThemeId = "acid" | "solar" | "velvet" | "midnight";
 export type Screen = "deck" | "game";
