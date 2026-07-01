@@ -155,6 +155,7 @@ export const useGame = create<State>()(
             currentPlayer: nextPlayer,
           };
         });
+        if (get().decks.unfiltered) primeUnfiltered(get().progress);
       },
 
       flip: () => set((s) => ({ flipped: !s.flipped })),
