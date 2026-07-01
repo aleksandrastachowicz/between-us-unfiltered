@@ -3,6 +3,7 @@ import { useGame } from "@/lib/store";
 import { AuraBackground } from "./AuraBackground";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
+import { MultiplayerPanel } from "./MultiplayerPanel";
 
 export function BetweenUsApp() {
   const [ready, setReady] = useState(false);
