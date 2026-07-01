@@ -20,6 +20,7 @@ export function BetweenUsApp() {
   return (
     <div className={`theme-${theme} relative min-h-dvh w-full overflow-hidden`}>
       <AuraBackground />
+      <MultiplayerPanel />
       <main className="relative z-10">
         {screen === "deck" ? <DeckSelector /> : <GameScreen />}
       </main>
