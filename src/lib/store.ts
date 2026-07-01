@@ -9,7 +9,7 @@ import {
 } from "@/data/questions";
 import { generateUnfiltered, type UnfilteredQuestion } from "@/data/unfiltered";
 
-export type ThemeId = "acid" | "solar" | "velvet";
+export type ThemeId = "acid" | "solar" | "velvet" | "midnight";
 export type Screen = "deck" | "game";
 
 export interface DrawnCard {
