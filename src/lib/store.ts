@@ -112,7 +112,7 @@ export const useGame = create<State>()(
 
         let card: DrawnCard | null = null;
         if (useUnfiltered) {
-          const q = generateUnfiltered(s.progress);
+          const q = nextUnfiltered(s.progress);
           card = {
             id: q.id,
             pl: q.pl,
