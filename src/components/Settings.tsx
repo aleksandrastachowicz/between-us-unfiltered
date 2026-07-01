@@ -15,7 +15,7 @@ const t = {
     playersD: "Dodaj imiona, by śledzić tury",
     add: "Dodaj gracza",
     name: "Imię gracza",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet" },
+    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
   },
   en: {
     settings: "Settings",
