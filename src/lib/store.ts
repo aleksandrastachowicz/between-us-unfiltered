@@ -10,7 +10,8 @@ import {
 import { type UnfilteredQuestion } from "@/data/unfiltered";
 import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
 
-export type ThemeId = "acid" | "solar" | "velvet" | "midnight";
+export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
+export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
 
 export interface DrawnCard {
@@ -26,6 +27,7 @@ interface State {
   // settings
   lang: Lang;
   theme: ThemeId;
+  mode: Mode;
   animations: boolean;
   players: string[];
   // decks
@@ -43,6 +45,8 @@ interface State {
   // actions
   setLang: (l: Lang) => void;
   setTheme: (t: ThemeId) => void;
+  setMode: (m: Mode) => void;
+  toggleMode: () => void;
   toggleAnimations: () => void;
   setPlayers: (p: string[]) => void;
   toggleDeck: (d: DeckId) => void;
@@ -68,7 +72,8 @@ export const useGame = create<State>()(
   persist(
     (set, get) => ({
       lang: "pl",
-      theme: "acid",
+      theme: "rose",
+      mode: "light",
       animations: true,
       players: [],
       decks: { basic: true, plus: false, unfiltered: false },
@@ -80,6 +85,8 @@ export const useGame = create<State>()(
         introspection: true,
         plus_love: true,
         plus_spice: true,
+        plus_deep: true,
+        plus_kinky: true,
       },
       screen: "deck",
       currentPlayer: 0,
@@ -91,6 +98,8 @@ export const useGame = create<State>()(
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
+      setMode: (mode) => set({ mode }),
+      toggleMode: () => set((s) => ({ mode: s.mode === "light" ? "dark" : "light" })),
       toggleAnimations: () => set((s) => ({ animations: !s.animations })),
       setPlayers: (players) => set({ players }),
       toggleDeck: (d) =>
@@ -163,10 +172,23 @@ export const useGame = create<State>()(
     }),
     {
       name: "between-us",
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persisted) => {
+        const s = (persisted ?? {}) as Record<string, unknown>;
+        const validThemes: ThemeId[] = ["rose", "fairy", "violet", "spicy"];
+        if (!validThemes.includes(s.theme as ThemeId)) s.theme = "rose";
+        if (s.mode !== "light" && s.mode !== "dark") s.mode = "light";
+        const cats = (s.categories ?? {}) as Record<string, boolean>;
+        if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
+        if (typeof cats.plus_kinky !== "boolean") cats.plus_kinky = true;
+        s.categories = cats;
+        return s;
+      },
       partialize: (s) => ({
         lang: s.lang,
         theme: s.theme,
+        mode: s.mode,
         animations: s.animations,
         players: s.players,
         decks: s.decks,

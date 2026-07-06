@@ -2,66 +2,55 @@ import type { ReactNode } from "react";
 import type { CategoryId } from "@/data/questions";
 import type { UnfilteredQuestion } from "@/data/unfiltered";
 
-type PatternKey =
-  | "wavyChecker"
-  | "daisyGrid"
-  | "aura"
-  | "liquidStars"
-  | "sunMoon"
-  | "burgundy"
-  | "unfiltered";
+export type PatternKey =
+  | CategoryId
+  | "uf_love_spice"
+  | "uf_after_dark"
+  | "uf_no_limits";
 
 const ID = () => Math.random().toString(36).slice(2, 8);
 
 /* ============================================================
-   Shared premium frame: art layer + readable labels/monogram
+   Shared premium frame: art layer + readable labels (no big
+   background monogram — purely graphic reverse per category).
    ============================================================ */
 function CardBack({
   art,
   ink,
-  monogram,
+  emblem,
   edition,
   category,
   hint,
-  frameOpacity = 0.22,
 }: {
   art: ReactNode;
   ink: string;
-  monogram: string;
+  emblem: ReactNode;
   edition: string;
   category: string;
   hint: string;
-  frameOpacity?: number;
 }) {
   return (
     <div className="relative h-full w-full overflow-hidden">
       {art}
       <div
         className="pointer-events-none absolute inset-[10px] rounded-[24px]"
-        style={{ border: `1.5px solid ${ink}`, opacity: 0.28 }}
+        style={{ border: `1.5px solid ${ink}`, opacity: 0.32 }}
       />
       <div
         className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
         style={{ color: ink }}
       >
-        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.75 }}>
+        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.8 }}>
           {edition}
         </span>
 
-        <div className="flex flex-1 items-center justify-center">
-          <span
-            className="font-black leading-none"
-            style={{ fontSize: "128px", opacity: frameOpacity, letterSpacing: "-0.04em" }}
-          >
-            {monogram}
-          </span>
-        </div>
+        <div className="flex flex-1 items-center justify-center">{emblem}</div>
 
         <div className="flex flex-col items-center gap-2">
           <span className="max-w-[85%] text-balance text-[17px] font-extrabold leading-tight tracking-tight">
             {category}
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.5 }}>
+          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.55 }}>
             {hint}
           </span>
         </div>
@@ -70,7 +59,100 @@ function CardBack({
   );
 }
 
-/* ---------- Love & Relationships: romantic rose + floating hearts ---------- */
+/* ---------- Emblems: crisp central icon, drawn (no letters) ---------- */
+function Emblem({ ink, children }: { ink: string; children: ReactNode }) {
+  return (
+    <svg viewBox="0 0 120 120" width="132" height="132" fill="none" stroke={ink} aria-hidden>
+      <circle cx="60" cy="60" r="52" strokeWidth="1.2" opacity="0.35" />
+      <circle cx="60" cy="60" r="44" strokeWidth="0.8" opacity="0.2" />
+      {children}
+    </svg>
+  );
+}
+
+const HeartEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <path d="M60 84 C34 66 40 42 54 42 C60 42 60 48 60 50 C60 48 60 42 66 42 C80 42 86 66 60 84 Z" strokeWidth="2" />
+  </Emblem>
+);
+const DaisyEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)">
+      {Array.from({ length: 8 }).map((_, j) => (
+        <ellipse key={j} cx="0" cy="-20" rx="7" ry="16" strokeWidth="1.8" transform={`rotate(${j * 45})`} />
+      ))}
+      <circle r="9" strokeWidth="1.8" />
+    </g>
+  </Emblem>
+);
+const LeafEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)">
+      <path d="M0 26 C-26 6 -20 -24 0 -26 C20 -24 26 6 0 26 Z" strokeWidth="2" />
+      <path d="M0 22 L0 -22" strokeWidth="1.6" />
+    </g>
+  </Emblem>
+);
+const StarEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <path
+      transform="translate(60 60) scale(2.2)"
+      d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z"
+      strokeWidth="1"
+      fill={ink}
+      opacity="0.9"
+    />
+  </Emblem>
+);
+const EyeEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)">
+      <path d="M-34 0 Q0 -24 34 0 Q0 24 -34 0 Z" strokeWidth="2" />
+      <circle r="11" strokeWidth="2" />
+      <circle r="4" fill={ink} stroke="none" />
+    </g>
+  </Emblem>
+);
+const FlameEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)">
+      <path d="M0 26 C-20 14 -16 -6 -2 -26 C-2 -8 12 -12 8 -2 C18 4 14 22 0 26 Z" strokeWidth="2" />
+    </g>
+  </Emblem>
+);
+const InfinityEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)" strokeWidth="2.2">
+      <path d="M-8 0 a12 12 0 1 1 8 10 a12 12 0 1 0 8 -10 a12 12 0 0 0 -16 0 Z" />
+    </g>
+  </Emblem>
+);
+const KeyEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)" strokeWidth="2.2">
+      <circle cx="0" cy="-14" r="12" />
+      <path d="M0 -2 L0 26 M0 14 L10 14 M0 20 L8 20" />
+    </g>
+  </Emblem>
+);
+const MoonEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)">
+      <path d="M14 -22 a26 26 0 1 0 10 44 a20 20 0 0 1 -10 -44 Z" strokeWidth="2" fill={ink} opacity="0.85" />
+      <path transform="translate(-20 -14) scale(1)" d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z" fill={ink} stroke="none" />
+    </g>
+  </Emblem>
+);
+const DiamondEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)" strokeWidth="2">
+      <path d="M0 -26 L22 0 L0 26 L-22 0 Z" />
+      <path d="M-22 0 L22 0 M0 -26 L0 26" strokeWidth="1" opacity="0.55" />
+    </g>
+  </Emblem>
+);
+
+/* ---------- Love & Relationships: romantic rose ---------- */
 function LoveArt() {
   const id = ID();
   return (
@@ -88,22 +170,16 @@ function LoveArt() {
       </defs>
       <rect width="300" height="420" fill={`url(#lv-${id})`} />
       <rect width="300" height="420" fill={`url(#lvg-${id})`} />
-      <g fill="none" stroke="#ffd9e2" strokeWidth="2" opacity="0.5">
-        {[[46, 74, 0.9], [246, 120, 0.7], [60, 336, 0.8], [238, 320, 0.6], [150, 60, 0.5]].map(
-          ([x, y, s], i) => (
-            <path
-              key={i}
-              transform={`translate(${x} ${y}) scale(${s})`}
-              d="M0 6 C -12 -8 -26 4 0 24 C 26 4 12 -8 0 6 Z"
-            />
-          ),
-        )}
+      <g fill="none" stroke="#ffd9e2" strokeWidth="2" opacity="0.45">
+        {[[46, 74, 0.9], [246, 120, 0.7], [60, 336, 0.8], [238, 320, 0.6]].map(([x, y, s], i) => (
+          <path key={i} transform={`translate(${x} ${y}) scale(${s})`} d="M0 6 C -12 -8 -26 4 0 24 C 26 4 12 -8 0 6 Z" />
+        ))}
       </g>
     </svg>
   );
 }
 
-/* ---------- Friendship & Family: warm coral sunset + retro daisies ---------- */
+/* ---------- Friendship & Family: warm coral sunset ---------- */
 function FriendshipArt() {
   const id = ID();
   return (
@@ -116,23 +192,20 @@ function FriendshipArt() {
         </linearGradient>
       </defs>
       <rect width="300" height="420" fill={`url(#fr-${id})`} />
-      <g opacity="0.7">
-        {[[52, 70, 0.9], [250, 90, 0.7], [40, 250, 0.75], [262, 320, 0.85], [150, 380, 0.6]].map(
-          ([x, y, s], i) => (
-            <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
-              {Array.from({ length: 8 }).map((_, j) => (
-                <ellipse key={j} cx="0" cy="-15" rx="6.5" ry="14" fill="#fff2d6" transform={`rotate(${j * 45})`} />
-              ))}
-              <circle r="8" fill="#ffcf5a" />
-            </g>
-          ),
-        )}
+      <g opacity="0.35" fill="none" stroke="#fff2d6" strokeWidth="2">
+        {[[40, 90, 0.9], [262, 320, 0.85]].map(([x, y, s], i) => (
+          <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
+            {Array.from({ length: 8 }).map((_, j) => (
+              <ellipse key={j} cx="0" cy="-15" rx="6.5" ry="14" transform={`rotate(${j * 45})`} />
+            ))}
+          </g>
+        ))}
       </g>
     </svg>
   );
 }
 
-/* ---------- Self-Development: calm sage aura rings ---------- */
+/* ---------- Self-Development: calm sage aura ---------- */
 function SelfDevArt() {
   const id = ID();
   return (
@@ -151,8 +224,8 @@ function SelfDevArt() {
           fill={`url(#sd-${id})`}
           style={{ transformOrigin: "center", animation: "auraPulse 8s ease-in-out infinite" }}
         />
-        <g transform="translate(150 200)" fill="none" stroke="#4d6b34" strokeWidth="1.6" opacity="0.4">
-          {[42, 66, 92, 120].map((r) => (
+        <g transform="translate(150 210)" fill="none" stroke="#4d6b34" strokeWidth="1.4" opacity="0.3">
+          {[70, 100, 130, 160].map((r) => (
             <circle key={r} r={r} />
           ))}
         </g>
@@ -161,7 +234,7 @@ function SelfDevArt() {
   );
 }
 
-/* ---------- Passions & Dreams: dreamy cobalt + four-point stars ---------- */
+/* ---------- Passions & Dreams: dreamy cobalt ---------- */
 function PassionsArt() {
   const id = ID();
   return (
@@ -172,31 +245,18 @@ function PassionsArt() {
           <stop offset="52%" stopColor="#4b5ce6" />
           <stop offset="100%" stopColor="#2a1c8f" />
         </linearGradient>
-        <filter id={`pw-${id}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.008 0.016" numOctaves="3" seed="4" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="34" />
-        </filter>
       </defs>
       <rect width="300" height="420" fill={`url(#pa-${id})`} />
-      <g filter={`url(#pw-${id})`} stroke="#cdddff" strokeWidth="4" fill="none" opacity="0.4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <path key={i} d={`M-20 ${58 + i * 62} Q 90 ${24 + i * 62} 160 ${58 + i * 62} T 330 ${58 + i * 62}`} />
-        ))}
-      </g>
-      <g fill="#ffffff" opacity="0.92">
-        {[[54, 92, 1.1], [244, 150, 0.8], [78, 322, 0.9], [222, 352, 1], [150, 240, 0.7]].map(([x, y, s], i) => (
-          <path
-            key={i}
-            transform={`translate(${x} ${y}) scale(${s})`}
-            d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z"
-          />
+      <g fill="#ffffff" opacity="0.55">
+        {[[54, 92, 0.9], [244, 150, 0.7], [78, 322, 0.8], [222, 352, 0.85]].map(([x, y, s], i) => (
+          <path key={i} transform={`translate(${x} ${y}) scale(${s})`} d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z" />
         ))}
       </g>
     </svg>
   );
 }
 
-/* ---------- Introspection: mystical violet + sun/moon eye ---------- */
+/* ---------- Introspection: mystical violet ---------- */
 function IntrospectionArt() {
   const id = ID();
   return (
@@ -209,36 +269,29 @@ function IntrospectionArt() {
         </radialGradient>
       </defs>
       <rect width="300" height="420" fill={`url(#in-${id})`} />
-      <g transform="translate(150 200)" stroke="#efe6ff" strokeWidth="2.2" fill="none" opacity="0.7">
-        <path d="M-82 0 Q0 -56 82 0 Q0 56 -82 0 Z" />
-        <circle r="27" />
-        <circle r="11" fill="#efe6ff" stroke="none" />
-        {Array.from({ length: 12 }).map((_, i) => (
-          <line key={i} x1="0" y1="-42" x2="0" y2="-52" transform={`rotate(${i * 30})`} strokeLinecap="round" />
+      <g transform="translate(150 210)" stroke="#efe6ff" strokeWidth="1.4" fill="none" opacity="0.35">
+        {[60, 96, 132].map((r) => (
+          <circle key={r} r={r} />
         ))}
       </g>
     </svg>
   );
 }
 
-/* ---------- Edition Plus: burgundy luxe waves + heart ---------- */
-function BurgundyArt() {
+/* ---------- Plus · Love & Relationships: burgundy luxe ---------- */
+function PlusLoveArt() {
   const id = ID();
   return (
     <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <linearGradient id={`bu-${id}`} x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`pl-${id}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#9a2444" />
           <stop offset="55%" stopColor="#6c1330" />
           <stop offset="100%" stopColor="#3f0a19" />
         </linearGradient>
-        <filter id={`bw-${id}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="2" seed="11" result="n" />
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="28" />
-        </filter>
       </defs>
-      <rect width="300" height="420" fill={`url(#bu-${id})`} />
-      <g filter={`url(#bw-${id})`} stroke="#f0c3cf" strokeWidth="4" fill="none" opacity="0.4">
+      <rect width="300" height="420" fill={`url(#pl-${id})`} />
+      <g stroke="#f0c3cf" strokeWidth="3" fill="none" opacity="0.28">
         {Array.from({ length: 7 }).map((_, i) => (
           <path key={i} d={`M-20 ${44 + i * 58} Q 90 ${12 + i * 58} 160 ${44 + i * 58} T 330 ${44 + i * 58}`} />
         ))}
@@ -247,110 +300,254 @@ function BurgundyArt() {
   );
 }
 
-/* ---------- Unfiltered: obsidian + gold celestial ---------- */
-function UnfilteredArt({ level }: { level?: UnfilteredQuestion["level"] }) {
+/* ---------- Plus · Spicy & Intimate: fiery scarlet ---------- */
+function PlusSpiceArt() {
   const id = ID();
-  const speed = level === "no_limits" ? 5 : level === "after_dark" ? 9 : 15;
+  return (
+    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id={`ps-${id}`} x1="0" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#ff6a3d" />
+          <stop offset="50%" stopColor="#e01f3d" />
+          <stop offset="100%" stopColor="#7a0821" />
+        </linearGradient>
+        <radialGradient id={`psg-${id}`} cx="50%" cy="70%" r="70%">
+          <stop offset="0%" stopColor="#ffd07a" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#ffd07a" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="300" height="420" fill={`url(#ps-${id})`} />
+      <rect width="300" height="420" fill={`url(#psg-${id})`} />
+      <g stroke="#ffd9c2" strokeWidth="2.4" fill="none" opacity="0.3">
+        {[70, 150, 230, 310].map((y, i) => (
+          <path key={i} d={`M-10 ${y} C 80 ${y - 40} 130 ${y + 40} 320 ${y - 10}`} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/* ---------- Plus · Deep & Emotional: indigo-teal tide ---------- */
+function PlusDeepArt() {
+  const id = ID();
+  return (
+    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id={`pd-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#2ec6c0" />
+          <stop offset="52%" stopColor="#2c5fb8" />
+          <stop offset="100%" stopColor="#1a2452" />
+        </linearGradient>
+      </defs>
+      <rect width="300" height="420" fill={`url(#pd-${id})`} />
+      <g stroke="#c9f2ee" strokeWidth="2.2" fill="none" opacity="0.28">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <path key={i} d={`M-20 ${52 + i * 50} Q 150 ${20 + i * 50} 320 ${52 + i * 50}`} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/* ---------- Plus · Kinky & Fantasy: electric magenta ---------- */
+function PlusKinkyArt() {
+  const id = ID();
+  return (
+    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id={`pk-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ff4fd8" />
+          <stop offset="50%" stopColor="#a01ec0" />
+          <stop offset="100%" stopColor="#3d0a5c" />
+        </linearGradient>
+      </defs>
+      <rect width="300" height="420" fill={`url(#pk-${id})`} />
+      <g stroke="#ffd6f7" strokeWidth="1.6" fill="none" opacity="0.28">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <path key={i} d={`M${-20 + i * 4} 0 L${60 + i * 26} 420`} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/* ---------- Unfiltered I · Love & Spice: warm ember rose ---------- */
+function UfLoveSpiceArt() {
+  const id = ID();
+  return (
+    <div className="absolute inset-0 overflow-hidden" style={{ background: "#2a0d1a" }}>
+      <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id={`u1-${id}`} cx="50%" cy="46%" r="70%">
+            <stop offset="0%" stopColor="#ff8fa8" />
+            <stop offset="48%" stopColor="#c93b63" />
+            <stop offset="100%" stopColor="#2a0d1a" />
+          </radialGradient>
+        </defs>
+        <rect width="300" height="420" fill={`url(#u1-${id})`} />
+        <g fill="#ffd9c2" opacity="0.5">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <circle key={i} cx={(i * 71) % 300} cy={(i * 113) % 420} r={i % 3 === 0 ? 2 : 1.2} />
+          ))}
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+/* ---------- Unfiltered II · After Dark: crimson-violet night ---------- */
+function UfAfterDarkArt() {
+  const id = ID();
+  return (
+    <div className="absolute inset-0 overflow-hidden" style={{ background: "#160616" }}>
+      <div
+        className="pointer-events-none absolute inset-2 rounded-[24px]"
+        style={{ border: "1.5px solid #e0629b", boxShadow: "0 0 20px rgba(224,98,155,0.45), inset 0 0 18px rgba(224,98,155,0.2)", animation: "hueShift 12s linear infinite" }}
+      />
+      <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id={`u2-${id}`} cx="50%" cy="40%" r="72%">
+            <stop offset="0%" stopColor="#8a2b6d" />
+            <stop offset="60%" stopColor="#3a0f38" />
+            <stop offset="100%" stopColor="#160616" />
+          </radialGradient>
+        </defs>
+        <rect width="300" height="420" fill={`url(#u2-${id})`} />
+        <g fill="#e0629b" opacity="0.45">
+          {Array.from({ length: 18 }).map((_, i) => (
+            <circle key={i} cx={(i * 53) % 300} cy={(i * 97) % 420} r={i % 4 === 0 ? 1.8 : 1} />
+          ))}
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+/* ---------- Unfiltered III · No Limits: obsidian + gold ---------- */
+function UfNoLimitsArt() {
+  const id = ID();
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: "#0b0a0e" }}>
       <div
         className="pointer-events-none absolute inset-2 rounded-[24px]"
-        style={{
-          border: "1.5px solid #d9b25a",
-          boxShadow: "0 0 20px rgba(217,178,90,0.55), inset 0 0 18px rgba(217,178,90,0.22)",
-          animation: `hueShift ${speed}s linear infinite`,
-        }}
+        style={{ border: "1.5px solid #d9b25a", boxShadow: "0 0 20px rgba(217,178,90,0.55), inset 0 0 18px rgba(217,178,90,0.22)", animation: "hueShift 6s linear infinite" }}
       />
       <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-        <g stroke="#d9b25a" strokeWidth="1.4" fill="none" opacity="0.85">
-          <g transform="translate(150 128)">
-            <circle r="46" opacity="0.45" />
-            <circle r="34" opacity="0.3" />
-            <path d="M0 -40 L7 -7 L40 0 L7 7 L0 40 L-7 7 L-40 0 L-7 -7 Z" fill="#d9b25a" stroke="none" />
-            <path d="M52 -8 a18 18 0 1 0 16 30 a14 14 0 0 1 -16 -30z" fill="#d9b25a" stroke="none" opacity="0.8" />
-          </g>
+        <g fill="#d9b25a" opacity="0.5">
+          {Array.from({ length: 22 }).map((_, i) => (
+            <circle key={i} cx={(i * 53) % 300} cy={(i * 97) % 420} r={i % 4 === 0 ? 1.8 : 1} />
+          ))}
         </g>
-        {Array.from({ length: 20 }).map((_, i) => (
-          <circle key={i} cx={(i * 53) % 300} cy={(i * 97) % 420} r={i % 4 === 0 ? 1.8 : 1} fill="#d9b25a" opacity="0.5" />
-        ))}
       </svg>
     </div>
   );
 }
 
 const INK: Record<PatternKey, string> = {
-  wavyChecker: "#ffe4ec",
-  daisyGrid: "#3a1526",
-  aura: "#2f4020",
-  liquidStars: "#eaf1ff",
-  sunMoon: "#f3ecff",
-  burgundy: "#f6d3dc",
-  unfiltered: "#e7c877",
+  love: "#ffe4ec",
+  friendship: "#3a1526",
+  selfdev: "#2f4020",
+  passions: "#eaf1ff",
+  introspection: "#f3ecff",
+  plus_love: "#f6d3dc",
+  plus_spice: "#ffe0d0",
+  plus_deep: "#d6f5f1",
+  plus_kinky: "#ffdcf6",
+  uf_love_spice: "#ffe0cf",
+  uf_after_dark: "#f6cfe4",
+  uf_no_limits: "#e7c877",
 };
 
-function artFor(pattern: PatternKey, level?: UnfilteredQuestion["level"]): ReactNode {
+function artFor(pattern: PatternKey): ReactNode {
   switch (pattern) {
-    case "wavyChecker":
+    case "love":
       return <LoveArt />;
-    case "daisyGrid":
+    case "friendship":
       return <FriendshipArt />;
-    case "aura":
+    case "selfdev":
       return <SelfDevArt />;
-    case "liquidStars":
+    case "passions":
       return <PassionsArt />;
-    case "sunMoon":
+    case "introspection":
       return <IntrospectionArt />;
-    case "burgundy":
-      return <BurgundyArt />;
-    case "unfiltered":
-      return <UnfilteredArt level={level} />;
+    case "plus_love":
+      return <PlusLoveArt />;
+    case "plus_spice":
+      return <PlusSpiceArt />;
+    case "plus_deep":
+      return <PlusDeepArt />;
+    case "plus_kinky":
+      return <PlusKinkyArt />;
+    case "uf_love_spice":
+      return <UfLoveSpiceArt />;
+    case "uf_after_dark":
+      return <UfAfterDarkArt />;
+    case "uf_no_limits":
+      return <UfNoLimitsArt />;
+  }
+}
+
+function emblemFor(pattern: PatternKey, ink: string): ReactNode {
+  switch (pattern) {
+    case "love":
+      return HeartEmblem(ink);
+    case "friendship":
+      return DaisyEmblem(ink);
+    case "selfdev":
+      return LeafEmblem(ink);
+    case "passions":
+      return StarEmblem(ink);
+    case "introspection":
+      return EyeEmblem(ink);
+    case "plus_love":
+      return HeartEmblem(ink);
+    case "plus_spice":
+      return FlameEmblem(ink);
+    case "plus_deep":
+      return InfinityEmblem(ink);
+    case "plus_kinky":
+      return KeyEmblem(ink);
+    case "uf_love_spice":
+      return FlameEmblem(ink);
+    case "uf_after_dark":
+      return MoonEmblem(ink);
+    case "uf_no_limits":
+      return DiamondEmblem(ink);
   }
 }
 
 export function CardArt({
   pattern,
-  monogram,
   edition,
   category,
   hint,
-  unfilteredLevel,
 }: {
   pattern: PatternKey;
-  monogram: string;
   edition: string;
   category: string;
   hint: string;
-  unfilteredLevel?: UnfilteredQuestion["level"];
 }) {
+  const ink = INK[pattern];
   return (
     <CardBack
-      art={artFor(pattern, unfilteredLevel)}
-      ink={INK[pattern]}
-      monogram={monogram}
+      art={artFor(pattern)}
+      ink={ink}
+      emblem={emblemFor(pattern, ink)}
       edition={edition}
       category={category}
       hint={hint}
-      frameOpacity={pattern === "unfiltered" ? 0.32 : 0.22}
     />
   );
 }
 
-export function patternFor(category: CategoryId | "unfiltered"): PatternKey {
-  switch (category) {
-    case "love":
-      return "wavyChecker";
-    case "friendship":
-      return "daisyGrid";
-    case "selfdev":
-      return "aura";
-    case "passions":
-      return "liquidStars";
-    case "introspection":
-      return "sunMoon";
-    case "plus_love":
-    case "plus_spice":
-      return "burgundy";
-    case "unfiltered":
-      return "unfiltered";
+export function patternFor(
+  category: CategoryId | "unfiltered",
+  level?: UnfilteredQuestion["level"],
+): PatternKey {
+  if (category === "unfiltered") {
+    if (level === "no_limits") return "uf_no_limits";
+    if (level === "after_dark") return "uf_after_dark";
+    return "uf_love_spice";
   }
+  return category;
 }

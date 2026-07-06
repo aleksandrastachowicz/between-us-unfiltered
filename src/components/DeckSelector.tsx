@@ -17,6 +17,8 @@ const t = {
     unfD: "Progresywna, 3-poziomowa podróż, która dostosowuje się do poziomu intimności.",
     cats: "Kategorie",
     levels: "Poziomy intymności",
+    unfNote:
+      "Poziom wybierasz w trakcie gry — steruje intensywnością i wpływa też na pozostałe losowane pytania.",
     start: "Rozpocznij grę",
     none: "Wybierz przynajmniej jedną talię",
     adult: "18+",
@@ -33,6 +35,8 @@ const t = {
     unfD: "A progressive 3-level journey that adapts to the intimacy of the players.",
     cats: "Categories",
     levels: "Intimacy levels",
+    unfNote:
+      "You pick the level during play — it drives intensity and also shapes the other questions drawn.",
     start: "Start playing",
     none: "Select at least one deck",
     adult: "18+",
@@ -178,6 +182,9 @@ export function DeckSelector() {
                   </span>
                 ))}
               </div>
+              <p className="mt-3 text-xs leading-snug" style={{ color: "var(--muted-text)" }}>
+                {c.unfNote}
+              </p>
             </div>
           )}
         </DeckCard>
