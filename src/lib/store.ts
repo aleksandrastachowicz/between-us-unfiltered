@@ -172,10 +172,23 @@ export const useGame = create<State>()(
     }),
     {
       name: "between-us",
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persisted) => {
+        const s = (persisted ?? {}) as Record<string, unknown>;
+        const validThemes: ThemeId[] = ["rose", "fairy", "violet", "spicy"];
+        if (!validThemes.includes(s.theme as ThemeId)) s.theme = "rose";
+        if (s.mode !== "light" && s.mode !== "dark") s.mode = "light";
+        const cats = (s.categories ?? {}) as Record<string, boolean>;
+        if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
+        if (typeof cats.plus_kinky !== "boolean") cats.plus_kinky = true;
+        s.categories = cats;
+        return s;
+      },
       partialize: (s) => ({
         lang: s.lang,
         theme: s.theme,
+        mode: s.mode,
         animations: s.animations,
         players: s.players,
         decks: s.decks,
