@@ -66,12 +66,11 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         >
           <CardArt
             pattern={pattern}
-            monogram={monogram}
             edition={edition}
             category={categoryLabel}
             hint={hint}
-            unfilteredLevel={card.unfilteredLevel}
           />
+
         </div>
 
         {/* FRONT (facing) */}
