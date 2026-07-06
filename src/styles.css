@@ -34,11 +34,15 @@
   /* category accents (theme-independent) */
   --color-cat-love: #a21836;
   --color-cat-friendship: #ff47af;
-  --color-cat-selfdev: #cae774;
-  --color-cat-passions: #a4c7ff;
-  --color-cat-introspection: #d3c0ff;
-  --color-cat-plus: #6e1228;
+  --color-cat-selfdev: #7fb45d;
+  --color-cat-passions: #4b5ce6;
+  --color-cat-introspection: #8f6bf0;
+  --color-cat-plus-love: #9a2444;
+  --color-cat-plus-spice: #e01f3d;
+  --color-cat-plus-deep: #2c7fb8;
+  --color-cat-plus-kinky: #b21fb0;
   --color-cat-unfiltered: #d9b25a;
+
 }
 
 :root {
