@@ -360,6 +360,36 @@ const plusSpice: QuestionText[] = [
   { pl: "Co sądzisz o spontanicznym, nieplanowanym seksie w porównaniu do starannie przygotowanych momentów?", en: "How do you feel about spontaneous, unplanned sex versus carefully planned and prepared moments?" },
 ];
 
+const plusDeep: QuestionText[] = [
+  { pl: "Kiedy ostatnio poczułeś/aś się przy mnie w pełni zrozumiany/a?", en: "When did you last feel completely understood by me?" },
+  { pl: "Jaka emocja jest dla Ciebie najtrudniejsza do pokazania drugiej osobie?", en: "Which emotion is hardest for you to show another person?" },
+  { pl: "Co sprawia, że czujesz się przy kimś naprawdę bezpiecznie?", en: "What makes you feel truly safe with someone?" },
+  { pl: "Jakiej formy bliskości brakuje Ci najbardziej?", en: "What kind of closeness do you crave the most?" },
+  { pl: "Co chciałbyś/ałabyś, żebym rozumiał/a o Twoich lękach?", en: "What do you wish I understood about your fears?" },
+  { pl: "Kiedy czujesz się najbardziej kochany/a?", en: "When do you feel the most loved?" },
+  { pl: "Jaka rana z przeszłości wciąż wpływa na to, jak kochasz?", en: "What past wound still shapes how you love?" },
+  { pl: "Co znaczy dla Ciebie prawdziwe zaufanie w związku?", en: "What does real trust mean to you in a relationship?" },
+  { pl: "Czego nigdy nie powiedziałeś/aś na głos o naszej relacji?", en: "What have you never said out loud about our connection?" },
+  { pl: "Jak wygląda Twój sposób proszenia o wsparcie?", en: "What does asking for support look like for you?" },
+  { pl: "Co pomaga Ci otworzyć się, gdy jest Ci trudno?", en: "What helps you open up when things feel hard?" },
+  { pl: "Jaka wspólna chwila zbliżyła nas najbardziej?", en: "What shared moment brought us closest together?" },
+];
+
+const plusKinky: QuestionText[] = [
+  { pl: "Jaką fantazję chciałbyś/ałabyś kiedyś wspólnie eksplorować?", en: "What's a fantasy you'd love to explore together someday?" },
+  { pl: "Co Cię intryguje, choć nigdy tego nie próbowałeś/aś?", en: "What intrigues you even though you've never tried it?" },
+  { pl: "Wolisz przejmować kontrolę czy ją oddawać?", en: "Do you prefer taking control or giving it up?" },
+  { pl: "Jaka gra wstępna napięcia najbardziej Cię podnieca?", en: "What kind of teasing build-up excites you most?" },
+  { pl: "Jak lubisz komunikować swoje granice i zgodę?", en: "How do you like to communicate boundaries and consent?" },
+  { pl: "Co sprawia, że napięcie staje się ekscytujące, a nie krępujące?", en: "What makes tension exciting rather than awkward for you?" },
+  { pl: "Jaka scena z filmu lub książki wydała Ci się nieoczekiwanie gorąca?", en: "What scene from a film or book felt unexpectedly hot to you?" },
+  { pl: "Co chciałbyś/ałabyś, żeby partner odważył się zaproponować?", en: "What do you wish a partner would be bold enough to suggest?" },
+  { pl: "Jaki rodzaj zabawy i śmiechu lubisz w intymnych chwilach?", en: "What kind of playfulness do you enjoy in intimate moments?" },
+  { pl: "Co dodaje Ci pewności, by wyrazić swoje pragnienia?", en: "What gives you confidence to express your desires?" },
+  { pl: "Jaka niespodzianka od partnera wprawiłaby Cię w zachwyt?", en: "What kind of surprise from a partner would thrill you?" },
+  { pl: "Gdzie leży granica między ekscytacją a strefą komfortu dla Ciebie?", en: "Where's the line between excitement and comfort zone for you?" },
+];
+
 export const QUESTIONS: Question[] = [
   ...build("love", "basic", love),
   ...build("friendship", "basic", friendship),
@@ -368,6 +398,8 @@ export const QUESTIONS: Question[] = [
   ...build("introspection", "basic", introspection),
   ...build("plus_love", "plus", plusLove),
   ...build("plus_spice", "plus", plusSpice),
+  ...build("plus_deep", "plus", plusDeep),
+  ...build("plus_kinky", "plus", plusKinky),
 ];
 
 export const BASIC_CATEGORIES: CategoryId[] = [
@@ -378,7 +410,12 @@ export const BASIC_CATEGORIES: CategoryId[] = [
   "introspection",
 ];
 
-export const PLUS_CATEGORIES: CategoryId[] = ["plus_love", "plus_spice"];
+export const PLUS_CATEGORIES: CategoryId[] = [
+  "plus_love",
+  "plus_spice",
+  "plus_deep",
+  "plus_kinky",
+];
 
 /** Short, display-friendly edition names per deck. */
 export const EDITION_META: Record<DeckId, QuestionText> = {
