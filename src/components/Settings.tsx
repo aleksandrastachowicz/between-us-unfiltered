@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Sun, Moon } from "lucide-react";
 import { useGame, type ThemeId } from "@/lib/store";
 import type { Lang } from "@/data/questions";
 
