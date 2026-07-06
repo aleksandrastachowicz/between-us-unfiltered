@@ -46,7 +46,7 @@ const themeSwatch: Record<ThemeId, string[]> = {
 
 
 export function Settings({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { lang, setLang, theme, setTheme, animations, toggleAnimations, players, setPlayers } = useGame();
+  const { lang, setLang, theme, setTheme, mode, setMode, animations, toggleAnimations, players, setPlayers } = useGame();
   const [draft, setDraft] = useState("");
   const c = t[lang];
 
