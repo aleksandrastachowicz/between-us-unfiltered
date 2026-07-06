@@ -10,33 +10,40 @@ const t = {
     language: "Język główny",
     anim: "Animacje",
     animD: "Płynne efekty 3D",
+    appearance: "Wygląd",
+    light: "Jasny",
+    dark: "Ciemny",
     theme: "Motyw",
     players: "Gracze",
     playersD: "Dodaj imiona, by śledzić tury",
     add: "Dodaj gracza",
     name: "Imię gracza",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
+    themes: { rose: "Różany Pastel", fairy: "Wróżkowa Zieleń", violet: "Fiolet", spicy: "Spicy Red" },
   },
   en: {
     settings: "Settings",
     language: "Primary language",
     anim: "Animations",
     animD: "Smooth 3D effects",
+    appearance: "Appearance",
+    light: "Light",
+    dark: "Dark",
     theme: "Theme",
     players: "Players",
     playersD: "Add names to track turns",
     add: "Add player",
     name: "Player name",
-    themes: { acid: "Acid Pastel", solar: "Solar Flare", velvet: "Deep Velvet", midnight: "Midnight (Dark)" },
+    themes: { rose: "Rose Pastel", fairy: "Fairy Green", violet: "Violet", spicy: "Spicy Red" },
   },
 };
 
 const themeSwatch: Record<ThemeId, string[]> = {
-  acid: ["#ff3ea5", "#b59cff", "#cae774"],
-  solar: ["#f2612e", "#ff5e7a", "#ffc24b"],
-  velvet: ["#b673ff", "#00e0c6", "#b6ff3e"],
-  midnight: ["#8a7dff", "#7c3aed", "#1f6f8a"],
+  rose: ["#ff3ea5", "#ff8fd0", "#ffd76e"],
+  fairy: ["#12b981", "#5ff0c0", "#d9f99d"],
+  violet: ["#7c3aed", "#a78bfa", "#22d3ee"],
+  spicy: ["#e0392b", "#ff6a3d", "#ffb347"],
 };
+
 
 export function Settings({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { lang, setLang, theme, setTheme, animations, toggleAnimations, players, setPlayers } = useGame();
