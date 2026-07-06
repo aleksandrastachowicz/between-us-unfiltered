@@ -10,7 +10,9 @@ export type CategoryId =
   | "passions"
   | "introspection"
   | "plus_love"
-  | "plus_spice";
+  | "plus_spice"
+  | "plus_deep"
+  | "plus_kinky";
 
 export type DeckId = "basic" | "plus" | "unfiltered";
 
@@ -31,14 +33,6 @@ export interface CategoryMeta {
   id: CategoryId;
   deck: DeckId;
   label: QuestionText;
-  /** background pattern key for the card reverse */
-  pattern:
-    | "wavyChecker"
-    | "daisyGrid"
-    | "aura"
-    | "liquidStars"
-    | "sunMoon"
-    | "burgundy";
 }
 
 export const CATEGORY_META: Record<CategoryId, CategoryMeta> = {
@@ -46,45 +40,49 @@ export const CATEGORY_META: Record<CategoryId, CategoryMeta> = {
     id: "love",
     deck: "basic",
     label: { pl: "Miłość i Relacje", en: "Love & Relationships" },
-    pattern: "wavyChecker",
   },
   friendship: {
     id: "friendship",
     deck: "basic",
     label: { pl: "Przyjaźń i Rodzina", en: "Friendship & Family" },
-    pattern: "daisyGrid",
   },
   selfdev: {
     id: "selfdev",
     deck: "basic",
     label: { pl: "Rozwój i Zdrowie Psychiczne", en: "Self-Development & Mental Health" },
-    pattern: "aura",
   },
   passions: {
     id: "passions",
     deck: "basic",
     label: { pl: "Pasje i Marzenia", en: "Passions & Dreams" },
-    pattern: "liquidStars",
   },
   introspection: {
     id: "introspection",
     deck: "basic",
     label: { pl: "Introspekcja i Emocje", en: "Introspection & Emotions" },
-    pattern: "sunMoon",
   },
   plus_love: {
     id: "plus_love",
     deck: "plus",
-    label: { pl: "Miłość (Premium)", en: "Love (Premium)" },
-    pattern: "burgundy",
+    label: { pl: "Miłość i Relacje", en: "Love & Relationships" },
   },
   plus_spice: {
     id: "plus_spice",
     deck: "plus",
     label: { pl: "Pikantne i Intymne", en: "Spicy & Intimate" },
-    pattern: "burgundy",
+  },
+  plus_deep: {
+    id: "plus_deep",
+    deck: "plus",
+    label: { pl: "Głęboka Więź Emocjonalna", en: "Deep & Emotional Connection" },
+  },
+  plus_kinky: {
+    id: "plus_kinky",
+    deck: "plus",
+    label: { pl: "Kinky i Fantazje", en: "Kinky & Fantasy" },
   },
 };
+
 
 function build(category: CategoryId, deck: DeckId, items: QuestionText[]): Question[] {
   return items.map((q, i) => ({ ...q, id: `${category}-${i}`, category, deck }));
