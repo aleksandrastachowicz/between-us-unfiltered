@@ -72,7 +72,8 @@ export const useGame = create<State>()(
   persist(
     (set, get) => ({
       lang: "pl",
-      theme: "acid",
+      theme: "rose",
+      mode: "light",
       animations: true,
       players: [],
       decks: { basic: true, plus: false, unfiltered: false },
@@ -84,6 +85,8 @@ export const useGame = create<State>()(
         introspection: true,
         plus_love: true,
         plus_spice: true,
+        plus_deep: true,
+        plus_kinky: true,
       },
       screen: "deck",
       currentPlayer: 0,
@@ -95,6 +98,8 @@ export const useGame = create<State>()(
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
+      setMode: (mode) => set({ mode }),
+      toggleMode: () => set((s) => ({ mode: s.mode === "light" ? "dark" : "light" })),
       toggleAnimations: () => set((s) => ({ animations: !s.animations })),
       setPlayers: (players) => set({ players }),
       toggleDeck: (d) =>
