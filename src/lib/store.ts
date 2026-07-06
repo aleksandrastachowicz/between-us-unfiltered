@@ -45,6 +45,8 @@ interface State {
   // actions
   setLang: (l: Lang) => void;
   setTheme: (t: ThemeId) => void;
+  setMode: (m: Mode) => void;
+  toggleMode: () => void;
   toggleAnimations: () => void;
   setPlayers: (p: string[]) => void;
   toggleDeck: (d: DeckId) => void;
