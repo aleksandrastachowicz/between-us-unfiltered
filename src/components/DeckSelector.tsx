@@ -182,6 +182,9 @@ export function DeckSelector() {
                   </span>
                 ))}
               </div>
+              <p className="mt-3 text-xs leading-snug" style={{ color: "var(--muted-text)" }}>
+                {c.unfNote}
+              </p>
             </div>
           )}
         </DeckCard>
