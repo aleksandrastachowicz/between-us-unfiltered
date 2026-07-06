@@ -8,6 +8,7 @@ import { MultiplayerPanel } from "./MultiplayerPanel";
 export function BetweenUsApp() {
   const [ready, setReady] = useState(false);
   const theme = useGame((s) => s.theme);
+  const mode = useGame((s) => s.mode);
   const screen = useGame((s) => s.screen);
 
   useEffect(() => {
