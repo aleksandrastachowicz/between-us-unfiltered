@@ -10,7 +10,8 @@ import {
 import { type UnfilteredQuestion } from "@/data/unfiltered";
 import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
 
-export type ThemeId = "acid" | "solar" | "velvet" | "midnight";
+export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
+export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
 
 export interface DrawnCard {
