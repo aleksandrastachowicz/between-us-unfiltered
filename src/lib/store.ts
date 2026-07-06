@@ -27,6 +27,7 @@ interface State {
   // settings
   lang: Lang;
   theme: ThemeId;
+  mode: Mode;
   animations: boolean;
   players: string[];
   // decks
