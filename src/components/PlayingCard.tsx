@@ -10,10 +10,10 @@ const accentVar: Record<string, string> = {
   selfdev: "var(--color-cat-selfdev)",
   passions: "var(--color-cat-passions)",
   introspection: "var(--color-cat-introspection)",
-  plus_love: "var(--color-cat-plus-love)",
-  plus_spice: "var(--color-cat-plus-spice)",
-  plus_deep: "var(--color-cat-plus-deep)",
-  plus_kinky: "var(--color-cat-plus-kinky)",
+  plus_love: "var(--color-cat-plus_love)",
+  plus_spice: "var(--color-cat-plus_spice)",
+  plus_deep: "var(--color-cat-plus_deep)",
+  plus_kinky: "var(--color-cat-plus_kinky)",
   unfiltered: "var(--color-cat-unfiltered)",
 };
 
