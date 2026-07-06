@@ -10,8 +10,10 @@ const accentVar: Record<string, string> = {
   selfdev: "var(--color-cat-selfdev)",
   passions: "var(--color-cat-passions)",
   introspection: "var(--color-cat-introspection)",
-  plus_love: "var(--color-cat-plus)",
-  plus_spice: "var(--color-cat-plus)",
+  plus_love: "var(--color-cat-plus-love)",
+  plus_spice: "var(--color-cat-plus-spice)",
+  plus_deep: "var(--color-cat-plus-deep)",
+  plus_kinky: "var(--color-cat-plus-kinky)",
   unfiltered: "var(--color-cat-unfiltered)",
 };
 
@@ -23,21 +25,15 @@ function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
   return CATEGORY_META[card.category].label[lang];
 }
 
-function monogramFor(label: string) {
-  const letter = [...label].find((ch) => /\p{L}/u.test(ch));
-  return (letter ?? "•").toUpperCase();
-}
-
 export function PlayingCard({ card }: { card: DrawnCard }) {
   const { lang, flipped, flip, animations } = useGame();
-  const pattern = patternFor(card.category);
+  const pattern = patternFor(card.category, card.unfilteredLevel);
   const primary = lang === "pl" ? card.pl : card.en;
   const secondary = lang === "pl" ? card.en : card.pl;
   const accent = accentVar[card.category];
 
   const edition = EDITION_META[editionForCategory(card.category)][lang];
   const categoryLabel = categoryLabelFor(card, lang);
-  const monogram = monogramFor(categoryLabel);
   const hint = lang === "pl" ? "dotknij, aby odkryć" : "tap to reveal";
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
