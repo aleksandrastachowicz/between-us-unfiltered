@@ -109,8 +109,29 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </button>
             </Section>
 
+            {/* Appearance (light / dark) */}
+            <Section title={c.appearance}>
+              <div className="flex rounded-2xl p-1" style={{ background: "var(--panel-2)" }}>
+                {(["light", "dark"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-sm font-bold transition-all"
+                    style={{
+                      background: mode === m ? "var(--accent)" : "transparent",
+                      color: mode === m ? "var(--accent-ink)" : "var(--muted-text)",
+                    }}
+                  >
+                    {m === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {m === "light" ? c.light : c.dark}
+                  </button>
+                ))}
+              </div>
+            </Section>
+
             {/* Theme */}
             <Section title={c.theme}>
+
               <div className="flex flex-col gap-2">
                 {(Object.keys(themeSwatch) as ThemeId[]).map((th) => (
                   <button
