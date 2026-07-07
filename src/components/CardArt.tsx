@@ -600,6 +600,42 @@ export function CardArt({
   );
 }
 
+/* Compact card-back preview for the deck selector (art + emblem, no copy). */
+export function CardArtPreview({
+  pattern,
+  label,
+}: {
+  pattern: PatternKey;
+  label?: string;
+}) {
+  const ink = INK[pattern];
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div
+        className="relative overflow-hidden rounded-2xl shadow-lg"
+        style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
+      >
+        {artFor(pattern)}
+        <div
+          className="pointer-events-none absolute inset-[5px] rounded-[14px]"
+          style={{ border: `1px solid ${ink}`, opacity: 0.32 }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center" style={{ color: ink }}>
+          <div style={{ transform: "scale(0.6)" }}>{emblemFor(pattern, ink)}</div>
+        </div>
+      </div>
+      {label ? (
+        <span
+          className="max-w-[80px] text-center text-[9px] font-semibold leading-tight"
+          style={{ color: "var(--muted-text)" }}
+        >
+          {label}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 export function patternFor(
   category: CategoryId | "unfiltered",
   level?: UnfilteredQuestion["level"],
