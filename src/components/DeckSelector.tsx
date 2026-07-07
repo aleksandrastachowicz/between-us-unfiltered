@@ -3,6 +3,7 @@ import { Heart } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
+import { CardArtPreview, patternFor } from "./CardArt";
 
 const t = {
   pl: {
