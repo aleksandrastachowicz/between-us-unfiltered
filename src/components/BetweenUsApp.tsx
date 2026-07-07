@@ -19,7 +19,10 @@ export function BetweenUsApp() {
   if (!ready) return null;
 
   return (
-    <div className={`theme-${theme} ${mode === "dark" ? "dark" : ""} relative min-h-dvh w-full overflow-hidden`}>
+    <div
+      className={`theme-${theme} ${mode === "dark" ? "dark" : ""} relative min-h-dvh w-full overflow-hidden`}
+      style={{ background: "var(--bg)", color: "var(--text)" }}
+    >
       <AuraBackground />
       <MultiplayerPanel />
       <main className="relative z-10">
