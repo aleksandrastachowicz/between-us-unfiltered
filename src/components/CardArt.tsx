@@ -59,12 +59,38 @@ function CardBack({
   );
 }
 
-/* ---------- Emblems: crisp central icon, drawn (no letters) ---------- */
+/* ---------- Emblems: smooth tarot-style motifs (no letters) ----------
+   Refined line-art with soft fills, a delicate double halo and orbiting
+   sparkles so every category reads as an elegant sigil.                    */
+function Sparkle({ x, y, s = 1, ink }: { x: number; y: number; s?: number; ink: string }) {
+  return (
+    <path
+      transform={`translate(${x} ${y}) scale(${s})`}
+      d="M0 -6 C0.6 -2 2 -0.6 6 0 C2 0.6 0.6 2 0 6 C-0.6 2 -2 0.6 -6 0 C-2 -0.6 -0.6 -2 0 -6 Z"
+      fill={ink}
+      stroke="none"
+      opacity="0.85"
+    />
+  );
+}
+
 function Emblem({ ink, children }: { ink: string; children: ReactNode }) {
   return (
-    <svg viewBox="0 0 120 120" width="132" height="132" fill="none" stroke={ink} aria-hidden>
-      <circle cx="60" cy="60" r="52" strokeWidth="1.2" opacity="0.35" />
-      <circle cx="60" cy="60" r="44" strokeWidth="0.8" opacity="0.2" />
+    <svg
+      viewBox="0 0 120 120"
+      width="140"
+      height="140"
+      fill="none"
+      stroke={ink}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="60" cy="60" r="52" strokeWidth="0.7" opacity="0.28" />
+      <circle cx="60" cy="60" r="46" strokeWidth="0.5" opacity="0.16" strokeDasharray="1 5" />
+      <Sparkle x={60} y={4} s={1.1} ink={ink} />
+      <Sparkle x={112} y={68} s={0.7} ink={ink} />
+      <Sparkle x={12} y={54} s={0.8} ink={ink} />
       {children}
     </svg>
   );
@@ -72,82 +98,116 @@ function Emblem({ ink, children }: { ink: string; children: ReactNode }) {
 
 const HeartEmblem = (ink: string) => (
   <Emblem ink={ink}>
-    <path d="M60 84 C34 66 40 42 54 42 C60 42 60 48 60 50 C60 48 60 42 66 42 C80 42 86 66 60 84 Z" strokeWidth="2" />
+    <path
+      transform="translate(60 62)"
+      d="M0 24 C-4 18 -30 6 -30 -12 C-30 -26 -14 -30 -4 -18 C-2 -15 0 -12 0 -10 C0 -12 2 -15 4 -18 C14 -30 30 -26 30 -12 C30 6 4 18 0 24 Z"
+      strokeWidth="1.8"
+      fill={ink}
+      fillOpacity="0.12"
+    />
   </Emblem>
 );
 const DaisyEmblem = (ink: string) => (
   <Emblem ink={ink}>
     <g transform="translate(60 60)">
       {Array.from({ length: 8 }).map((_, j) => (
-        <ellipse key={j} cx="0" cy="-20" rx="7" ry="16" strokeWidth="1.8" transform={`rotate(${j * 45})`} />
+        <path
+          key={j}
+          transform={`rotate(${j * 45})`}
+          d="M0 -8 C7 -14 7 -28 0 -34 C-7 -28 -7 -14 0 -8 Z"
+          strokeWidth="1.5"
+          fill={ink}
+          fillOpacity="0.1"
+        />
       ))}
-      <circle r="9" strokeWidth="1.8" />
+      <circle r="8" strokeWidth="1.6" fill={ink} fillOpacity="0.16" />
     </g>
   </Emblem>
 );
 const LeafEmblem = (ink: string) => (
   <Emblem ink={ink}>
     <g transform="translate(60 60)">
-      <path d="M0 26 C-26 6 -20 -24 0 -26 C20 -24 26 6 0 26 Z" strokeWidth="2" />
-      <path d="M0 22 L0 -22" strokeWidth="1.6" />
+      <path d="M0 30 C0 6 0 -14 0 -32" strokeWidth="1.6" />
+      <path d="M0 -6 C-16 -10 -26 -22 -24 -36 C-10 -36 2 -24 0 -6 Z" strokeWidth="1.5" fill={ink} fillOpacity="0.12" />
+      <path d="M0 8 C16 4 26 -8 24 -22 C10 -22 -2 -10 0 8 Z" strokeWidth="1.5" fill={ink} fillOpacity="0.12" />
     </g>
   </Emblem>
 );
 const StarEmblem = (ink: string) => (
   <Emblem ink={ink}>
-    <path
-      transform="translate(60 60) scale(2.2)"
-      d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z"
-      strokeWidth="1"
-      fill={ink}
-      opacity="0.9"
-    />
+    <g transform="translate(60 60)">
+      <path
+        d="M0 -32 C3 -12 12 -3 32 0 C12 3 3 12 0 32 C-3 12 -12 3 -32 0 C-12 -3 -3 -12 0 -32 Z"
+        strokeWidth="1.4"
+        fill={ink}
+        fillOpacity="0.14"
+      />
+      <circle r="4" fill={ink} stroke="none" />
+    </g>
   </Emblem>
 );
 const EyeEmblem = (ink: string) => (
   <Emblem ink={ink}>
     <g transform="translate(60 60)">
-      <path d="M-34 0 Q0 -24 34 0 Q0 24 -34 0 Z" strokeWidth="2" />
-      <circle r="11" strokeWidth="2" />
-      <circle r="4" fill={ink} stroke="none" />
+      <path d="M-32 0 C-16 -20 16 -20 32 0 C16 20 -16 20 -32 0 Z" strokeWidth="1.6" />
+      <circle r="10" strokeWidth="1.6" fill={ink} fillOpacity="0.14" />
+      <circle r="3.5" fill={ink} stroke="none" />
+      <path d="M-36 -12 C-40 -18 -40 -18 -42 -22 M36 -12 C40 -18 40 -18 42 -22" strokeWidth="1.2" opacity="0.5" />
     </g>
   </Emblem>
 );
 const FlameEmblem = (ink: string) => (
   <Emblem ink={ink}>
     <g transform="translate(60 60)">
-      <path d="M0 26 C-20 14 -16 -6 -2 -26 C-2 -8 12 -12 8 -2 C18 4 14 22 0 26 Z" strokeWidth="2" />
+      <path
+        d="M0 30 C-18 22 -22 2 -6 -18 C-8 -30 2 -34 4 -30 C2 -18 14 -18 10 -6 C22 0 18 22 0 30 Z"
+        strokeWidth="1.6"
+        fill={ink}
+        fillOpacity="0.12"
+      />
+      <path d="M0 24 C-8 18 -8 6 0 -4 C6 4 6 16 0 24 Z" strokeWidth="1.2" opacity="0.55" />
     </g>
   </Emblem>
 );
 const InfinityEmblem = (ink: string) => (
   <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="2.2">
-      <path d="M-8 0 a12 12 0 1 1 8 10 a12 12 0 1 0 8 -10 a12 12 0 0 0 -16 0 Z" />
+    <g transform="translate(60 60)" strokeWidth="1.8">
+      <path
+        d="M0 0 C-8 -14 -30 -14 -30 0 C-30 14 -8 14 0 0 C8 -14 30 -14 30 0 C30 14 8 14 0 0 Z"
+        fill={ink}
+        fillOpacity="0.1"
+      />
     </g>
   </Emblem>
 );
 const KeyEmblem = (ink: string) => (
   <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="2.2">
-      <circle cx="0" cy="-14" r="12" />
-      <path d="M0 -2 L0 26 M0 14 L10 14 M0 20 L8 20" />
+    <g transform="translate(60 60)" strokeWidth="1.8">
+      <circle cx="0" cy="-16" r="12" fill={ink} fillOpacity="0.12" />
+      <circle cx="0" cy="-16" r="4.5" strokeWidth="1.4" />
+      <path d="M0 -4 L0 30" />
+      <path d="M0 16 L9 16 M0 24 L7 24" />
     </g>
   </Emblem>
 );
 const MoonEmblem = (ink: string) => (
   <Emblem ink={ink}>
     <g transform="translate(60 60)">
-      <path d="M14 -22 a26 26 0 1 0 10 44 a20 20 0 0 1 -10 -44 Z" strokeWidth="2" fill={ink} opacity="0.85" />
-      <path transform="translate(-20 -14) scale(1)" d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z" fill={ink} stroke="none" />
+      <path
+        d="M10 -26 C-6 -20 -16 -4 -12 12 C-8 24 4 30 16 28 C4 24 -2 12 -2 0 C-2 -12 4 -22 10 -26 Z"
+        strokeWidth="1.6"
+        fill={ink}
+        fillOpacity="0.16"
+      />
+      <Sparkle x={16} y={-14} s={0.9} ink={ink} />
     </g>
   </Emblem>
 );
 const DiamondEmblem = (ink: string) => (
   <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="2">
-      <path d="M0 -26 L22 0 L0 26 L-22 0 Z" />
-      <path d="M-22 0 L22 0 M0 -26 L0 26" strokeWidth="1" opacity="0.55" />
+    <g transform="translate(60 60)" strokeWidth="1.6">
+      <path d="M-18 -10 L18 -10 L26 -2 L0 30 L-26 -2 Z" fill={ink} fillOpacity="0.12" />
+      <path d="M-26 -2 L26 -2 M-18 -10 L-8 -2 L0 30 L8 -2 L18 -10 M-8 -2 L8 -2" strokeWidth="1" opacity="0.5" />
     </g>
   </Emblem>
 );
