@@ -58,14 +58,34 @@ interface State {
   setProgress: (n: number) => void;
 }
 
+// Draw-variety trackers (module-scoped; reset on reload).
+let lastStaticCategory: CategoryId | null = null;
+let lastWasUnfiltered = false;
+
+/**
+ * Picks a static question with strong category variety: choose a category
+ * first (uniformly, avoiding the previous one when possible) so decks with
+ * many questions in one category don't dominate the draw.
+ */
 function pickStatic(state: State): Question | null {
-  const pool = QUESTIONS.filter((q) => {
+  const avail = QUESTIONS.filter((q) => {
     if (!state.decks[q.deck]) return false;
     if (!state.categories[q.category]) return false;
     return !state.discard.has(q.id);
   });
-  if (pool.length === 0) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
+  if (avail.length === 0) return null;
+
+  const cats = Array.from(new Set(avail.map((q) => q.category)));
+  let choices = cats;
+  if (cats.length > 1 && lastStaticCategory) {
+    const filtered = cats.filter((c) => c !== lastStaticCategory);
+    if (filtered.length) choices = filtered;
+  }
+  const cat = choices[Math.floor(Math.random() * choices.length)];
+  lastStaticCategory = cat;
+
+  const inCat = avail.filter((q) => q.category === cat);
+  return inCat[Math.floor(Math.random() * inCat.length)];
 }
 
 export const useGame = create<State>()(
@@ -118,8 +138,11 @@ export const useGame = create<State>()(
       drawCard: () => {
         const s = get();
         const anyStatic = s.decks.basic || s.decks.plus;
-        const useUnfiltered =
-          s.decks.unfiltered && (!anyStatic || Math.random() < 0.5);
+        let useUnfiltered: boolean;
+        if (!s.decks.unfiltered) useUnfiltered = false;
+        else if (!anyStatic) useUnfiltered = true;
+        else useUnfiltered = Math.random() < (lastWasUnfiltered ? 0.3 : 0.55);
+        lastWasUnfiltered = useUnfiltered;
 
         let card: DrawnCard | null = null;
         if (useUnfiltered) {

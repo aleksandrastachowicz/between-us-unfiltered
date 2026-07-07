@@ -3,6 +3,7 @@ import { Heart } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
+import { CardArtPreview, patternFor } from "./CardArt";
 
 const t = {
   pl: {
@@ -117,6 +118,11 @@ export function DeckSelector() {
         <DeckCard id="basic" title={c.basic} desc={c.basicD}>
           {decks.basic && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
+              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
+                {BASIC_CATEGORIES.map((cat) => (
+                  <CardArtPreview key={cat} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
+                ))}
+              </div>
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
               <div className="flex flex-wrap gap-2">
                 {BASIC_CATEGORIES.map((cat) => {
@@ -144,6 +150,11 @@ export function DeckSelector() {
         <DeckCard id="plus" title={c.plus} desc={c.plusD}>
           {decks.plus && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
+              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
+                {PLUS_CATEGORIES.map((cat) => (
+                  <CardArtPreview key={cat} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
+                ))}
+              </div>
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
               <div className="flex flex-wrap gap-2">
                 {PLUS_CATEGORIES.map((cat) => {
@@ -170,6 +181,15 @@ export function DeckSelector() {
         <DeckCard id="unfiltered" title={c.unf} desc={c.unfD} badge={c.adult}>
           {decks.unfiltered && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
+              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
+                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl) => (
+                  <CardArtPreview
+                    key={lvl}
+                    pattern={patternFor("unfiltered", lvl)}
+                    label={`${UNFILTERED_LEVELS[lvl].emoji} ${UNFILTERED_LEVELS[lvl].label[lang]}`}
+                  />
+                ))}
+              </div>
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.levels}</p>
               <div className="flex flex-wrap gap-2">
                 {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl) => (
