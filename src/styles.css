@@ -54,155 +54,157 @@
    Toggle by adding the `dark` class alongside `.theme-*`.
    ============================================================ */
 
-/* ===== ROSE (pastel pink) ===== */
+/* ===== ROSE (blush aura) ===== */
 .theme-rose {
-  --bg: #fdf5f9;
-  --panel: #ffffff;
-  --panel-2: #f7ebf2;
-  --text: #2a1f2c;
-  --muted-text: #8a7d8c;
-  --border: #efe0ea;
-  --accent: #ff3ea5;
+  --bg: #fff1f7;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-2: #fbe4f0;
+  --text: #2c1626;
+  --muted-text: #9a7089;
+  --border: #f6d8e8;
+  --accent: #ff2f9e;
   --accent-ink: #ffffff;
   --card-surface: #ffffff;
   --card-ink: #1d1620;
   --aura-1: #ff8fd0;
-  --aura-2: #ffb3de;
+  --aura-2: #ffc2e3;
   --aura-3: #ffd76e;
-  --aura-4: #ff6fae;
-  --aura-5: #ffe0ef;
-  --glow: 0 0 22px rgba(255, 62, 165, 0.4);
+  --aura-4: #ff5aa6;
+  --aura-5: #c9b6ff;
+  --glow: 0 0 24px rgba(255, 47, 158, 0.45);
 }
 .theme-rose.dark {
-  --bg: #150910;
-  --panel: rgba(38, 20, 32, 0.72);
-  --panel-2: rgba(56, 30, 46, 0.6);
-  --text: #fbeaf3;
-  --muted-text: #c69bb4;
-  --border: rgba(255, 143, 208, 0.18);
-  --accent: #ff5cb0;
-  --accent-ink: #150910;
-  --card-surface: #221420;
-  --card-ink: #fbeaf3;
-  --aura-1: #7a1d52;
-  --aura-2: #b83a86;
-  --aura-3: #ff5cb0;
-  --aura-4: #3d1330;
-  --aura-5: #5a2044;
+  --bg: #17091');
+  --bg: #190a13;
+  --panel: rgba(46, 22, 38, 0.6);
+  --panel-2: rgba(66, 32, 52, 0.55);
+  --text: #fce8f2;
+  --muted-text: #d1a0be;
+  --border: rgba(255, 143, 208, 0.2);
+  --accent: #ff6bb8;
+  --accent-ink: #190a13;
+  --card-surface: #241220;
+  --card-ink: #fce8f2;
+  --aura-1: #8a205e;
+  --aura-2: #d1479a;
+  --aura-3: #ff6bb8;
+  --aura-4: #4a1638;
+  --aura-5: #6a2a80;
+  --glow: 0 0 26px rgba(255, 107, 184, 0.5);
 }
 
-/* ===== FAIRY (magical green) ===== */
+/* ===== FAIRY (enchanted green) ===== */
 .theme-fairy {
-  --bg: #f1fbf5;
-  --panel: #ffffff;
-  --panel-2: #e4f6ea;
-  --text: #10281d;
-  --muted-text: #5c8271;
-  --border: #d3ecdc;
-  --accent: #12b981;
+  --bg: #eefbf3;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-2: #ddf4e6;
+  --text: #0f2a1e;
+  --muted-text: #588a72;
+  --border: #cceddb;
+  --accent: #0fb587;
   --accent-ink: #ffffff;
   --card-surface: #ffffff;
   --card-ink: #10281d;
   --aura-1: #5ff0c0;
-  --aura-2: #a7f3b8;
-  --aura-3: #d9f99d;
+  --aura-2: #b6f5c8;
+  --aura-3: #e6fbb0;
   --aura-4: #2ec6a0;
-  --aura-5: #bff5da;
-  --glow: 0 0 22px rgba(18, 185, 129, 0.4);
+  --aura-5: #a7e8ff;
+  --glow: 0 0 24px rgba(15, 181, 135, 0.45);
 }
 .theme-fairy.dark {
-  --bg: #05130d;
-  --panel: rgba(14, 36, 26, 0.72);
-  --panel-2: rgba(20, 50, 38, 0.6);
+  --bg: #061710;
+  --panel: rgba(16, 40, 30, 0.6);
+  --panel-2: rgba(24, 56, 42, 0.55);
   --text: #e7fbf1;
-  --muted-text: #86bfa6;
-  --border: rgba(52, 224, 161, 0.18);
-  --accent: #34e0a1;
-  --accent-ink: #05130d;
-  --card-surface: #0e2419;
+  --muted-text: #8ec8ac;
+  --border: rgba(52, 224, 161, 0.2);
+  --accent: #3ce8a9;
+  --accent-ink: #061710;
+  --card-surface: #0f261b;
   --card-ink: #e7fbf1;
-  --aura-1: #0c5c42;
-  --aura-2: #159c74;
-  --aura-3: #34e0a1;
-  --aura-4: #0a3d2c;
-  --aura-5: #1f6f56;
-  --glow: 0 0 22px rgba(52, 224, 161, 0.45);
+  --aura-1: #0d6a4c;
+  --aura-2: #1cae82;
+  --aura-3: #3ce8a9;
+  --aura-4: #0a4432;
+  --aura-5: #237a5f;
+  --glow: 0 0 26px rgba(60, 232, 169, 0.5);
 }
 
-/* ===== VIOLET (deep purple) ===== */
+/* ===== VIOLET (mystic dusk) ===== */
 .theme-violet {
-  --bg: #f7f4ff;
-  --panel: #ffffff;
-  --panel-2: #ece5fb;
+  --bg: #f5f1ff;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-2: #eae1fb;
   --text: #241a3a;
-  --muted-text: #7d719c;
-  --border: #e2d8f6;
+  --muted-text: #837498;
+  --border: #e0d5f6;
   --accent: #7c3aed;
   --accent-ink: #ffffff;
   --card-surface: #ffffff;
   --card-ink: #241a3a;
-  --aura-1: #a78bfa;
-  --aura-2: #c4b5fd;
-  --aura-3: #22d3ee;
+  --aura-1: #b7a0ff;
+  --aura-2: #d5c6ff;
+  --aura-3: #7fe6f5;
   --aura-4: #8b5cf6;
-  --aura-5: #ddd6fe;
-  --glow: 0 0 22px rgba(124, 58, 237, 0.4);
+  --aura-5: #ffc2ec;
+  --glow: 0 0 24px rgba(124, 58, 237, 0.45);
 }
 .theme-violet.dark {
-  --bg: #0b0713;
-  --panel: rgba(26, 20, 44, 0.72);
-  --panel-2: rgba(40, 30, 66, 0.6);
+  --bg: #0c0819;
+  --panel: rgba(30, 22, 50, 0.6);
+  --panel-2: rgba(46, 34, 74, 0.55);
   --text: #efeafd;
-  --muted-text: #a99cca;
-  --border: rgba(167, 139, 250, 0.2);
-  --accent: #a78bfa;
-  --accent-ink: #0b0713;
-  --card-surface: #17112a;
+  --muted-text: #ab9ecc;
+  --border: rgba(167, 139, 250, 0.22);
+  --accent: #b49bff;
+  --accent-ink: #0c0819;
+  --card-surface: #18122c;
   --card-ink: #efeafd;
-  --aura-1: #3d327f;
+  --aura-1: #453a8c;
   --aura-2: #7c3aed;
-  --aura-3: #22d3ee;
-  --aura-4: #1f1447;
-  --aura-5: #5a2ec9;
-  --glow: 0 0 24px rgba(167, 139, 250, 0.5);
+  --aura-3: #3fc9e0;
+  --aura-4: #241650;
+  --aura-5: #6a3ad6;
+  --glow: 0 0 26px rgba(180, 155, 255, 0.55);
 }
 
-/* ===== SPICY (red) ===== */
+/* ===== SPICY (ember red) ===== */
 .theme-spicy {
-  --bg: #fff5f3;
-  --panel: #ffffff;
-  --panel-2: #ffe6e0;
+  --bg: #fff2ee;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-2: #ffe0d8;
   --text: #3a130d;
-  --muted-text: #a2685c;
-  --border: #f6d4cc;
-  --accent: #e0392b;
+  --muted-text: #ab6b5d;
+  --border: #f8d0c6;
+  --accent: #e23422;
   --accent-ink: #ffffff;
   --card-surface: #ffffff;
   --card-ink: #3a130d;
   --aura-1: #ff6a3d;
-  --aura-2: #ff9a7a;
-  --aura-3: #ffb347;
+  --aura-2: #ffab7a;
+  --aura-3: #ffcf5c;
   --aura-4: #e0392b;
-  --aura-5: #ffd0c2;
-  --glow: 0 0 22px rgba(224, 57, 43, 0.4);
+  --aura-5: #ff9ec2;
+  --glow: 0 0 24px rgba(226, 52, 34, 0.45);
 }
 .theme-spicy.dark {
-  --bg: #150707;
-  --panel: rgba(42, 16, 14, 0.72);
-  --panel-2: rgba(60, 24, 20, 0.6);
+  --bg: #170807;
+  --panel: rgba(48, 20, 16, 0.6);
+  --panel-2: rgba(68, 28, 22, 0.55);
   --text: #fbe9e5;
-  --muted-text: #cb968a;
-  --border: rgba(255, 106, 61, 0.18);
-  --accent: #ff5a4d;
-  --accent-ink: #150707;
-  --card-surface: #241110;
+  --muted-text: #d29a8c;
+  --border: rgba(255, 106, 61, 0.2);
+  --accent: #ff6a54;
+  --accent-ink: #170807;
+  --card-surface: #251210;
   --card-ink: #fbe9e5;
-  --aura-1: #7a1810;
-  --aura-2: #c23320;
-  --aura-3: #ff6a3d;
-  --aura-4: #3d0f0a;
-  --aura-5: #5a1a12;
-  --glow: 0 0 22px rgba(255, 90, 77, 0.45);
+  --aura-1: #8a1c12;
+  --aura-2: #d43a24;
+  --aura-3: #ff7a4d;
+  --aura-4: #461009;
+  --aura-5: #6a1d14;
+  --glow: 0 0 26px rgba(255, 106, 84, 0.5);
 }
 
 
