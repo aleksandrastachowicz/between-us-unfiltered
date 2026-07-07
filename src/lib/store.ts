@@ -138,8 +138,11 @@ export const useGame = create<State>()(
       drawCard: () => {
         const s = get();
         const anyStatic = s.decks.basic || s.decks.plus;
-        const useUnfiltered =
-          s.decks.unfiltered && (!anyStatic || Math.random() < 0.5);
+        let useUnfiltered: boolean;
+        if (!s.decks.unfiltered) useUnfiltered = false;
+        else if (!anyStatic) useUnfiltered = true;
+        else useUnfiltered = Math.random() < (lastWasUnfiltered ? 0.3 : 0.55);
+        lastWasUnfiltered = useUnfiltered;
 
         let card: DrawnCard | null = null;
         if (useUnfiltered) {
