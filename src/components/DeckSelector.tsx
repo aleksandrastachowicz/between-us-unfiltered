@@ -182,9 +182,10 @@ export function DeckSelector() {
           {decks.unfiltered && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
               <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
-                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl) => (
+                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl, i) => (
                   <CardArtPreview
                     key={lvl}
+                    index={i}
                     pattern={patternFor("unfiltered", lvl)}
                     label={`${UNFILTERED_LEVELS[lvl].emoji} ${UNFILTERED_LEVELS[lvl].label[lang]}`}
                   />
