@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Settings as Cog, ChevronLeft, Shuffle } from "lucide-react";
+import { Settings as Cog, ChevronLeft, Shuffle, Undo2 } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { PlayingCard } from "./PlayingCard";
 import { Settings } from "./Settings";
 import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
 
 const t = {
-  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę" },
-  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card" },
+  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
+  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous" },
 };
 
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
+  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
   const lvlMeta = UNFILTERED_LEVELS[level];
+  const canGoBack = history.length > 0;
 
   const handleNext = () => {
     if (decks.unfiltered) setProgress(Math.min(100, progress + 4));
@@ -84,18 +85,37 @@ export function GameScreen() {
         </AnimatePresence>
       </div>
 
-      <button
-        onClick={handleNext}
-        className="mt-6 flex items-center justify-center gap-2 rounded-2xl py-4 text-base font-extrabold transition-all"
-        style={{
-          background: flipped ? "var(--accent)" : "var(--panel)",
-          color: flipped ? "var(--accent-ink)" : "var(--text)",
-          boxShadow: flipped ? "0 16px 36px -16px var(--accent)" : "none",
-        }}
-      >
-        <Shuffle className="h-4 w-4" />
-        {flipped ? c.next : c.draw}
-      </button>
+      <div className="mt-6 flex items-center gap-3">
+        <AnimatePresence initial={false}>
+          {canGoBack && (
+            <motion.button
+              key="prev"
+              initial={{ opacity: 0, width: 0, scale: 0.9 }}
+              animate={{ opacity: 1, width: "auto", scale: 1 }}
+              exit={{ opacity: 0, width: 0, scale: 0.9 }}
+              onClick={goBack}
+              aria-label={c.prev}
+              className="flex shrink-0 items-center gap-2 overflow-hidden rounded-2xl px-4 py-4 text-sm font-bold"
+              style={{ background: "var(--panel)", color: "var(--text)" }}
+            >
+              <Undo2 className="h-4 w-4" />
+              <span className="hidden sm:inline">{c.prev}</span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+        <button
+          onClick={handleNext}
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-base font-extrabold transition-all"
+          style={{
+            background: flipped ? "var(--accent)" : "var(--panel)",
+            color: flipped ? "var(--accent-ink)" : "var(--text)",
+            boxShadow: flipped ? "0 16px 36px -16px var(--accent)" : "none",
+          }}
+        >
+          <Shuffle className="h-4 w-4" />
+          {flipped ? c.next : c.draw}
+        </button>
+      </div>
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>

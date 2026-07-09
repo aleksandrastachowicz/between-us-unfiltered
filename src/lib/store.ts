@@ -9,6 +9,7 @@ import {
 } from "@/data/questions";
 import { type UnfilteredQuestion } from "@/data/unfiltered";
 import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
+import { haptic, HAPTIC } from "@/lib/haptics";
 
 export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
 export type Mode = "light" | "dark";
@@ -41,6 +42,7 @@ interface State {
   flipped: boolean;
   discard: Set<string>;
   drawCount: number;
+  history: { card: DrawnCard; currentPlayer: number }[];
 
   // actions
   setLang: (l: Lang) => void;
@@ -54,6 +56,7 @@ interface State {
   startGame: () => void;
   backToDecks: () => void;
   drawCard: () => void;
+  goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
 }
@@ -115,6 +118,7 @@ export const useGame = create<State>()(
       flipped: false,
       discard: new Set<string>(),
       drawCount: 0,
+      history: [],
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
@@ -130,7 +134,7 @@ export const useGame = create<State>()(
       startGame: () => {
         const s = get();
         if (s.decks.unfiltered) primeUnfiltered(s.progress);
-        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0 });
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [] });
         get().drawCard();
       },
       backToDecks: () => set({ screen: "deck" }),
@@ -175,22 +179,43 @@ export const useGame = create<State>()(
         set((st) => {
           const nextDiscard = new Set(st.discard);
           if (card) nextDiscard.add(card.id);
-          const nextPlayer =
-            st.players.length > 0 && st.drawCount > 0
-              ? (st.currentPlayer + 1) % st.players.length
-              : st.currentPlayer;
+          const advanceTurn = st.players.length > 0 && st.drawCount > 0;
+          const nextPlayer = advanceTurn
+            ? (st.currentPlayer + 1) % st.players.length
+            : st.currentPlayer;
+          if (advanceTurn) haptic(HAPTIC.turn);
+          const nextHistory = st.card
+            ? [...st.history, { card: st.card, currentPlayer: st.currentPlayer }].slice(-50)
+            : st.history;
           return {
             card,
             flipped: false,
             discard: nextDiscard,
             drawCount: st.drawCount + 1,
             currentPlayer: nextPlayer,
+            history: nextHistory,
           };
         });
         if (get().decks.unfiltered) primeUnfiltered(get().progress);
       },
 
-      flip: () => set((s) => ({ flipped: !s.flipped })),
+      goBack: () => {
+        const s = get();
+        if (s.history.length === 0) return;
+        const prev = s.history[s.history.length - 1];
+        haptic(HAPTIC.tap);
+        set({
+          card: prev.card,
+          currentPlayer: prev.currentPlayer,
+          flipped: false,
+          history: s.history.slice(0, -1),
+        });
+      },
+
+      flip: () => {
+        haptic(HAPTIC.flip);
+        set((s) => ({ flipped: !s.flipped }));
+      },
       setProgress: (n) => set({ progress: Math.max(0, Math.min(100, n)) }),
     }),
     {

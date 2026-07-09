@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 import type { CategoryId } from "@/data/questions";
 import type { UnfilteredQuestion } from "@/data/unfiltered";
 
@@ -600,20 +601,31 @@ export function CardArt({
   );
 }
 
-/* Compact card-back preview for the deck selector (art + emblem, no copy). */
+/* Compact card-back preview for the deck selector (art + emblem, no copy).
+   Gently flips and catches a shimmer sweep while the user browses decks. */
 export function CardArtPreview({
   pattern,
   label,
+  index = 0,
 }: {
   pattern: PatternKey;
   label?: string;
+  index?: number;
 }) {
   const ink = INK[pattern];
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div
-        className="relative overflow-hidden rounded-2xl shadow-lg"
+    <div className="flex flex-col items-center gap-1.5" style={{ perspective: 700 }}>
+      <motion.div
+        className="preserve-3d relative overflow-hidden rounded-2xl shadow-lg"
         style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
+        initial={{ rotateY: -14, y: 4, opacity: 0 }}
+        animate={{ rotateY: [-8, 8, -8], y: [0, -4, 0], opacity: 1 }}
+        transition={{
+          rotateY: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.35 },
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.35 },
+          opacity: { duration: 0.5, delay: index * 0.08 },
+        }}
+        whileHover={{ scale: 1.06, rotateY: 0 }}
       >
         {artFor(pattern)}
         <div
@@ -623,7 +635,25 @@ export function CardArtPreview({
         <div className="absolute inset-0 flex items-center justify-center" style={{ color: ink }}>
           <div style={{ transform: "scale(0.6)" }}>{emblemFor(pattern, ink)}</div>
         </div>
-      </div>
+        {/* Shimmer sweep */}
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 48%, transparent 66%)",
+            mixBlendMode: "overlay",
+          }}
+          initial={{ x: "-130%" }}
+          animate={{ x: "130%" }}
+          transition={{
+            duration: 2.2,
+            repeat: Infinity,
+            repeatDelay: 2.6,
+            ease: "easeInOut",
+            delay: index * 0.4,
+          }}
+        />
+      </motion.div>
       {label ? (
         <span
           className="max-w-[80px] text-center text-[9px] font-semibold leading-tight"
