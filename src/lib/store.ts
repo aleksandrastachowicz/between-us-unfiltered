@@ -118,6 +118,7 @@ export const useGame = create<State>()(
       flipped: false,
       discard: new Set<string>(),
       drawCount: 0,
+      history: [],
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
