@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Settings as Cog, ChevronLeft, Shuffle } from "lucide-react";
+import { Settings as Cog, ChevronLeft, Shuffle, Undo2 } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { PlayingCard } from "./PlayingCard";
 import { Settings } from "./Settings";
 import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
 
 const t = {
-  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę" },
-  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card" },
+  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
+  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous" },
 };
 
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
+  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
   const lvlMeta = UNFILTERED_LEVELS[level];
+  const canGoBack = history.length > 0;
 
   const handleNext = () => {
     if (decks.unfiltered) setProgress(Math.min(100, progress + 4));
