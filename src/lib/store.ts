@@ -134,7 +134,7 @@ export const useGame = create<State>()(
       startGame: () => {
         const s = get();
         if (s.decks.unfiltered) primeUnfiltered(s.progress);
-        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0 });
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [] });
         get().drawCard();
       },
       backToDecks: () => set({ screen: "deck" }),
