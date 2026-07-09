@@ -42,6 +42,7 @@ interface State {
   flipped: boolean;
   discard: Set<string>;
   drawCount: number;
+  history: { card: DrawnCard; currentPlayer: number }[];
 
   // actions
   setLang: (l: Lang) => void;
@@ -55,6 +56,7 @@ interface State {
   startGame: () => void;
   backToDecks: () => void;
   drawCard: () => void;
+  goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
 }
