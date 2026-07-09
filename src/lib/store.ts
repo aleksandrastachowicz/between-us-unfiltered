@@ -9,6 +9,7 @@ import {
 } from "@/data/questions";
 import { type UnfilteredQuestion } from "@/data/unfiltered";
 import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
+import { haptic, HAPTIC } from "@/lib/haptics";
 
 export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
 export type Mode = "light" | "dark";
