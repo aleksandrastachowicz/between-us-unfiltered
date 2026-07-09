@@ -119,8 +119,8 @@ export function DeckSelector() {
           {decks.basic && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
               <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
-                {BASIC_CATEGORIES.map((cat) => (
-                  <CardArtPreview key={cat} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
+                {BASIC_CATEGORIES.map((cat, i) => (
+                  <CardArtPreview key={cat} index={i} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
                 ))}
               </div>
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
