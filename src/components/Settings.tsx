@@ -10,6 +10,10 @@ const t = {
     language: "Język główny",
     anim: "Animacje",
     animD: "Płynne efekty 3D",
+    haptics: "Wibracje",
+    hapticsD: "Delikatny feedback przy obrocie karty",
+    reduced: "Ograniczenie ruchu",
+    reducedD: "Zastąp animacje 3D prostym fade",
     appearance: "Wygląd",
     light: "Jasny",
     dark: "Ciemny",
@@ -25,6 +29,10 @@ const t = {
     language: "Primary language",
     anim: "Animations",
     animD: "Smooth 3D effects",
+    haptics: "Haptic feedback",
+    hapticsD: "Gentle vibrations on flip & turn",
+    reduced: "Reduced motion",
+    reducedD: "Replace 3D animations with fades",
     appearance: "Appearance",
     light: "Light",
     dark: "Dark",
@@ -46,7 +54,13 @@ const themeSwatch: Record<ThemeId, string[]> = {
 
 
 export function Settings({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { lang, setLang, theme, setTheme, mode, setMode, animations, toggleAnimations, players, setPlayers } = useGame();
+  const {
+    lang, setLang, theme, setTheme, mode, setMode,
+    animations, toggleAnimations,
+    hapticsEnabled, toggleHaptics,
+    reducedMotion, toggleReducedMotion,
+    players, setPlayers,
+  } = useGame();
   const [draft, setDraft] = useState("");
   const c = t[lang];
 
@@ -101,12 +115,11 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
 
             {/* Animations */}
             <Section title={c.anim}>
-              <button onClick={toggleAnimations} className="flex w-full items-center justify-between rounded-2xl p-4" style={{ background: "var(--panel-2)" }}>
-                <span className="text-sm" style={{ color: "var(--muted-text)" }}>{c.animD}</span>
-                <span className="flex h-6 w-11 items-center rounded-full p-0.5" style={{ background: animations ? "var(--accent)" : "var(--border)" }}>
-                  <motion.span layout className="h-5 w-5 rounded-full bg-white shadow" style={{ marginLeft: animations ? "auto" : 0 }} />
-                </span>
-              </button>
+              <div className="flex flex-col gap-2">
+                <Toggle label={c.animD} on={animations} onToggle={toggleAnimations} />
+                <Toggle label={c.reduced + " — " + c.reducedD} on={reducedMotion} onToggle={toggleReducedMotion} />
+                <Toggle label={c.haptics + " — " + c.hapticsD} on={hapticsEnabled} onToggle={toggleHaptics} />
+              </div>
             </Section>
 
             {/* Appearance (light / dark) */}
@@ -191,5 +204,26 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--muted-text)" }}>{title}</p>
       {children}
     </div>
+  );
+}
+
+function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="flex w-full items-center justify-between gap-3 rounded-2xl p-4 text-left"
+      style={{ background: "var(--panel-2)" }}
+    >
+      <span className="text-sm" style={{ color: "var(--muted-text)" }}>{label}</span>
+      <span
+        className="relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors"
+        style={{ background: on ? "var(--accent)" : "var(--border)" }}
+      >
+        <span
+          className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform"
+          style={{ transform: on ? "translateX(22px)" : "translateX(2px)" }}
+        />
+      </span>
+    </button>
   );
 }
