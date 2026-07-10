@@ -616,8 +616,8 @@ export function CardArtPreview({
   return (
     <div className="flex flex-col items-center gap-1.5" style={{ perspective: 700 }}>
       <motion.div
-        className="preserve-3d transform-gpu relative overflow-hidden rounded-2xl shadow-lg"
-        style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)", willChange: "transform" }}
+        className="preserve-3d relative overflow-hidden rounded-2xl shadow-lg"
+        style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
         initial={{ rotateY: -14, y: 4, opacity: 0 }}
         animate={{ rotateY: [-8, 8, -8], y: [0, -4, 0], opacity: 1 }}
         transition={{

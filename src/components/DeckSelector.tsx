@@ -103,7 +103,7 @@ export function DeckSelector() {
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
 
   return (
-    <div className="mx-auto w-full max-w-lg px-5 pb-28 pt-[calc(env(safe-area-inset-top)+4rem)]">
+    <div className="mx-auto w-full max-w-lg px-5 pb-28 pt-10">
       <div className="mb-8 text-center">
         <div className="mb-3 flex items-center justify-center gap-2">
           <Heart className="h-5 w-5" style={{ color: "var(--accent)" }} fill="currentColor" />

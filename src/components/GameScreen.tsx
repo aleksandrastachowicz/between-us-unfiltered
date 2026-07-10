@@ -1,48 +1,33 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, Shuffle, Undo2, Heart, Share2 } from "lucide-react";
+import { Settings as Cog, ChevronLeft, Shuffle, Undo2 } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { PlayingCard } from "./PlayingCard";
-import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
+import { Settings } from "./Settings";
 import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
-import { generateShareCard, accentHexFor } from "@/lib/shareCard";
 
 const t = {
-  pl: { turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", next: "Następna karta", prev: "Poprzednia", save: "Zapisz", share: "Udostępnij" },
-  en: { turn: "Turn", progress: "Intimacy level", draw: "Draw a card", next: "Next card", prev: "Previous", save: "Save", share: "Share" },
+  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
+  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous" },
 };
 
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, favorites, toggleFavorite } = useGame();
+  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
   const lvlMeta = UNFILTERED_LEVELS[level];
   const canGoBack = history.length > 0;
-  const isFav = card ? favorites.some((f) => f.id === card.id) : false;
 
   const handleNext = () => {
     if (decks.unfiltered) setProgress(Math.min(100, progress + 4));
     drawCard();
   };
 
-  const handleShare = () => {
-    if (!card) return;
-    void generateShareCard({
-      primary: lang === "pl" ? card.pl : card.en,
-      secondary: lang === "pl" ? card.en : card.pl,
-      category:
-        card.category === "unfiltered"
-          ? `${UNFILTERED_LEVELS[card.unfilteredLevel ?? "love_spice"].emoji} ${UNFILTERED_LEVELS[card.unfilteredLevel ?? "love_spice"].label[lang]}`
-          : CATEGORY_META[card.category].label[lang],
-      edition: EDITION_META[editionForCategory(card.category)][lang],
-      accent: accentHexFor(card.category),
-    });
-  };
-
   return (
-    <div className="relative mx-auto flex h-[100dvh] w-full max-w-lg flex-col overflow-hidden px-5 pb-5 pt-[calc(env(safe-area-inset-top)+4rem)]">
-      {/* Compact header — sits below the global top nav */}
-      <header className="mb-2 flex h-10 shrink-0 items-center justify-between gap-2">
-        <button onClick={backToDecks} aria-label="Back" className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-8 pt-5">
+      <header className="mb-2 flex items-center justify-between">
+        <button onClick={backToDecks} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
           <ChevronLeft className="h-5 w-5" />
         </button>
         {players.length > 0 ? (
@@ -52,7 +37,7 @@ export function GameScreen() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
-              className="truncate rounded-full px-4 py-2 text-sm font-bold"
+              className="rounded-full px-4 py-2 text-sm font-bold"
               style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
             >
               {c.turn}: {players[currentPlayer]}
@@ -61,11 +46,13 @@ export function GameScreen() {
         ) : (
           <span className="text-sm font-extrabold tracking-tight">Between Us</span>
         )}
-        <span className="w-10" aria-hidden />
+        <button onClick={() => setSettingsOpen(true)} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
+          <Cog className="h-5 w-5" />
+        </button>
       </header>
 
       {decks.unfiltered && (
-        <div className="mb-2 shrink-0 rounded-2xl p-3" style={{ background: "var(--panel)" }}>
+        <div className="mb-4 rounded-2xl p-3" style={{ background: "var(--panel)" }}>
           <div className="mb-1.5 flex items-center justify-between text-xs">
             <span className="font-bold">{lvlMeta.emoji} {lvlMeta.label[lang]}</span>
             <span style={{ color: "var(--muted-text)" }}>{c.progress}: {progress}</span>
@@ -81,8 +68,7 @@ export function GameScreen() {
         </div>
       )}
 
-      {/* Card zone — flexible, with generous safe space above/below for swipe gestures */}
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-2">
+      <div className="flex flex-1 flex-col items-center justify-center">
         <AnimatePresence mode="wait">
           {card && (
             <motion.div
@@ -91,39 +77,15 @@ export function GameScreen() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: -20 }}
               transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              className="flex min-h-0 w-full flex-1 items-center justify-center"
+              className="w-full"
             >
               <PlayingCard card={card} />
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Discrete actions bar under the card */}
-        <div className="mt-3 flex shrink-0 items-center gap-2">
-          <button
-            onClick={() => card && toggleFavorite(card)}
-            aria-label={c.save}
-            className="flex items-center justify-center rounded-full p-3 transition-transform active:scale-90"
-            style={{ background: "var(--panel)", border: "1px solid var(--border)" }}
-          >
-            <Heart
-              className="h-5 w-5 transition-colors"
-              style={{ color: isFav ? "var(--accent)" : "var(--muted-text)" }}
-              fill={isFav ? "currentColor" : "none"}
-            />
-          </button>
-          <button
-            onClick={handleShare}
-            aria-label={c.share}
-            className="flex items-center justify-center rounded-full p-3 transition-transform active:scale-90"
-            style={{ background: "var(--panel)", border: "1px solid var(--border)" }}
-          >
-            <Share2 className="h-5 w-5" style={{ color: "var(--muted-text)" }} />
-          </button>
-        </div>
       </div>
 
-      <div className="mt-3 flex shrink-0 items-center gap-3">
+      <div className="mt-6 flex items-center gap-3">
         <AnimatePresence initial={false}>
           {canGoBack && (
             <motion.button
@@ -154,6 +116,8 @@ export function GameScreen() {
           {flipped ? c.next : c.draw}
         </button>
       </div>
+
+      <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }
