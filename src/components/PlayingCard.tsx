@@ -1,4 +1,6 @@
-import { motion, type PanInfo } from "motion/react";
+import { useRef, useState } from "react";
+import { motion, AnimatePresence, type PanInfo } from "motion/react";
+import { Heart } from "lucide-react";
 import { useGame, type DrawnCard } from "@/lib/store";
 import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
@@ -26,7 +28,11 @@ function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
 }
 
 export function PlayingCard({ card }: { card: DrawnCard }) {
-  const { lang, flipped, flip, animations } = useGame();
+  const { lang, flipped, flip, animations, reducedMotion, favorites, toggleFavorite } = useGame();
+  const isFav = favorites.includes(card.id);
+  const [heartBurst, setHeartBurst] = useState(0);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const use3d = animations && !reducedMotion;
   const pattern = patternFor(card.category, card.unfilteredLevel);
   const primary = lang === "pl" ? card.pl : card.en;
   const secondary = lang === "pl" ? card.en : card.pl;
@@ -42,27 +48,43 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     }
   };
 
+  const handleTap = () => {
+    if (clickTimer.current) {
+      // double-tap → favorite
+      clearTimeout(clickTimer.current);
+      clickTimer.current = null;
+      toggleFavorite(card.id);
+      setHeartBurst((n) => n + 1);
+      return;
+    }
+    clickTimer.current = setTimeout(() => {
+      clickTimer.current = null;
+      flip();
+    }, 220);
+  };
+
   return (
-    <div className="relative mx-auto w-full max-w-[340px]" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
+    <div className="relative mx-auto w-full max-w-[340px] select-none" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
       <motion.div
-        className="preserve-3d relative h-full w-full cursor-pointer"
-        onClick={flip}
-        drag={animations ? true : false}
+        className="preserve-3d transform-gpu relative h-full w-full cursor-pointer"
+        style={{ willChange: "transform" }}
+        onClick={handleTap}
+        drag={use3d ? true : false}
         dragSnapToOrigin
         dragElastic={0.18}
         onDragEnd={onDragEnd}
-        animate={{ rotateY: flipped ? 180 : 0 }}
+        animate={use3d ? { rotateY: flipped ? 180 : 0, opacity: 1 } : { rotateY: flipped ? 180 : 0, opacity: 1 }}
         transition={
-          animations
+          use3d
             ? { type: "spring", stiffness: 120, damping: 14 }
-            : { duration: 0 }
+            : { duration: 0.18, ease: "easeOut" }
         }
-        whileTap={animations ? { scale: 0.97 } : undefined}
+        whileTap={use3d ? { scale: 0.97 } : undefined}
       >
         {/* BACK (reverse) — shown first */}
         <div
-          className="backface-hidden absolute inset-0 overflow-hidden rounded-[32px] shadow-2xl"
-          style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.4)" }}
+          className="backface-hidden transform-gpu absolute inset-0 overflow-hidden rounded-[32px] shadow-2xl"
+          style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.4)", willChange: "transform" }}
         >
           <CardArt
             pattern={pattern}
@@ -75,12 +97,13 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
 
         {/* FRONT (facing) */}
         <div
-          className="backface-hidden absolute inset-0 flex flex-col rounded-[32px] p-7"
+          className="backface-hidden transform-gpu absolute inset-0 flex flex-col rounded-[32px] p-7"
           style={{
             transform: "rotateY(180deg)",
             background: "var(--card-surface)",
             color: "var(--card-ink)",
             boxShadow: "0 30px 60px -20px rgba(0,0,0,0.35)",
+            willChange: "transform",
           }}
         >
           <div className="flex items-start justify-between gap-3">
@@ -125,6 +148,35 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           </p>
         </div>
       </motion.div>
+
+      {/* Persistent tiny favorite indicator */}
+      {isFav && (
+        <div className="pointer-events-none absolute right-4 top-4 z-20">
+          <Heart className="h-5 w-5" fill="#ff3b6b" stroke="#ff3b6b" />
+        </div>
+      )}
+
+      {/* Double-tap heart burst */}
+      <AnimatePresence>
+        {heartBurst > 0 && (
+          <motion.div
+            key={heartBurst}
+            className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.4 }}
+            animate={{ opacity: 1, scale: 1.15 }}
+            exit={{ opacity: 0, scale: 1.4 }}
+            transition={{ duration: 0.6 }}
+            onAnimationComplete={() => setHeartBurst(0)}
+          >
+            <Heart
+              className="h-32 w-32 drop-shadow-2xl"
+              fill={isFav ? "#ff3b6b" : "rgba(255,255,255,0.75)"}
+              stroke={isFav ? "#ff3b6b" : "#ffffff"}
+              strokeWidth={1.5}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
