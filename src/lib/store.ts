@@ -30,6 +30,8 @@ interface State {
   theme: ThemeId;
   mode: Mode;
   animations: boolean;
+  hapticsEnabled: boolean;
+  reducedMotion: boolean;
   players: string[];
   // decks
   decks: Record<DeckId, boolean>;
@@ -43,6 +45,7 @@ interface State {
   discard: Set<string>;
   drawCount: number;
   history: { card: DrawnCard; currentPlayer: number }[];
+  favorites: string[];
 
   // actions
   setLang: (l: Lang) => void;
@@ -50,6 +53,8 @@ interface State {
   setMode: (m: Mode) => void;
   toggleMode: () => void;
   toggleAnimations: () => void;
+  toggleHaptics: () => void;
+  toggleReducedMotion: () => void;
   setPlayers: (p: string[]) => void;
   toggleDeck: (d: DeckId) => void;
   toggleCategory: (c: CategoryId) => void;
@@ -59,6 +64,7 @@ interface State {
   goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
+  toggleFavorite: (id: string) => void;
 }
 
 // Draw-variety trackers (module-scoped; reset on reload).
@@ -98,6 +104,8 @@ export const useGame = create<State>()(
       theme: "rose",
       mode: "light",
       animations: true,
+      hapticsEnabled: true,
+      reducedMotion: false,
       players: [],
       decks: { basic: true, plus: false, unfiltered: false },
       categories: {
@@ -119,12 +127,16 @@ export const useGame = create<State>()(
       discard: new Set<string>(),
       drawCount: 0,
       history: [],
+      favorites: [],
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
       setMode: (mode) => set({ mode }),
       toggleMode: () => set((s) => ({ mode: s.mode === "light" ? "dark" : "light" })),
       toggleAnimations: () => set((s) => ({ animations: !s.animations })),
+      toggleHaptics: () => set((s) => ({ hapticsEnabled: !s.hapticsEnabled })),
+      toggleReducedMotion: () =>
+        set((s) => ({ reducedMotion: !s.reducedMotion })),
       setPlayers: (players) => set({ players }),
       toggleDeck: (d) =>
         set((s) => ({ decks: { ...s.decks, [d]: !s.decks[d] } })),
@@ -217,10 +229,16 @@ export const useGame = create<State>()(
         set((s) => ({ flipped: !s.flipped }));
       },
       setProgress: (n) => set({ progress: Math.max(0, Math.min(100, n)) }),
+      toggleFavorite: (id) =>
+        set((s) => ({
+          favorites: s.favorites.includes(id)
+            ? s.favorites.filter((f) => f !== id)
+            : [...s.favorites, id],
+        })),
     }),
     {
       name: "between-us",
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted) => {
         const s = (persisted ?? {}) as Record<string, unknown>;
@@ -231,6 +249,10 @@ export const useGame = create<State>()(
         if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
         if (typeof cats.plus_kinky !== "boolean") cats.plus_kinky = true;
         s.categories = cats;
+        if (typeof s.hapticsEnabled !== "boolean") s.hapticsEnabled = true;
+        if (typeof s.reducedMotion !== "boolean") s.reducedMotion = false;
+        if (!Array.isArray(s.favorites)) s.favorites = [];
+        if (!Array.isArray(s.history)) s.history = [];
         return s;
       },
       partialize: (s) => ({
@@ -238,10 +260,17 @@ export const useGame = create<State>()(
         theme: s.theme,
         mode: s.mode,
         animations: s.animations,
+        hapticsEnabled: s.hapticsEnabled,
+        reducedMotion: s.reducedMotion,
         players: s.players,
         decks: s.decks,
         categories: s.categories,
         progress: s.progress,
+        favorites: s.favorites,
+        history: s.history,
+        card: s.card,
+        currentPlayer: s.currentPlayer,
+        drawCount: s.drawCount,
       }),
       skipHydration: true,
     },

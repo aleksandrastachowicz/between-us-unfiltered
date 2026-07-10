@@ -1,8 +1,14 @@
 /**
  * Gentle haptic feedback for supported mobile devices.
- * Silently no-ops where the Vibration API is unavailable (most desktops/iOS Safari).
+ * Silently no-ops where the Vibration API is unavailable (most desktops/iOS Safari)
+ * or when the user has disabled haptics via Settings.
  */
+let enabled = true;
+export function setHapticsEnabled(v: boolean) {
+  enabled = v;
+}
 export function haptic(pattern: number | number[] = 10) {
+  if (!enabled) return;
   if (typeof navigator === "undefined") return;
   const nav = navigator as Navigator & { vibrate?: (p: number | number[]) => boolean };
   if (typeof nav.vibrate !== "function") return;

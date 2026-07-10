@@ -21,6 +21,7 @@ export interface SharedState {
   discard: string[];
   drawCount: number;
   players: string[];
+  history: { card: DrawnCard; currentPlayer: number }[];
 }
 
 function snapshot(): SharedState {
@@ -37,6 +38,7 @@ function snapshot(): SharedState {
     discard: [...s.discard],
     drawCount: s.drawCount,
     players: s.players,
+    history: s.history,
   };
 }
 
@@ -60,6 +62,7 @@ function applyShared(state: SharedState) {
     discard: new Set(state.discard ?? []),
     drawCount: state.drawCount,
     players: state.players ?? [],
+    history: state.history ?? [],
   });
   // release on next tick so the resulting store notification is ignored
   setTimeout(() => {
