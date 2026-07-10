@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGame } from "@/lib/store";
+import { setHapticsEnabled } from "@/lib/haptics";
 import { AuraBackground } from "./AuraBackground";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
@@ -10,11 +11,16 @@ export function BetweenUsApp() {
   const theme = useGame((s) => s.theme);
   const mode = useGame((s) => s.mode);
   const screen = useGame((s) => s.screen);
+  const hapticsEnabled = useGame((s) => s.hapticsEnabled);
 
   useEffect(() => {
     useGame.persist.rehydrate();
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    setHapticsEnabled(hapticsEnabled);
+  }, [hapticsEnabled]);
 
   if (!ready) return null;
 
