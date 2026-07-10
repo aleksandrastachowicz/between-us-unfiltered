@@ -40,7 +40,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      game_state_within_limit: { Args: { _state: Json }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

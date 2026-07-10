@@ -43,6 +43,7 @@ interface State {
   discard: Set<string>;
   drawCount: number;
   history: { card: DrawnCard; currentPlayer: number }[];
+  favorites: DrawnCard[];
 
   // actions
   setLang: (l: Lang) => void;
@@ -59,6 +60,7 @@ interface State {
   goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
+  toggleFavorite: (card: DrawnCard) => void;
 }
 
 // Draw-variety trackers (module-scoped; reset on reload).
@@ -119,6 +121,7 @@ export const useGame = create<State>()(
       discard: new Set<string>(),
       drawCount: 0,
       history: [],
+      favorites: [],
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
@@ -217,6 +220,16 @@ export const useGame = create<State>()(
         set((s) => ({ flipped: !s.flipped }));
       },
       setProgress: (n) => set({ progress: Math.max(0, Math.min(100, n)) }),
+      toggleFavorite: (card) =>
+        set((s) => {
+          const exists = s.favorites.some((f) => f.id === card.id);
+          haptic(HAPTIC.tap);
+          return {
+            favorites: exists
+              ? s.favorites.filter((f) => f.id !== card.id)
+              : [{ ...card }, ...s.favorites].slice(0, 200),
+          };
+        }),
     }),
     {
       name: "between-us",
@@ -231,6 +244,7 @@ export const useGame = create<State>()(
         if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
         if (typeof cats.plus_kinky !== "boolean") cats.plus_kinky = true;
         s.categories = cats;
+        if (!Array.isArray(s.favorites)) s.favorites = [];
         return s;
       },
       partialize: (s) => ({
@@ -242,6 +256,7 @@ export const useGame = create<State>()(
         decks: s.decks,
         categories: s.categories,
         progress: s.progress,
+        favorites: s.favorites,
       }),
       skipHydration: true,
     },
