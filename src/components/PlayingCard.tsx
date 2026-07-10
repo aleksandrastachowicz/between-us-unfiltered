@@ -43,9 +43,13 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-[340px]" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
+    <div
+      className="relative mx-auto w-full"
+      style={{ perspective: 1600, aspectRatio: "5 / 7", height: "100%", maxHeight: "100%", maxWidth: 340, width: "auto" }}
+    >
       <motion.div
-        className="preserve-3d relative h-full w-full cursor-pointer"
+        className="preserve-3d transform-gpu relative h-full w-full cursor-pointer"
+        style={{ willChange: "transform" }}
         onClick={flip}
         drag={animations ? true : false}
         dragSnapToOrigin
