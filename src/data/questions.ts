@@ -358,6 +358,18 @@ const plusSpice: QuestionText[] = [
   { pl: "Co sądzisz o dominacji i uległości w sypialni?", en: "How do you feel about dominance and submission in the bedroom?" },
   { pl: "Wolisz partnera bardziej doświadczonego czy takiego, który uczy się razem z Tobą?", en: "Would you rather have a partner who's more experienced than you or one who learns with you?" },
   { pl: "Co sądzisz o spontanicznym, nieplanowanym seksie w porównaniu do starannie przygotowanych momentów?", en: "How do you feel about spontaneous, unplanned sex versus carefully planned and prepared moments?" },
+  { pl: "Jaka niefizyczna rzecz, którą robię, działa na Ciebie najbardziej pociągająco?", en: "What non-physical thing that I do turns you on the most?" },
+  { pl: "Gdybyśmy mieli spróbować czegoś zupełnie nowego w sypialni bez żadnego oceniania, co by to było?", en: "If we were to try something completely new in the bedroom with zero judgment, what would it be?" },
+  { pl: "Jaki rodzaj dotyku sprawia, że natychmiast czujesz ze mną głęboką bliskość?", en: "What kind of touch makes you instantly feel a deep closeness with me?" },
+  { pl: "O jakiej fantazji z moim udziałem myślisz najczęściej, gdy nie jesteśmy razem?", en: "What fantasy involving me do you think about most often when we are apart?" },
+  { pl: "Jakie słowa szeptane podczas bliskości elektryzują Cię najbardziej?", en: "What words whispered during intimacy electrify you the most?" },
+  { pl: "Co według Ciebie buduje największe napięcie i pożądanie między nami w ciągu dnia?", en: "What do you think builds the greatest tension and desire between us during the day?" },
+  { pl: "Jaki moment naszej wspólnej intymności zapamiętasz na zawsze i dlaczego?", en: "What moment of our intimacy together will you remember forever, and why?" },
+  { pl: "Co sprawia, że najbardziej czujesz się przy mnie pożądany/a?", en: "What makes you feel most desired by me?" },
+  { pl: "Jaki gest z mojej strony w środku dnia potrafi Cię rozgrzać na wieczór?", en: "What gesture from me in the middle of the day can warm you up for the evening?" },
+  { pl: "Jakie spojrzenie ode mnie mówi Ci więcej niż jakiekolwiek słowa?", en: "What kind of look from me tells you more than any words could?" },
+  { pl: "Co chciałbyś/ałabyś, żebym częściej robił/a, kiedy jesteśmy sami?", en: "What do you wish I did more often when we are alone?" },
+  { pl: "Kiedy ostatnio poczułeś/aś między nami autentyczne, elektryzujące napięcie?", en: "When did you last feel genuine, electric tension between us?" },
 ];
 
 const plusDeep: QuestionText[] = [
