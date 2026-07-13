@@ -61,35 +61,44 @@ function DeckCard({
   const toggleDeck = useGame((s) => s.toggleDeck);
   return (
     <motion.div
-      layout
       role="button"
       tabIndex={0}
+      aria-pressed={active}
+      aria-label={title}
       onClick={() => toggleDeck(id)}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggleDeck(id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleDeck(id);
+        }
+      }}
       whileTap={{ scale: 0.985 }}
-      className="glass w-full cursor-pointer rounded-3xl p-6 text-left transition-all"
+      className="glass w-full cursor-pointer rounded-3xl p-4 text-left transition-[outline,box-shadow] duration-200 sm:p-6"
       style={{
         outline: active ? "2px solid var(--accent)" : "2px solid transparent",
         boxShadow: active ? "0 18px 40px -22px var(--accent)" : "none",
       }}
     >
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-extrabold tracking-tight">{title}</h3>
+            <h3 className="truncate text-base font-extrabold tracking-tight sm:text-lg">{title}</h3>
             {badge && (
-              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
                 {badge}
               </span>
             )}
           </div>
-          <p className="mt-1 text-sm" style={{ color: "var(--muted-text)" }}>{desc}</p>
+          <p className="mt-1 text-[13px] leading-snug sm:text-sm" style={{ color: "var(--muted-text)" }}>{desc}</p>
         </div>
         <span
           className="mt-1 flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors"
           style={{ background: active ? "var(--accent)" : "var(--panel-2)" }}
         >
-          <motion.span layout className="h-5 w-5 rounded-full bg-white shadow" style={{ marginLeft: active ? "auto" : 0 }} />
+          <span
+            className="h-5 w-5 rounded-full bg-white shadow transition-transform duration-200"
+            style={{ transform: active ? "translateX(20px)" : "translateX(0)" }}
+          />
         </span>
       </div>
       {children}
@@ -103,18 +112,18 @@ export function DeckSelector() {
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
 
   return (
-    <div className="mx-auto w-full max-w-lg px-5 pb-28 pt-10">
-      <div className="mb-8 text-center">
-        <div className="mb-3 flex items-center justify-center gap-2">
+    <div className="mx-auto w-full max-w-lg px-4 pb-28 pt-6 sm:px-5 sm:pt-10">
+      <div className="mb-5 text-center sm:mb-8">
+        <div className="mb-2 flex items-center justify-center gap-2 sm:mb-3">
           <Heart className="h-5 w-5" style={{ color: "var(--accent)" }} fill="currentColor" />
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight velvet-glow">{c.title}</h1>
-        <p className="mx-auto mt-2 max-w-xs text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
+        <h1 className="text-3xl font-extrabold tracking-tight velvet-glow sm:text-4xl">{c.title}</h1>
+        <p className="mx-auto mt-1.5 max-w-xs text-[13px] sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
       </div>
 
-      <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <DeckCard id="basic" title={c.basic} desc={c.basicD}>
           {decks.basic && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
