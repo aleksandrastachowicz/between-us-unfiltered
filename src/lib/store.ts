@@ -14,6 +14,7 @@ import { haptic, HAPTIC } from "@/lib/haptics";
 export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
 export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
+export type Tab = "play" | "history" | "favorites";
 
 export interface DrawnCard {
   id: string;
@@ -46,6 +47,7 @@ interface State {
   drawCount: number;
   history: { card: DrawnCard; currentPlayer: number }[];
   favorites: string[];
+  activeTab: Tab;
 
   // actions
   setLang: (l: Lang) => void;
@@ -65,6 +67,7 @@ interface State {
   flip: () => void;
   setProgress: (n: number) => void;
   toggleFavorite: (id: string) => void;
+  setTab: (t: Tab) => void;
 }
 
 // Draw-variety trackers (module-scoped; reset on reload).
@@ -128,6 +131,7 @@ export const useGame = create<State>()(
       drawCount: 0,
       history: [],
       favorites: [],
+      activeTab: "play",
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
@@ -146,10 +150,10 @@ export const useGame = create<State>()(
       startGame: () => {
         const s = get();
         if (s.decks.unfiltered) primeUnfiltered(s.progress);
-        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [] });
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [], activeTab: "play" });
         get().drawCard();
       },
-      backToDecks: () => set({ screen: "deck" }),
+      backToDecks: () => set({ screen: "deck", activeTab: "play" }),
 
       drawCard: () => {
         const s = get();
@@ -235,6 +239,7 @@ export const useGame = create<State>()(
             ? s.favorites.filter((f) => f !== id)
             : [...s.favorites, id],
         })),
+      setTab: (activeTab) => set({ activeTab }),
     }),
     {
       name: "between-us",

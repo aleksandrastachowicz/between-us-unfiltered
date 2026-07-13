@@ -5,6 +5,9 @@ import { useGame } from "@/lib/store";
 import { PlayingCard } from "./PlayingCard";
 import { Settings } from "./Settings";
 import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
+import { BottomTabs } from "./BottomTabs";
+import { HistoryView } from "./HistoryView";
+import { FavoritesView } from "./FavoritesView";
 
 const t = {
   pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
@@ -12,7 +15,7 @@ const t = {
 };
 
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress } = useGame();
+  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, activeTab } = useGame();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
@@ -50,14 +53,21 @@ export function GameScreen() {
             </motion.div>
           </AnimatePresence>
         ) : (
-          <span className="text-sm font-extrabold tracking-tight">Between Us</span>
+          <button
+            onClick={backToDecks}
+            className="text-sm font-extrabold tracking-tight"
+            style={{ fontFamily: "Helvetica, Inter, system-ui, sans-serif" }}
+            aria-label={lang === "pl" ? "Wróć do wyboru talii" : "Back to deck selection"}
+          >
+            Between Us
+          </button>
         )}
         <button onClick={() => setSettingsOpen(true)} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
           <Cog className="h-5 w-5" />
         </button>
       </header>
 
-      {decks.unfiltered && (
+      {activeTab === "play" && decks.unfiltered && (
         <div className="mb-4 rounded-2xl p-3" style={{ background: "var(--panel)" }}>
           <div className="mb-1.5 flex items-center justify-between text-xs">
             <span className="font-bold">{lvlMeta.emoji} {lvlMeta.label[lang]}</span>
@@ -74,23 +84,28 @@ export function GameScreen() {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <AnimatePresence mode="wait">
-          {card && (
-            <motion.div
-              key={card.id}
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: -20 }}
-              transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              className="w-full"
-            >
-              <PlayingCard card={card} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto">
+        {activeTab === "play" && (
+          <AnimatePresence mode="wait">
+            {card && (
+              <motion.div
+                key={card.id}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.92, y: -20 }}
+                transition={{ type: "spring", stiffness: 200, damping: 22 }}
+                className="w-full"
+              >
+                <PlayingCard card={card} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+        {activeTab === "history" && <HistoryView />}
+        {activeTab === "favorites" && <FavoritesView />}
       </div>
 
+      {activeTab === "play" && (
       <div className="mt-6 flex items-center gap-3">
         <AnimatePresence initial={false}>
           {canGoBack && (
@@ -122,6 +137,9 @@ export function GameScreen() {
           {flipped ? c.next : c.draw}
         </button>
       </div>
+      )}
+
+      <BottomTabs />
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>

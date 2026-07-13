@@ -3,6 +3,8 @@ import { useGame } from "@/lib/store";
 /** Slow-moving luminous aura meshes behind the app, themed. */
 export function AuraBackground() {
   const animations = useGame((s) => s.animations);
+  const reducedMotion = useGame((s) => s.reducedMotion);
+  const animate = animations && !reducedMotion;
   const blobs = [
     { v: "--aura-1", top: "-10%", left: "-8%", size: "55vmax", dur: 26 },
     { v: "--aura-2", top: "30%", left: "55%", size: "48vmax", dur: 32 },
@@ -24,7 +26,7 @@ export function AuraBackground() {
             background: `radial-gradient(circle at 50% 50%, var(${b.v}), transparent 62%)`,
             opacity: 0.55,
             filter: "blur(40px)",
-            animation: animations ? `drift ${b.dur}s ease-in-out infinite` : "none",
+            animation: animate ? `drift ${b.dur}s ease-in-out infinite` : "none",
           }}
         />
       ))}
