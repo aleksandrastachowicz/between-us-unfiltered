@@ -150,10 +150,10 @@ export const useGame = create<State>()(
       startGame: () => {
         const s = get();
         if (s.decks.unfiltered) primeUnfiltered(s.progress);
-        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [] });
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [], activeTab: "play" });
         get().drawCard();
       },
-      backToDecks: () => set({ screen: "deck" }),
+      backToDecks: () => set({ screen: "deck", activeTab: "play" }),
 
       drawCard: () => {
         const s = get();
