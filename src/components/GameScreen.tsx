@@ -25,7 +25,13 @@ export function GameScreen() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-8 pt-5">
+    <div
+      className="relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 sm:px-5"
+      style={{
+        paddingTop: "max(1rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+      }}
+    >
       <header className="mb-2 flex items-center justify-between">
         <button onClick={backToDecks} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
           <ChevronLeft className="h-5 w-5" />
