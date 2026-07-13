@@ -41,6 +41,12 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   const edition = EDITION_META[editionForCategory(card.category)][lang];
   const categoryLabel = categoryLabelFor(card, lang);
   const hint = lang === "pl" ? "dotknij, aby odkryć" : "tap to reveal";
+  const flipLabel = lang === "pl"
+    ? (flipped ? `Karta odwrócona, pytanie: ${primary}` : `Karta zakryta, kategoria: ${categoryLabel}. Naciśnij Enter, aby odkryć.`)
+    : (flipped ? `Card revealed, question: ${primary}` : `Card hidden, category: ${categoryLabel}. Press Enter to reveal.`);
+  const favLabel = lang === "pl"
+    ? (isFav ? "Usuń z ulubionych" : "Dodaj do ulubionych")
+    : (isFav ? "Remove from favorites" : "Add to favorites");
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (Math.abs(info.offset.x) > 70 || Math.abs(info.offset.y) > 70) {
@@ -63,11 +69,23 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     }, 220);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      flip();
+    }
+  };
+
   return (
     <div className="relative mx-auto w-full max-w-[340px] select-none" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
       <motion.div
-        className="preserve-3d transform-gpu relative h-full w-full cursor-pointer"
+        className="preserve-3d transform-gpu will-change-transform relative h-full w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-[32px]"
         style={{ willChange: "transform" }}
+        role="button"
+        tabIndex={0}
+        aria-pressed={flipped}
+        aria-label={flipLabel}
+        onKeyDown={handleKeyDown}
         onClick={handleTap}
         drag={use3d ? true : false}
         dragSnapToOrigin
@@ -148,6 +166,21 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           </p>
         </div>
       </motion.div>
+
+      {/* Screen-reader-only favorite toggle (double-tap works for pointer users) */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleFavorite(card.id);
+          setHeartBurst((n) => n + 1);
+        }}
+        aria-label={favLabel}
+        aria-pressed={isFav}
+        className="sr-only focus:not-sr-only focus:absolute focus:right-2 focus:top-2 focus:z-30 focus:rounded-full focus:bg-black/70 focus:px-3 focus:py-1 focus:text-xs focus:text-white"
+      >
+        {favLabel}
+      </button>
 
       {/* Persistent tiny favorite indicator */}
       {isFav && (
