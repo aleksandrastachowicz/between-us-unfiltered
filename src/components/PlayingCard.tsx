@@ -195,14 +195,13 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           <motion.div
             key={heartBurst}
             className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.4 }}
-            animate={{ opacity: 1, scale: 1.15 }}
-            exit={{ opacity: 0, scale: 1.4 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1.05, 1.1, 1.2] }}
+            transition={{ duration: 0.7, times: [0, 0.25, 0.55, 1], ease: "easeOut" }}
             onAnimationComplete={() => setHeartBurst(0)}
           >
             <Heart
-              className="h-32 w-32 drop-shadow-2xl"
+              className="h-28 w-28 drop-shadow-2xl"
               fill={isFav ? "#ff3b6b" : "rgba(255,255,255,0.75)"}
               stroke={isFav ? "#ff3b6b" : "#ffffff"}
               strokeWidth={1.5}
