@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "A premium dual-language conversation game for couples and close connections.",
+          "Between Us is an intimate, relationship-driven conversation card game for couples and close connections. Draw, flip and connect.",
       },
     ],
   }),
