@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { Share2, Heart } from "lucide-react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGame } from "@/lib/store";
 import { shareOrDownloadStory } from "@/lib/storyExport";
 
@@ -26,6 +28,13 @@ export function HistoryView() {
   const c = t[lang];
 
   const entries = [...history].reverse();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: entries.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 132,
+    overscan: 6,
+  });
 
   return (
     <div className="w-full">
@@ -35,14 +44,22 @@ export function HistoryView() {
           {c.empty}
         </p>
       ) : (
-        <ul className="flex flex-col gap-2.5">
-          {entries.map((h, i) => {
-            const primary = lang === "pl" ? h.card.pl : h.card.en;
-            const secondary = lang === "pl" ? h.card.en : h.card.pl;
-            const player = players[h.currentPlayer];
-            const isFav = favorites.includes(h.card.id);
-            return (
-              <li key={`${h.card.id}-${i}`} className="glass rounded-2xl p-4">
+        <div ref={parentRef} className="max-h-[60dvh] overflow-y-auto">
+          <div style={{ height: rowVirtualizer.getTotalSize(), position: "relative", width: "100%" }}>
+            {rowVirtualizer.getVirtualItems().map((vi) => {
+              const h = entries[vi.index];
+              const primary = lang === "pl" ? h.card.pl : h.card.en;
+              const secondary = lang === "pl" ? h.card.en : h.card.pl;
+              const player = players[h.currentPlayer];
+              const isFav = favorites.includes(h.card.id);
+              return (
+                <div
+                  key={`${h.card.id}-${vi.index}`}
+                  ref={rowVirtualizer.measureElement}
+                  data-index={vi.index}
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${vi.start}px)`, paddingBottom: 10 }}
+                >
+                  <div className="glass rounded-2xl p-4">
                 <div className="mb-1 flex items-center justify-between gap-2">
                   {player ? (
                     <span
@@ -80,10 +97,12 @@ export function HistoryView() {
                 <p className="mt-1 text-xs leading-snug" style={{ color: "var(--muted-text)" }}>
                   {secondary}
                 </p>
-              </li>
-            );
-          })}
-        </ul>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
     </div>
   );

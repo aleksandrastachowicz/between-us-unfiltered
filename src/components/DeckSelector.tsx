@@ -8,7 +8,7 @@ import { CardArtPreview, patternFor } from "./CardArt";
 const t = {
   pl: {
     title: "Between Us",
-    sub: "Intymna gra rozmów dla par i bliskich.",
+    sub: "Gra konwersacyjna dla głębokich relacji. Stworzona dla przyjaciół, par i każdego, kto chce naprawdę poznać drugą osobę.",
     pick: "Wybierz talie",
     basic: "Edycja Podstawowa",
     basicD: "Codzienna więź, rozwój emocjonalny i refleksja. 5 klasycznych kategorii.",
@@ -26,7 +26,7 @@ const t = {
   },
   en: {
     title: "Between Us",
-    sub: "An intimate conversation game for couples & close connections.",
+    sub: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
     pick: "Choose your decks",
     basic: "Basic Edition",
     basicD: "Daily connection, emotional growth & reflection. 5 classic categories.",
@@ -112,18 +112,18 @@ export function DeckSelector() {
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
 
   return (
-    <div className="mx-auto w-full max-w-lg px-4 pb-28 pt-6 sm:px-5 sm:pt-10">
-      <div className="mb-5 text-center sm:mb-8">
-        <div className="mb-2 flex items-center justify-center gap-2 sm:mb-3">
+    <div className="mx-auto w-full max-w-lg px-4 pb-24 pt-4 sm:px-5 sm:pt-8">
+      <div className="mb-3 text-center sm:mb-6">
+        <div className="mb-1.5 flex items-center justify-center gap-2 sm:mb-2">
           <Heart className="h-5 w-5" style={{ color: "var(--accent)" }} fill="currentColor" />
         </div>
-        <h1 className="text-3xl font-extrabold tracking-tight velvet-glow sm:text-4xl">{c.title}</h1>
-        <p className="mx-auto mt-1.5 max-w-xs text-[13px] sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
+        <h1 className="text-2xl font-extrabold tracking-tight velvet-glow sm:text-4xl">{c.title}</h1>
+        <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-snug sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
       </div>
 
-      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
+      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
 
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-2.5 sm:gap-4">
         <DeckCard id="basic" title={c.basic} desc={c.basicD}>
           {decks.basic && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>

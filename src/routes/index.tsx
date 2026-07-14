@@ -5,17 +5,17 @@ import { BetweenUsApp } from "@/components/BetweenUsApp";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Between Us — Intimate Conversation Card Game" },
+      { title: "Between Us — Conversation Game for Deep Connections" },
       {
         name: "description",
         content:
-          "Between Us is an intimate, relationship-driven conversation card game for couples and close connections. Draw, flip and connect.",
+          "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
       },
-      { property: "og:title", content: "Between Us — Intimate Conversation Card Game" },
+      { property: "og:title", content: "Between Us — Conversation Game for Deep Connections" },
       {
         property: "og:description",
         content:
-          "Between Us is an intimate, relationship-driven conversation card game for couples and close connections. Draw, flip and connect.",
+          "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
       },
     ],
   }),
