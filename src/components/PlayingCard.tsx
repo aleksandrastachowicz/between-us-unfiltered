@@ -77,7 +77,7 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-[340px] select-none" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
+    <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[320px] select-none" style={{ perspective: 1600, aspectRatio: "5 / 7" }}>
       <motion.div
         className="preserve-3d transform-gpu will-change-transform relative h-full w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-[32px]"
         style={{ willChange: "transform" }}
@@ -89,15 +89,15 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         onClick={handleTap}
         drag={use3d ? true : false}
         dragSnapToOrigin
-        dragElastic={0.18}
+        dragElastic={0.14}
         onDragEnd={onDragEnd}
         animate={use3d ? { rotateY: flipped ? 180 : 0, opacity: 1 } : { rotateY: flipped ? 180 : 0, opacity: 1 }}
         transition={
           use3d
-            ? { type: "spring", stiffness: 120, damping: 14 }
+            ? { type: "spring", stiffness: 140, damping: 18, mass: 0.9 }
             : { duration: 0.18, ease: "easeOut" }
         }
-        whileTap={use3d ? { scale: 0.97 } : undefined}
+        whileTap={use3d ? { scale: 0.98 } : undefined}
       >
         {/* BACK (reverse) — shown first */}
         <div
@@ -165,6 +165,38 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
             Between Us
           </p>
         </div>
+
+        {/* Persistent tiny favorite indicator — anchored inside 3D card so it rotates with it */}
+        {isFav && (
+          <div
+            className="pointer-events-none absolute right-4 top-4 z-20"
+            style={{ transform: `rotateY(${flipped ? 180 : 0}deg) translateZ(2px)`, backfaceVisibility: "hidden" }}
+          >
+            <Heart className="h-5 w-5" fill="#ff3b6b" stroke="#ff3b6b" />
+          </div>
+        )}
+
+        {/* Double-tap heart burst — nested inside 3D wrapper so it rotates with the card */}
+        <AnimatePresence>
+          {heartBurst > 0 && (
+            <motion.div
+              key={heartBurst}
+              className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
+              style={{ transform: `rotateY(${flipped ? 180 : 0}deg) translateZ(4px)`, backfaceVisibility: "hidden" }}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1.05, 1.1, 1.2] }}
+              transition={{ duration: 0.7, times: [0, 0.25, 0.55, 1], ease: "easeOut" }}
+              onAnimationComplete={() => setHeartBurst(0)}
+            >
+              <Heart
+                className="h-28 w-28 drop-shadow-2xl"
+                fill={isFav ? "#ff3b6b" : "rgba(255,255,255,0.75)"}
+                stroke={isFav ? "#ff3b6b" : "#ffffff"}
+                strokeWidth={1.5}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* Screen-reader-only favorite toggle (double-tap works for pointer users) */}
@@ -181,34 +213,6 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       >
         {favLabel}
       </button>
-
-      {/* Persistent tiny favorite indicator */}
-      {isFav && (
-        <div className="pointer-events-none absolute right-4 top-4 z-20">
-          <Heart className="h-5 w-5" fill="#ff3b6b" stroke="#ff3b6b" />
-        </div>
-      )}
-
-      {/* Double-tap heart burst */}
-      <AnimatePresence>
-        {heartBurst > 0 && (
-          <motion.div
-            key={heartBurst}
-            className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1.05, 1.1, 1.2] }}
-            transition={{ duration: 0.7, times: [0, 0.25, 0.55, 1], ease: "easeOut" }}
-            onAnimationComplete={() => setHeartBurst(0)}
-          >
-            <Heart
-              className="h-28 w-28 drop-shadow-2xl"
-              fill={isFav ? "#ff3b6b" : "rgba(255,255,255,0.75)"}
-              stroke={isFav ? "#ff3b6b" : "#ffffff"}
-              strokeWidth={1.5}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
