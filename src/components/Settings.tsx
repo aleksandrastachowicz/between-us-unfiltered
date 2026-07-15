@@ -142,6 +142,75 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </div>
             </Section>
 
+            {/* Multiplayer */}
+            <Section title={c.mp}>
+              {mpCode ? (
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs" style={{ color: "var(--muted-text)" }}>{c.mpShare}</p>
+                  <button
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(mpCode);
+                      setMpCopied(true);
+                      setTimeout(() => setMpCopied(false), 1500);
+                    }}
+                    className="flex items-center justify-between rounded-2xl px-4 py-3"
+                    style={{ background: "var(--panel-2)" }}
+                  >
+                    <span className="text-2xl font-black tracking-[0.3em]">{mpCode}</span>
+                    {mpCopied ? (
+                      <Check className="h-5 w-5" style={{ color: "var(--accent)" }} />
+                    ) : (
+                      <Copy className="h-5 w-5 opacity-60" />
+                    )}
+                  </button>
+                  <span className="flex items-center gap-2 text-xs font-semibold" style={{ color: "var(--accent)" }}>
+                    <Wifi className="h-4 w-4" /> {c.mpConnected}
+                  </span>
+                  <button
+                    onClick={leaveRoom}
+                    className="rounded-2xl py-2.5 text-sm font-bold"
+                    style={{ background: "var(--panel-2)", color: "var(--text)" }}
+                  >
+                    {c.mpLeave}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs" style={{ color: "var(--muted-text)" }}>{c.mpD}</p>
+                  <button
+                    onClick={() => createRoom()}
+                    disabled={mpStatus === "connecting"}
+                    className="flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-extrabold disabled:opacity-50"
+                    style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
+                  >
+                    <Users className="h-4 w-4" /> {c.mpCreate}
+                  </button>
+                  <div className="flex gap-2">
+                    <input
+                      value={mpInput}
+                      onChange={(e) => setMpInput(e.target.value.toUpperCase().slice(0, 4))}
+                      maxLength={4}
+                      placeholder={c.mpCode}
+                      aria-label={c.mpCode}
+                      className="flex-1 rounded-2xl px-4 py-2.5 text-center text-lg font-bold tracking-[0.25em] outline-none"
+                      style={{ background: "var(--panel-2)", color: "var(--text)" }}
+                    />
+                    <button
+                      onClick={() => void joinRoom(mpInput)}
+                      disabled={mpStatus === "connecting" || mpInput.length < 4}
+                      className="rounded-2xl px-5 text-sm font-bold disabled:opacity-40"
+                      style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
+                    >
+                      {c.mpJoin}
+                    </button>
+                  </div>
+                  {mpError && mpStatus === "error" && (
+                    <p className="text-xs font-semibold" style={{ color: "#e05252" }}>{c.mpNotFound}</p>
+                  )}
+                </div>
+              )}
+            </Section>
+
             {/* Animations */}
             <Section title={c.anim}>
               <div className="flex flex-col gap-2">
