@@ -18,18 +18,21 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          host_token: string
           state: Json
           updated_at: string
         }
         Insert: {
           code: string
           created_at?: string
+          host_token?: string
           state?: Json
           updated_at?: string
         }
         Update: {
           code?: string
           created_at?: string
+          host_token?: string
           state?: Json
           updated_at?: string
         }
@@ -40,7 +43,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_session: {
+        Args: { _state: Json }
+        Returns: {
+          code: string
+          host_token: string
+        }[]
+      }
       game_state_within_limit: { Args: { _state: Json }; Returns: boolean }
+      join_session: {
+        Args: { _code: string }
+        Returns: {
+          host_token: string
+          state: Json
+        }[]
+      }
+      update_session: {
+        Args: { _code: string; _host_token: string; _state: Json }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
