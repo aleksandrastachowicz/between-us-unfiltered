@@ -38,6 +38,7 @@ export function MultiplayerPanel() {
   const [input, setInput] = useState("");
   const [copied, setCopied] = useState(false);
   const lang = useGame((s) => s.lang);
+  const screen = useGame((s) => s.screen);
   const { code, status, createRoom, joinRoom, leaveRoom, error } = useMultiplayer();
   const c = t[lang];
 
@@ -52,11 +53,19 @@ export function MultiplayerPanel() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed left-4 top-4 z-30 flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold shadow-lg backdrop-blur"
+        aria-label={c.title}
+        className={
+          screen === "game"
+            ? "fixed left-4 z-30 flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold shadow-lg backdrop-blur"
+            : "fixed right-4 top-4 z-30 flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold shadow-lg backdrop-blur"
+        }
         style={{
           background: code ? "var(--accent)" : "var(--panel)",
           color: code ? "var(--accent-ink)" : "var(--text)",
           border: "1px solid var(--border)",
+          ...(screen === "game"
+            ? { bottom: "calc(env(safe-area-inset-bottom) + 5.5rem)" }
+            : {}),
         }}
       >
         {code ? <Wifi className="h-4 w-4" /> : <Users className="h-4 w-4" />}
