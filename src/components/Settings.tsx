@@ -81,6 +81,9 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
     players, setPlayers,
   } = useGame();
   const [draft, setDraft] = useState("");
+  const [mpInput, setMpInput] = useState("");
+  const [mpCopied, setMpCopied] = useState(false);
+  const { code: mpCode, status: mpStatus, createRoom, joinRoom, leaveRoom, error: mpError } = useMultiplayer();
   const c = t[lang];
 
   const addPlayer = () => {
