@@ -65,8 +65,15 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
   const c = t[lang];
 
   const addPlayer = () => {
-    const v = draft.trim();
-    if (v) {
+    // Strip control chars, collapse whitespace, cap length to prevent
+    // storage bloat and mitigate injection into shared-state payloads.
+    const v = draft
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001F\u007F<>]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 24);
+    if (v && players.length < 12) {
       setPlayers([...players, v]);
       setDraft("");
     }
@@ -180,9 +187,10 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               <div className="flex gap-2">
                 <input
                   value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => setDraft(e.target.value.slice(0, 24))}
                   onKeyDown={(e) => e.key === "Enter" && addPlayer()}
                   placeholder={c.name}
+                  maxLength={24}
                   className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
                   style={{ background: "var(--panel-2)", color: "var(--text)" }}
                 />

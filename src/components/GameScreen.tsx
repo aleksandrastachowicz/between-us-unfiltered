@@ -84,7 +84,7 @@ export function GameScreen() {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto">
+      <div className="flex flex-1 flex-col items-center justify-center overflow-visible py-2">
         {activeTab === "play" && (
           <AnimatePresence mode="wait">
             {card && (
@@ -94,7 +94,7 @@ export function GameScreen() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92, y: -20 }}
                 transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                className="w-full"
+                className="w-full px-2 py-4"
               >
                 <PlayingCard card={card} />
               </motion.div>
