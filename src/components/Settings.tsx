@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, Sun, Moon } from "lucide-react";
+import { X, Plus, Trash2, Sun, Moon, Users, Wifi, Copy, Check } from "lucide-react";
 import { useGame, type ThemeId } from "@/lib/store";
+import { useMultiplayer } from "@/lib/multiplayer";
 import type { Lang } from "@/data/questions";
 
 const t = {
@@ -22,6 +23,15 @@ const t = {
     playersD: "Dodaj imiona, by śledzić tury",
     add: "Dodaj gracza",
     name: "Imię gracza",
+    mp: "Gra wieloosobowa",
+    mpD: "Graj razem w czasie rzeczywistym. Utwórz pokój lub dołącz kodem.",
+    mpCreate: "Utwórz pokój",
+    mpJoin: "Dołącz",
+    mpCode: "KOD",
+    mpConnected: "Połączono",
+    mpLeave: "Rozłącz",
+    mpNotFound: "Nie znaleziono pokoju",
+    mpShare: "Podaj ten kod partnerowi:",
     themes: { rose: "Różany Pastel", fairy: "Wróżkowa Zieleń", violet: "Fiolet", spicy: "Spicy Red" },
   },
   en: {
@@ -41,6 +51,15 @@ const t = {
     playersD: "Add names to track turns",
     add: "Add player",
     name: "Player name",
+    mp: "Multiplayer",
+    mpD: "Play together in real time. Create a room or join with a code.",
+    mpCreate: "Create room",
+    mpJoin: "Join",
+    mpCode: "CODE",
+    mpConnected: "Connected",
+    mpLeave: "Leave",
+    mpNotFound: "Room not found",
+    mpShare: "Share this code with your partner:",
     themes: { rose: "Rose Pastel", fairy: "Fairy Green", violet: "Violet", spicy: "Spicy Red" },
   },
 };
