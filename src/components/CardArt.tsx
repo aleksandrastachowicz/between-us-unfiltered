@@ -618,14 +618,13 @@ export function CardArtPreview({
       <motion.div
         className="preserve-3d relative overflow-hidden rounded-2xl shadow-lg"
         style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
-        initial={{ rotateY: -14, y: 4, opacity: 0 }}
-        animate={{ rotateY: [-8, 8, -8], y: [0, -4, 0], opacity: 1 }}
+        initial={{ rotateY: -14, opacity: 0 }}
+        animate={{ rotateY: [-6, 6, -6], opacity: 1 }}
         transition={{
           rotateY: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.35 },
-          y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.35 },
           opacity: { duration: 0.5, delay: index * 0.08 },
         }}
-        whileHover={{ scale: 1.06, rotateY: 0 }}
+        whileHover={{ scale: 1.04, rotateY: 0 }}
       >
         {artFor(pattern)}
         <div

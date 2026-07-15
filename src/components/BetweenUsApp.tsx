@@ -4,7 +4,6 @@ import { setHapticsEnabled } from "@/lib/haptics";
 import { AuraBackground } from "./AuraBackground";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
-import { MultiplayerPanel } from "./MultiplayerPanel";
 
 export function BetweenUsApp() {
   const [ready, setReady] = useState(false);
@@ -30,7 +29,6 @@ export function BetweenUsApp() {
       style={{ background: "var(--bg)", color: "var(--text)" }}
     >
       <AuraBackground />
-      <MultiplayerPanel />
       <main className="relative z-10">
         {screen === "deck" ? <DeckSelector /> : <GameScreen />}
       </main>
