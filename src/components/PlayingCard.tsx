@@ -171,11 +171,11 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           </p>
         </div>
 
-        {/* Persistent tiny favorite indicator — anchored inside 3D card so it rotates with it */}
+        {/* Favorite indicator — anchored to the FRONT face only (hidden on reverse). */}
         {isFav && (
           <div
             className="pointer-events-none absolute right-4 top-4 z-20"
-            style={{ transform: `rotateY(${flipped ? 180 : 0}deg) translateZ(2px)`, backfaceVisibility: "hidden" }}
+            style={{ transform: "rotateY(180deg) translateZ(2px)", backfaceVisibility: "hidden" }}
           >
             <Heart className="h-5 w-5" fill="#ff3b6b" stroke="#ff3b6b" />
           </div>
