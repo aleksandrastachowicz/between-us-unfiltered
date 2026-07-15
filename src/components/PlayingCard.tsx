@@ -102,7 +102,12 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         {/* BACK (reverse) — shown first */}
         <div
           className="backface-hidden transform-gpu absolute inset-0 overflow-hidden rounded-[32px] shadow-2xl"
-          style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.4)", willChange: "transform" }}
+          style={{
+            boxShadow: isFav
+              ? "0 30px 60px -20px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,59,107,0.55), 0 0 40px -6px rgba(255,59,107,0.55)"
+              : "0 30px 60px -20px rgba(0,0,0,0.4)",
+            willChange: "transform",
+          }}
         >
           <CardArt
             pattern={pattern}
