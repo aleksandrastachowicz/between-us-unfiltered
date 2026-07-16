@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://rogelrzhsiiwrcdzyvnb.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "between-us-mcp",
+      "version": "0.1.0",
+      "title": "Between Us"
+    },
+    "tools": [
+      {
+        "name": "list_decks",
+        "title": "List decks",
+        "description": "List the available Between Us question decks (basic, plus, unfiltered) with their categories and question counts.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lang": {
+              "default": "en",
+              "description": "Language for deck/category labels.",
+              "type": "string",
+              "enum": [
+                "pl",
+                "en"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "draw_question",
+        "title": "Draw a question",
+        "description": "Draw one random question from the Between Us deck. Optionally filter by deck or category, and pick a language.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lang": {
+              "default": "en",
+              "description": "Language for the question text.",
+              "type": "string",
+              "enum": [
+                "pl",
+                "en"
+              ]
+            },
+            "deck": {
+              "description": "Restrict to a single deck.",
+              "type": "string",
+              "enum": [
+                "basic",
+                "plus",
+                "unfiltered"
+              ]
+            },
+            "category": {
+              "description": "Restrict to a single category id (see list_decks).",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_questions",
+        "title": "List questions",
+        "description": "List Between Us questions with optional filters. Returns paginated results with { items, nextOffset, total }.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lang": {
+              "default": "en",
+              "type": "string",
+              "enum": [
+                "pl",
+                "en"
+              ]
+            },
+            "deck": {
+              "type": "string",
+              "enum": [
+                "basic",
+                "plus",
+                "unfiltered"
+              ]
+            },
+            "category": {
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "offset": {
+              "default": 0,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
