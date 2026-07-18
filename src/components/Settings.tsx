@@ -85,6 +85,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
   const [mpInput, setMpInput] = useState("");
   const [mpCopied, setMpCopied] = useState(false);
   const { code: mpCode, status: mpStatus, createRoom, joinRoom, leaveRoom, error: mpError } = useMultiplayer();
+  const { user } = useAuth();
   const c = t[lang];
 
   const addPlayer = () => {
