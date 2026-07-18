@@ -274,6 +274,10 @@ export const useGame = create<State>()(
         if (typeof s.reducedMotion !== "boolean") s.reducedMotion = false;
         if (!Array.isArray(s.favorites)) s.favorites = [];
         if (!Array.isArray(s.history)) s.history = [];
+        const st = s.stats as { totalDraws?: number; categoryCounts?: Record<string, number> } | undefined;
+        if (!st || typeof st.totalDraws !== "number") {
+          s.stats = { totalDraws: 0, categoryCounts: {} };
+        }
         return s;
       },
       partialize: (s) => ({
@@ -292,6 +296,7 @@ export const useGame = create<State>()(
         card: s.card,
         currentPlayer: s.currentPlayer,
         drawCount: s.drawCount,
+        stats: s.stats,
       }),
       skipHydration: true,
     },
