@@ -14,7 +14,7 @@ import { haptic, HAPTIC } from "@/lib/haptics";
 export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
 export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
-export type Tab = "play" | "history" | "favorites";
+export type Tab = "play" | "history" | "favorites" | "insights";
 
 export interface DrawnCard {
   id: string;
@@ -48,6 +48,10 @@ interface State {
   history: { card: DrawnCard; currentPlayer: number }[];
   favorites: string[];
   activeTab: Tab;
+  stats: {
+    totalDraws: number;
+    categoryCounts: Record<string, number>;
+  };
 
   // actions
   setLang: (l: Lang) => void;
