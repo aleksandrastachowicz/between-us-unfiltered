@@ -14,7 +14,7 @@ import { haptic, HAPTIC } from "@/lib/haptics";
 export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
 export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
-export type Tab = "play" | "history" | "favorites";
+export type Tab = "play" | "history" | "favorites" | "insights";
 
 export interface DrawnCard {
   id: string;
@@ -48,6 +48,10 @@ interface State {
   history: { card: DrawnCard; currentPlayer: number }[];
   favorites: string[];
   activeTab: Tab;
+  stats: {
+    totalDraws: number;
+    categoryCounts: Record<string, number>;
+  };
 
   // actions
   setLang: (l: Lang) => void;
@@ -132,6 +136,7 @@ export const useGame = create<State>()(
       history: [],
       favorites: [],
       activeTab: "play",
+      stats: { totalDraws: 0, categoryCounts: {} },
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
@@ -203,6 +208,16 @@ export const useGame = create<State>()(
           const nextHistory = st.card
             ? [...st.history, { card: st.card, currentPlayer: st.currentPlayer }].slice(-50)
             : st.history;
+          const catKey = card?.category ?? "unknown";
+          const nextStats = card
+            ? {
+                totalDraws: st.stats.totalDraws + 1,
+                categoryCounts: {
+                  ...st.stats.categoryCounts,
+                  [catKey]: (st.stats.categoryCounts[catKey] ?? 0) + 1,
+                },
+              }
+            : st.stats;
           return {
             card,
             flipped: false,
@@ -210,6 +225,7 @@ export const useGame = create<State>()(
             drawCount: st.drawCount + 1,
             currentPlayer: nextPlayer,
             history: nextHistory,
+            stats: nextStats,
           };
         });
         if (get().decks.unfiltered) primeUnfiltered(get().progress);
@@ -258,6 +274,10 @@ export const useGame = create<State>()(
         if (typeof s.reducedMotion !== "boolean") s.reducedMotion = false;
         if (!Array.isArray(s.favorites)) s.favorites = [];
         if (!Array.isArray(s.history)) s.history = [];
+        const st = s.stats as { totalDraws?: number; categoryCounts?: Record<string, number> } | undefined;
+        if (!st || typeof st.totalDraws !== "number") {
+          s.stats = { totalDraws: 0, categoryCounts: {} };
+        }
         return s;
       },
       partialize: (s) => ({
@@ -276,6 +296,7 @@ export const useGame = create<State>()(
         card: s.card,
         currentPlayer: s.currentPlayer,
         drawCount: s.drawCount,
+        stats: s.stats,
       }),
       skipHydration: true,
     },

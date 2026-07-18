@@ -1,9 +1,9 @@
-import { Play, Clock, Heart } from "lucide-react";
+import { Play, Clock, Heart, BarChart3 } from "lucide-react";
 import { useGame, type Tab } from "@/lib/store";
 
 const labels = {
-  pl: { play: "Gra", history: "Historia", favorites: "Ulubione" },
-  en: { play: "Play", history: "History", favorites: "Favorites" },
+  pl: { play: "Gra", history: "Historia", favorites: "Ulubione", insights: "Statystyki" },
+  en: { play: "Play", history: "History", favorites: "Favorites", insights: "Insights" },
 };
 
 export function BottomTabs() {
@@ -16,6 +16,7 @@ export function BottomTabs() {
     { id: "play", icon: Play, label: l.play },
     { id: "history", icon: Clock, label: l.history },
     { id: "favorites", icon: Heart, label: l.favorites },
+    { id: "insights", icon: BarChart3, label: l.insights },
   ];
 
   return (

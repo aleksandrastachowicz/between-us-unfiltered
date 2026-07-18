@@ -4,6 +4,7 @@ import { useGame } from "@/lib/store";
 import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { CardArtPreview, patternFor } from "./CardArt";
+import { GuestBanner } from "./GuestBanner";
 
 const t = {
   pl: {
@@ -120,6 +121,8 @@ export function DeckSelector() {
         <h1 className="text-2xl font-extrabold tracking-tight velvet-glow sm:text-4xl">{c.title}</h1>
         <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-snug sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
       </div>
+
+      <GuestBanner />
 
       <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
 

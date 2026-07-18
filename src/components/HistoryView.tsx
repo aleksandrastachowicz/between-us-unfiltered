@@ -3,6 +3,7 @@ import { Share2, Heart } from "lucide-react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useGame } from "@/lib/store";
 import { shareOrDownloadStory } from "@/lib/storyExport";
+import { GuestBanner } from "./GuestBanner";
 
 const t = {
   pl: {
@@ -38,6 +39,7 @@ export function HistoryView() {
 
   return (
     <div className="w-full">
+      <GuestBanner />
       <h2 className="mb-3 text-lg font-extrabold tracking-tight">{c.title}</h2>
       {entries.length === 0 ? (
         <p className="rounded-2xl p-6 text-center text-sm" style={{ background: "var(--panel)", color: "var(--muted-text)" }}>
