@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Trash2, Sun, Moon, Users, Wifi, Copy, Check } from "lucide-react";
 import { useGame, type ThemeId } from "@/lib/store";
 import { useMultiplayer } from "@/lib/multiplayer";
+import { useAuth, signInWithGoogle, signOut } from "@/lib/useAuth";
 import type { Lang } from "@/data/questions";
 
 const t = {
