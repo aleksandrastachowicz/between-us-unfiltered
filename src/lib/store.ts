@@ -136,6 +136,7 @@ export const useGame = create<State>()(
       history: [],
       favorites: [],
       activeTab: "play",
+      stats: { totalDraws: 0, categoryCounts: {} },
 
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
@@ -207,6 +208,16 @@ export const useGame = create<State>()(
           const nextHistory = st.card
             ? [...st.history, { card: st.card, currentPlayer: st.currentPlayer }].slice(-50)
             : st.history;
+          const catKey = card?.category ?? "unknown";
+          const nextStats = card
+            ? {
+                totalDraws: st.stats.totalDraws + 1,
+                categoryCounts: {
+                  ...st.stats.categoryCounts,
+                  [catKey]: (st.stats.categoryCounts[catKey] ?? 0) + 1,
+                },
+              }
+            : st.stats;
           return {
             card,
             flipped: false,
@@ -214,6 +225,7 @@ export const useGame = create<State>()(
             drawCount: st.drawCount + 1,
             currentPlayer: nextPlayer,
             history: nextHistory,
+            stats: nextStats,
           };
         });
         if (get().decks.unfiltered) primeUnfiltered(get().progress);
