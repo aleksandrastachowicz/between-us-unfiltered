@@ -8,6 +8,7 @@ import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
 import { BottomTabs } from "./BottomTabs";
 import { HistoryView } from "./HistoryView";
 import { FavoritesView } from "./FavoritesView";
+import { InsightsView } from "./InsightsView";
 
 const t = {
   pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
@@ -103,6 +104,7 @@ export function GameScreen() {
         )}
         {activeTab === "history" && <HistoryView />}
         {activeTab === "favorites" && <FavoritesView />}
+        {activeTab === "insights" && <InsightsView />}
       </div>
 
       {activeTab === "play" && (
