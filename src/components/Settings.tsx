@@ -144,9 +144,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </div>
             </Section>
 
-            {/* Multiplayer */}
-            <Section title={c.mp}>
-            </Section>
             {/* Account */}
             <Section title={lang === "pl" ? "Konto" : "Account"}>
               {user ? (
