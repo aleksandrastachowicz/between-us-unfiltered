@@ -72,6 +72,7 @@ interface State {
   setProgress: (n: number) => void;
   toggleFavorite: (id: string) => void;
   setTab: (t: Tab) => void;
+  flushGuestSession: () => void;
 }
 
 // Draw-variety trackers (module-scoped; reset on reload).
