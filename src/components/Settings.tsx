@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Trash2, Sun, Moon, Users, Wifi, Copy, Check } from "lucide-react";
 import { useGame, type ThemeId } from "@/lib/store";
 import { useMultiplayer } from "@/lib/multiplayer";
-import { useAuth, signInWithGoogle, signOut } from "@/lib/useAuth";
+import { AccountPanel } from "./AccountPanel";
 import type { Lang } from "@/data/questions";
 
 const t = {
@@ -85,7 +85,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
   const [mpInput, setMpInput] = useState("");
   const [mpCopied, setMpCopied] = useState(false);
   const { code: mpCode, status: mpStatus, createRoom, joinRoom, leaveRoom, error: mpError } = useMultiplayer();
-  const { user } = useAuth();
   const c = t[lang];
 
   const addPlayer = () => {
@@ -128,7 +127,12 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </button>
             </div>
 
-            {/* Language */}
+            {/* Account (top) */}
+            <Section title={lang === "pl" ? "Konto" : "Account"}>
+              <AccountPanel variant="compact" />
+            </Section>
+
+            {/* Language (top) */}
             <Section title={c.language}>
               <div className="flex rounded-2xl p-1" style={{ background: "var(--panel-2)" }}>
                 {(["pl", "en"] as Lang[]).map((l) => (
@@ -144,34 +148,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </div>
             </Section>
 
-            {/* Account */}
-            <Section title={lang === "pl" ? "Konto" : "Account"}>
-              {user ? (
-                <div className="flex items-center justify-between rounded-2xl px-4 py-3" style={{ background: "var(--panel-2)" }}>
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-bold">{user.email ?? user.user_metadata?.name ?? "Signed in"}</p>
-                    <p className="text-[10px]" style={{ color: "var(--muted-text)" }}>
-                      {lang === "pl" ? "Dane są zapisywane" : "Progress is saved"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => void signOut()}
-                    className="rounded-full px-3 py-1.5 text-xs font-bold"
-                    style={{ background: "var(--panel)", color: "var(--text)", border: "1px solid var(--border)" }}
-                  >
-                    {lang === "pl" ? "Wyloguj" : "Sign out"}
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => void signInWithGoogle()}
-                  className="w-full rounded-2xl py-3 text-sm font-extrabold"
-                  style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
-                >
-                  {lang === "pl" ? "Zaloguj przez Google" : "Sign in with Google"}
-                </button>
-              )}
-            </Section>
+            {/* Multiplayer (middle) */}
             <Section title={c.mp}>
               {mpCode ? (
                 <div className="flex flex-col gap-3">
@@ -238,15 +215,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   )}
                 </div>
               )}
-            </Section>
-
-            {/* Animations */}
-            <Section title={c.anim}>
-              <div className="flex flex-col gap-2">
-                <Toggle label={c.animD} on={animations} onToggle={toggleAnimations} />
-                <Toggle label={c.reduced + " — " + c.reducedD} on={reducedMotion} onToggle={toggleReducedMotion} />
-                <Toggle label={c.haptics + " — " + c.hapticsD} on={hapticsEnabled} onToggle={toggleHaptics} />
-              </div>
             </Section>
 
             {/* Appearance (light / dark) */}
@@ -317,6 +285,15 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                 <button onClick={addPlayer} className="rounded-xl px-3" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
                   <Plus className="h-4 w-4" />
                 </button>
+              </div>
+            </Section>
+
+            {/* Motion & haptics (bottom) */}
+            <Section title={c.anim}>
+              <div className="flex flex-col gap-2">
+                <Toggle label={c.animD} on={animations} onToggle={toggleAnimations} />
+                <Toggle label={c.reduced + " — " + c.reducedD} on={reducedMotion} onToggle={toggleReducedMotion} />
+                <Toggle label={c.haptics + " — " + c.hapticsD} on={hapticsEnabled} onToggle={toggleHaptics} />
               </div>
             </Section>
           </motion.aside>

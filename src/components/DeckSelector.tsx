@@ -5,6 +5,8 @@ import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { CardArtPreview, patternFor } from "./CardArt";
 import { GuestBanner } from "./GuestBanner";
+import { AccountPanel } from "./AccountPanel";
+import { useAuth } from "@/lib/useAuth";
 
 const t = {
   pl: {
@@ -108,9 +110,15 @@ function DeckCard({
 }
 
 export function DeckSelector() {
-  const { lang, decks, categories, toggleCategory, startGame } = useGame();
+  const { lang, decks, categories, toggleCategory, startGame, flushGuestSession } = useGame();
+  const { user } = useAuth();
   const c = t[lang];
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
+
+  const handleStart = () => {
+    if (!user) flushGuestSession();
+    startGame();
+  };
 
   return (
     <div className="mx-auto w-full max-w-lg px-4 pb-24 pt-4 sm:px-5 sm:pt-8">
@@ -122,6 +130,9 @@ export function DeckSelector() {
         <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-snug sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
       </div>
 
+      <div className="mb-4">
+        <AccountPanel variant="hero" />
+      </div>
       <GuestBanner />
 
       <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
@@ -226,7 +237,7 @@ export function DeckSelector() {
       <div className="fixed inset-x-0 bottom-0 z-20 px-5 pb-6 pt-3" style={{ background: "linear-gradient(to top, var(--bg), transparent)" }}>
         <button
           disabled={!anyDeck}
-          onClick={startGame}
+          onClick={handleStart}
           className="mx-auto block w-full max-w-lg rounded-2xl py-4 text-base font-extrabold transition-all disabled:opacity-40"
           style={{ background: "var(--accent)", color: "var(--accent-ink)", boxShadow: "0 16px 36px -16px var(--accent)" }}
         >

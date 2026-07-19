@@ -72,6 +72,7 @@ interface State {
   setProgress: (n: number) => void;
   toggleFavorite: (id: string) => void;
   setTab: (t: Tab) => void;
+  flushGuestSession: () => void;
 }
 
 // Draw-variety trackers (module-scoped; reset on reload).
@@ -159,6 +160,19 @@ export const useGame = create<State>()(
         get().drawCard();
       },
       backToDecks: () => set({ screen: "deck", activeTab: "play" }),
+
+      flushGuestSession: () =>
+        set({
+          players: [],
+          currentPlayer: 0,
+          progress: 0,
+          card: null,
+          flipped: false,
+          discard: new Set(),
+          drawCount: 0,
+          history: [],
+        }),
+
 
       drawCard: () => {
         const s = get();
