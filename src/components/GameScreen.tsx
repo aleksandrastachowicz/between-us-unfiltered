@@ -9,6 +9,7 @@ import { BottomTabs } from "./BottomTabs";
 import { HistoryView } from "./HistoryView";
 import { FavoritesView } from "./FavoritesView";
 import { InsightsView } from "./InsightsView";
+import { useAuth } from "@/lib/useAuth";
 
 const t = {
   pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
@@ -16,12 +17,18 @@ const t = {
 };
 
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, activeTab } = useGame();
+  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, activeTab, flushGuestSession } = useGame();
+  const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
   const lvlMeta = UNFILTERED_LEVELS[level];
   const canGoBack = history.length > 0;
+
+  const handleBack = () => {
+    backToDecks();
+    if (!user) flushGuestSession();
+  };
 
   const handleNext = () => {
     if (decks.unfiltered) setProgress(Math.min(100, progress + 4));
@@ -37,7 +44,7 @@ export function GameScreen() {
       }}
     >
       <header className="mb-2 flex items-center justify-between">
-        <button onClick={backToDecks} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
+        <button onClick={handleBack} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
           <ChevronLeft className="h-5 w-5" />
         </button>
         {players.length > 0 ? (
@@ -55,7 +62,7 @@ export function GameScreen() {
           </AnimatePresence>
         ) : (
           <button
-            onClick={backToDecks}
+            onClick={handleBack}
             className="text-sm font-extrabold tracking-tight"
             style={{ fontFamily: "Helvetica, Inter, system-ui, sans-serif" }}
             aria-label={lang === "pl" ? "Wróć do wyboru talii" : "Back to deck selection"}
