@@ -4,6 +4,7 @@ import { X, Plus, Trash2, Sun, Moon, Users, Wifi, Copy, Check } from "lucide-rea
 import { useGame, type ThemeId } from "@/lib/store";
 import { useMultiplayer } from "@/lib/multiplayer";
 import { AccountPanel } from "./AccountPanel";
+import { useAuth } from "@/lib/useAuth";
 import type { Lang } from "@/data/questions";
 
 const t = {
@@ -33,6 +34,7 @@ const t = {
     mpLeave: "Rozłącz",
     mpNotFound: "Nie znaleziono pokoju",
     mpShare: "Podaj ten kod partnerowi:",
+    guestHint: "Grasz jako gość — zaloguj się na ekranie startowym, aby zapisać postęp.",
     themes: { rose: "Różany Pastel", fairy: "Wróżkowa Zieleń", violet: "Fiolet", spicy: "Spicy Red" },
   },
   en: {
@@ -61,6 +63,7 @@ const t = {
     mpLeave: "Leave",
     mpNotFound: "Room not found",
     mpShare: "Share this code with your partner:",
+    guestHint: "You are a guest — sign in on the start screen to save your progress.",
     themes: { rose: "Rose Pastel", fairy: "Fairy Green", violet: "Violet", spicy: "Spicy Red" },
   },
 };
@@ -81,6 +84,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
     reducedMotion, toggleReducedMotion,
     players, setPlayers,
   } = useGame();
+  const { user } = useAuth();
   const [draft, setDraft] = useState("");
   const [mpInput, setMpInput] = useState("");
   const [mpCopied, setMpCopied] = useState(false);
@@ -114,23 +118,30 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
             onClick={onClose}
           />
           <motion.aside
-            className="glass fixed inset-y-0 right-0 z-50 w-[88%] max-w-sm overflow-y-auto p-6"
+            className="glass fixed inset-y-0 right-0 z-50 w-[86%] max-w-xs overflow-y-auto p-5"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 280, damping: 30 }}
           >
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-extrabold">{c.settings}</h2>
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-lg font-extrabold">{c.settings}</h2>
               <button onClick={onClose} className="rounded-full p-2" style={{ background: "var(--panel-2)" }}>
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Account (top) */}
-            <Section title={lang === "pl" ? "Konto" : "Account"}>
-              <AccountPanel variant="compact" />
-            </Section>
+            {user && (
+              <Section title={lang === "pl" ? "Konto" : "Account"}>
+                <AccountPanel variant="compact" />
+              </Section>
+            )}
+            {!user && (
+              <p className="mb-5 rounded-xl px-3 py-2 text-[11px] leading-snug" style={{ background: "var(--panel-2)", color: "var(--muted-text)" }}>
+                {c.guestHint}
+              </p>
+            )}
 
             {/* Language (top) */}
             <Section title={c.language}>
@@ -139,12 +150,41 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   <button
                     key={l}
                     onClick={() => setLang(l)}
-                    className="flex-1 rounded-xl py-2 text-sm font-bold uppercase transition-all"
+                    className="flex-1 rounded-xl py-1.5 text-[13px] font-bold uppercase transition-all"
                     style={{ background: lang === l ? "var(--accent)" : "transparent", color: lang === l ? "var(--accent-ink)" : "var(--muted-text)" }}
                   >
                     {l}
                   </button>
                 ))}
+              </div>
+            </Section>
+
+            {/* Players */}
+            <Section title={c.players}>
+              <p className="mb-2 text-xs" style={{ color: "var(--muted-text)" }}>{c.playersD}</p>
+              <div className="mb-3 flex flex-col gap-2">
+                {players.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: "var(--panel-2)" }}>
+                    <span className="text-[13px] font-semibold">{p}</span>
+                    <button onClick={() => setPlayers(players.filter((_, j) => j !== i))}>
+                      <Trash2 className="h-4 w-4" style={{ color: "var(--muted-text)" }} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value.slice(0, 24))}
+                  onKeyDown={(e) => e.key === "Enter" && addPlayer()}
+                  placeholder={c.name}
+                  maxLength={24}
+                  className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
+                  style={{ background: "var(--panel-2)", color: "var(--text)" }}
+                />
+                <button onClick={addPlayer} className="rounded-xl px-3" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
             </Section>
 
@@ -186,7 +226,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   <button
                     onClick={() => createRoom()}
                     disabled={mpStatus === "connecting"}
-                    className="flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-extrabold disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 rounded-2xl py-2.5 text-[13px] font-extrabold disabled:opacity-50"
                     style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
                   >
                     <Users className="h-4 w-4" /> {c.mpCreate}
@@ -224,7 +264,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   <button
                     key={m}
                     onClick={() => setMode(m)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-sm font-bold transition-all"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-1.5 text-[13px] font-bold transition-all"
                     style={{
                       background: mode === m ? "var(--accent)" : "transparent",
                       color: mode === m ? "var(--accent-ink)" : "var(--muted-text)",
@@ -245,10 +285,10 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   <button
                     key={th}
                     onClick={() => setTheme(th)}
-                    className="flex items-center justify-between rounded-2xl p-3 transition-all"
+                    className="flex items-center justify-between rounded-2xl p-2.5 transition-all"
                     style={{ background: "var(--panel-2)", outline: theme === th ? "2px solid var(--accent)" : "2px solid transparent" }}
                   >
-                    <span className="text-sm font-semibold">{c.themes[th]}</span>
+                    <span className="text-[13px] font-semibold">{c.themes[th]}</span>
                     <span className="flex gap-1">
                       {themeSwatch[th].map((col) => (
                         <span key={col} className="h-4 w-4 rounded-full" style={{ background: col }} />
@@ -256,35 +296,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                     </span>
                   </button>
                 ))}
-              </div>
-            </Section>
-
-            {/* Players */}
-            <Section title={c.players}>
-              <p className="mb-2 text-xs" style={{ color: "var(--muted-text)" }}>{c.playersD}</p>
-              <div className="mb-3 flex flex-col gap-2">
-                {players.map((p, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: "var(--panel-2)" }}>
-                    <span className="text-sm font-semibold">{p}</span>
-                    <button onClick={() => setPlayers(players.filter((_, j) => j !== i))}>
-                      <Trash2 className="h-4 w-4" style={{ color: "var(--muted-text)" }} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value.slice(0, 24))}
-                  onKeyDown={(e) => e.key === "Enter" && addPlayer()}
-                  placeholder={c.name}
-                  maxLength={24}
-                  className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
-                  style={{ background: "var(--panel-2)", color: "var(--text)" }}
-                />
-                <button onClick={addPlayer} className="rounded-xl px-3" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
-                  <Plus className="h-4 w-4" />
-                </button>
               </div>
             </Section>
 
@@ -305,8 +316,8 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-6">
-      <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--muted-text)" }}>{title}</p>
+    <div className="mb-5">
+      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "var(--muted-text)" }}>{title}</p>
       {children}
     </div>
   );
@@ -316,10 +327,10 @@ function Toggle({ label, on, onToggle }: { label: string; on: boolean; onToggle:
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center justify-between gap-3 rounded-2xl p-4 text-left"
+      className="flex w-full items-center justify-between gap-3 rounded-2xl p-3 text-left"
       style={{ background: "var(--panel-2)" }}
     >
-      <span className="text-sm" style={{ color: "var(--muted-text)" }}>{label}</span>
+      <span className="text-[12px] leading-snug" style={{ color: "var(--muted-text)" }}>{label}</span>
       <span
         className="relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors"
         style={{ background: on ? "var(--accent)" : "var(--border)" }}

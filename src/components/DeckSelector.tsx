@@ -4,7 +4,6 @@ import { useGame } from "@/lib/store";
 import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { CardArtPreview, patternFor } from "./CardArt";
-import { GuestBanner } from "./GuestBanner";
 import { AccountPanel } from "./AccountPanel";
 import { useAuth } from "@/lib/useAuth";
 
@@ -133,7 +132,6 @@ export function DeckSelector() {
       <div className="mb-4">
         <AccountPanel variant="hero" />
       </div>
-      <GuestBanner />
 
       <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
 
