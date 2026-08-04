@@ -10,22 +10,41 @@ import { HistoryView } from "./HistoryView";
 import { FavoritesView } from "./FavoritesView";
 import { InsightsView } from "./InsightsView";
 import { useAuth } from "@/lib/useAuth";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 const t = {
-  pl: { next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia" },
-  en: { next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous" },
+  pl: {
+    next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia",
+    resetTitle: "Zresetować talię?",
+    resetGuest: "Grasz jako gość — bieżąca sesja, imiona graczy i postęp zostaną bezpowrotnie usunięte.",
+    resetUser: "Wrócisz do wyboru talii. Bieżąca runda zostanie zakończona, a Twoje dane pozostaną zapisane w chmurze.",
+    resetOk: "Resetuj",
+    cancel: "Anuluj",
+  },
+  en: {
+    next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous",
+    resetTitle: "Reset deck?",
+    resetGuest: "You are playing as a guest — the current session, player names and progress will be permanently deleted.",
+    resetUser: "You will return to deck selection. The current round ends, but your data stays saved in the cloud.",
+    resetOk: "Reset",
+    cancel: "Cancel",
+  },
 };
 
 export function GameScreen() {
   const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, activeTab, flushGuestSession } = useGame();
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const c = t[lang];
   const level = levelForProgress(progress);
   const lvlMeta = UNFILTERED_LEVELS[level];
   const canGoBack = history.length > 0;
 
-  const handleBack = () => {
+  const handleBack = () => setConfirmReset(true);
+
+  const doReset = () => {
+    setConfirmReset(false);
     backToDecks();
     if (!user) flushGuestSession();
   };
@@ -151,6 +170,16 @@ export function GameScreen() {
       <BottomTabs />
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+
+      <ConfirmDialog
+        open={confirmReset}
+        title={c.resetTitle}
+        body={user ? c.resetUser : c.resetGuest}
+        confirmLabel={c.resetOk}
+        cancelLabel={c.cancel}
+        onCancel={() => setConfirmReset(false)}
+        onConfirm={doReset}
+      />
     </div>
   );
 }
