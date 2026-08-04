@@ -213,294 +213,79 @@ const DiamondEmblem = (ink: string) => (
   </Emblem>
 );
 
-/* ---------- Love & Relationships: romantic rose ---------- */
-function LoveArt() {
+/* ============================================================
+   Unified reverse system — every deck shares the same
+   composition (deep gradient, top halo, guilloché arc weave,
+   corner star dust). Only the palette + motif differ, so all
+   card backs read as one family.
+   ============================================================ */
+type Palette = { from: string; via: string; to: string; glow: string; line: string };
+
+const PALETTE: Record<PatternKey, Palette> = {
+  love: { from: "#f2789b", via: "#c8294f", to: "#66101f", glow: "#ffc2d3", line: "#ffd9e2" },
+  friendship: { from: "#ffb877", via: "#f0736a", to: "#8e2340", glow: "#ffe0b8", line: "#fff0dc" },
+  selfdev: { from: "#cfe89b", via: "#7fb45d", to: "#2c4a2a", glow: "#f0ffce", line: "#e9ffd2" },
+  passions: { from: "#8fb4ff", via: "#4453d6", to: "#1a1352", glow: "#c6d8ff", line: "#e6efff" },
+  introspection: { from: "#cdb6ff", via: "#7f57e6", to: "#2c1a63", glow: "#e6dbff", line: "#f0e9ff" },
+  plus_love: { from: "#c05070", via: "#7d1938", to: "#33071a", glow: "#ffc3d2", line: "#f6d3dc" },
+  plus_spice: { from: "#ff8a5c", via: "#d81f3c", to: "#54061a", glow: "#ffd0a8", line: "#ffe0d0" },
+  plus_deep: { from: "#63d8cf", via: "#2a5cae", to: "#101b40", glow: "#bff3ee", line: "#d6f5f1" },
+  plus_kinky: { from: "#ff74e0", via: "#9b1cc0", to: "#2c0745", glow: "#ffc6f4", line: "#ffdcf6" },
+  uf_love_spice: { from: "#ff9bb0", via: "#b93659", to: "#240a16", glow: "#ffcfd8", line: "#ffe0cf" },
+  uf_after_dark: { from: "#a8408a", via: "#4a1447", to: "#120512", glow: "#eaa6cf", line: "#f6cfe4" },
+  uf_no_limits: { from: "#e6c884", via: "#7a5f2a", to: "#0b0a0e", glow: "#f4dfae", line: "#e7c877" },
+};
+
+function DeckArt({ pattern }: { pattern: PatternKey }) {
   const id = ID();
+  const p = PALETTE[pattern];
   return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+    <svg
+      viewBox="0 0 300 420"
+      className="absolute inset-0 h-full w-full"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden
+    >
       <defs>
-        <linearGradient id={`lv-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#e85a7f" />
-          <stop offset="55%" stopColor="#c02749" />
-          <stop offset="100%" stopColor="#7d0f2a" />
+        <linearGradient id={`g-${id}`} x1="0.1" y1="0" x2="0.9" y2="1">
+          <stop offset="0%" stopColor={p.from} />
+          <stop offset="52%" stopColor={p.via} />
+          <stop offset="100%" stopColor={p.to} />
         </linearGradient>
-        <radialGradient id={`lvg-${id}`} cx="50%" cy="34%" r="65%">
-          <stop offset="0%" stopColor="#ff9db6" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#ff9db6" stopOpacity="0" />
+        <radialGradient id={`h-${id}`} cx="50%" cy="34%" r="68%">
+          <stop offset="0%" stopColor={p.glow} stopOpacity="0.5" />
+          <stop offset="100%" stopColor={p.glow} stopOpacity="0" />
         </radialGradient>
       </defs>
-      <rect width="300" height="420" fill={`url(#lv-${id})`} />
-      <rect width="300" height="420" fill={`url(#lvg-${id})`} />
-      <g fill="none" stroke="#ffd9e2" strokeWidth="2" opacity="0.45">
-        {[[46, 74, 0.9], [246, 120, 0.7], [60, 336, 0.8], [238, 320, 0.6]].map(([x, y, s], i) => (
-          <path key={i} transform={`translate(${x} ${y}) scale(${s})`} d="M0 6 C -12 -8 -26 4 0 24 C 26 4 12 -8 0 6 Z" />
+
+      <rect width="300" height="420" fill={`url(#g-${id})`} />
+      <rect width="300" height="420" fill={`url(#h-${id})`} />
+
+      {/* guilloché arc weave — identical geometry across every deck */}
+      <g fill="none" stroke={p.line} strokeWidth="1.1" opacity="0.22">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <path key={`a${i}`} d={`M-20 ${34 + i * 48} Q 150 ${-4 + i * 48} 320 ${34 + i * 48}`} />
+        ))}
+        {Array.from({ length: 9 }).map((_, i) => (
+          <path key={`b${i}`} d={`M-20 ${58 + i * 48} Q 150 ${96 + i * 48} 320 ${58 + i * 48}`} />
         ))}
       </g>
-    </svg>
-  );
-}
 
-/* ---------- Friendship & Family: warm coral sunset ---------- */
-function FriendshipArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`fr-${id}`} x1="0" y1="0" x2="0.6" y2="1">
-          <stop offset="0%" stopColor="#ffb15c" />
-          <stop offset="52%" stopColor="#ff7a6b" />
-          <stop offset="100%" stopColor="#f0517f" />
-        </linearGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#fr-${id})`} />
-      <g opacity="0.35" fill="none" stroke="#fff2d6" strokeWidth="2">
-        {[[40, 90, 0.9], [262, 320, 0.85]].map(([x, y, s], i) => (
-          <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
-            {Array.from({ length: 8 }).map((_, j) => (
-              <ellipse key={j} cx="0" cy="-15" rx="6.5" ry="14" transform={`rotate(${j * 45})`} />
-            ))}
-          </g>
-        ))}
+      {/* concentric halo behind the emblem */}
+      <g transform="translate(150 196)" fill="none" stroke={p.line} strokeWidth="1" opacity="0.2">
+        <circle r="86" />
+        <circle r="112" strokeDasharray="1 6" />
+      </g>
+
+      {/* corner star dust */}
+      <g fill={p.line} opacity="0.5">
+        {[[38, 52, 1.8], [262, 78, 1.2], [44, 366, 1.3], [258, 344, 1.8], [150, 30, 1], [150, 392, 1]].map(
+          ([x, y, r], i) => (
+            <circle key={i} cx={x} cy={y} r={r} />
+          ),
+        )}
       </g>
     </svg>
-  );
-}
-
-/* ---------- Self-Development: calm sage aura ---------- */
-function SelfDevArt() {
-  const id = ID();
-  return (
-    <div className="grain absolute inset-0 overflow-hidden">
-      <svg viewBox="0 0 300 420" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <radialGradient id={`sd-${id}`} cx="50%" cy="42%" r="70%">
-            <stop offset="0%" stopColor="#f4fbcf" />
-            <stop offset="46%" stopColor="#c6e488" />
-            <stop offset="100%" stopColor="#7fb45d" />
-          </radialGradient>
-        </defs>
-        <rect
-          width="300"
-          height="420"
-          fill={`url(#sd-${id})`}
-          style={{ transformOrigin: "center", animation: "auraPulse 8s ease-in-out infinite" }}
-        />
-        <g transform="translate(150 210)" fill="none" stroke="#4d6b34" strokeWidth="1.4" opacity="0.3">
-          {[70, 100, 130, 160].map((r) => (
-            <circle key={r} r={r} />
-          ))}
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-/* ---------- Passions & Dreams: dreamy cobalt ---------- */
-function PassionsArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`pa-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#7ba6ff" />
-          <stop offset="52%" stopColor="#4b5ce6" />
-          <stop offset="100%" stopColor="#2a1c8f" />
-        </linearGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#pa-${id})`} />
-      <g fill="#ffffff" opacity="0.55">
-        {[[54, 92, 0.9], [244, 150, 0.7], [78, 322, 0.8], [222, 352, 0.85]].map(([x, y, s], i) => (
-          <path key={i} transform={`translate(${x} ${y}) scale(${s})`} d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z" />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Introspection: mystical violet ---------- */
-function IntrospectionArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <radialGradient id={`in-${id}`} cx="50%" cy="40%" r="72%">
-          <stop offset="0%" stopColor="#d9c7ff" />
-          <stop offset="52%" stopColor="#8f6bf0" />
-          <stop offset="100%" stopColor="#432c9c" />
-        </radialGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#in-${id})`} />
-      <g transform="translate(150 210)" stroke="#efe6ff" strokeWidth="1.4" fill="none" opacity="0.35">
-        {[60, 96, 132].map((r) => (
-          <circle key={r} r={r} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Plus · Love & Relationships: burgundy luxe ---------- */
-function PlusLoveArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`pl-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#9a2444" />
-          <stop offset="55%" stopColor="#6c1330" />
-          <stop offset="100%" stopColor="#3f0a19" />
-        </linearGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#pl-${id})`} />
-      <g stroke="#f0c3cf" strokeWidth="3" fill="none" opacity="0.28">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <path key={i} d={`M-20 ${44 + i * 58} Q 90 ${12 + i * 58} 160 ${44 + i * 58} T 330 ${44 + i * 58}`} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Plus · Spicy & Intimate: fiery scarlet ---------- */
-function PlusSpiceArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`ps-${id}`} x1="0" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor="#ff6a3d" />
-          <stop offset="50%" stopColor="#e01f3d" />
-          <stop offset="100%" stopColor="#7a0821" />
-        </linearGradient>
-        <radialGradient id={`psg-${id}`} cx="50%" cy="70%" r="70%">
-          <stop offset="0%" stopColor="#ffd07a" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#ffd07a" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#ps-${id})`} />
-      <rect width="300" height="420" fill={`url(#psg-${id})`} />
-      <g stroke="#ffd9c2" strokeWidth="2.4" fill="none" opacity="0.3">
-        {[70, 150, 230, 310].map((y, i) => (
-          <path key={i} d={`M-10 ${y} C 80 ${y - 40} 130 ${y + 40} 320 ${y - 10}`} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Plus · Deep & Emotional: indigo-teal tide ---------- */
-function PlusDeepArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`pd-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#2ec6c0" />
-          <stop offset="52%" stopColor="#2c5fb8" />
-          <stop offset="100%" stopColor="#1a2452" />
-        </linearGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#pd-${id})`} />
-      <g stroke="#c9f2ee" strokeWidth="2.2" fill="none" opacity="0.28">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <path key={i} d={`M-20 ${52 + i * 50} Q 150 ${20 + i * 50} 320 ${52 + i * 50}`} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Plus · Kinky & Fantasy: electric magenta ---------- */
-function PlusKinkyArt() {
-  const id = ID();
-  return (
-    <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id={`pk-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ff4fd8" />
-          <stop offset="50%" stopColor="#a01ec0" />
-          <stop offset="100%" stopColor="#3d0a5c" />
-        </linearGradient>
-      </defs>
-      <rect width="300" height="420" fill={`url(#pk-${id})`} />
-      <g stroke="#ffd6f7" strokeWidth="1.6" fill="none" opacity="0.28">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <path key={i} d={`M${-20 + i * 4} 0 L${60 + i * 26} 420`} />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/* ---------- Unfiltered I · Love & Spice: warm ember rose ---------- */
-function UfLoveSpiceArt() {
-  const id = ID();
-  return (
-    <div className="absolute inset-0 overflow-hidden" style={{ background: "#2a0d1a" }}>
-      <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <radialGradient id={`u1-${id}`} cx="50%" cy="46%" r="70%">
-            <stop offset="0%" stopColor="#ff8fa8" />
-            <stop offset="48%" stopColor="#c93b63" />
-            <stop offset="100%" stopColor="#2a0d1a" />
-          </radialGradient>
-        </defs>
-        <rect width="300" height="420" fill={`url(#u1-${id})`} />
-        <g fill="#ffd9c2" opacity="0.5">
-          {Array.from({ length: 14 }).map((_, i) => (
-            <circle key={i} cx={(i * 71) % 300} cy={(i * 113) % 420} r={i % 3 === 0 ? 2 : 1.2} />
-          ))}
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-/* ---------- Unfiltered II · After Dark: crimson-violet night ---------- */
-function UfAfterDarkArt() {
-  const id = ID();
-  return (
-    <div className="absolute inset-0 overflow-hidden" style={{ background: "#160616" }}>
-      <div
-        className="pointer-events-none absolute inset-2 rounded-[24px]"
-        style={{ border: "1.5px solid #e0629b", boxShadow: "0 0 20px rgba(224,98,155,0.45), inset 0 0 18px rgba(224,98,155,0.2)", animation: "hueShift 12s linear infinite" }}
-      />
-      <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <radialGradient id={`u2-${id}`} cx="50%" cy="40%" r="72%">
-            <stop offset="0%" stopColor="#8a2b6d" />
-            <stop offset="60%" stopColor="#3a0f38" />
-            <stop offset="100%" stopColor="#160616" />
-          </radialGradient>
-        </defs>
-        <rect width="300" height="420" fill={`url(#u2-${id})`} />
-        <g fill="#e0629b" opacity="0.45">
-          {Array.from({ length: 18 }).map((_, i) => (
-            <circle key={i} cx={(i * 53) % 300} cy={(i * 97) % 420} r={i % 4 === 0 ? 1.8 : 1} />
-          ))}
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-/* ---------- Unfiltered III · No Limits: obsidian + gold ---------- */
-function UfNoLimitsArt() {
-  const id = ID();
-  return (
-    <div className="absolute inset-0 overflow-hidden" style={{ background: "#0b0a0e" }}>
-      <div
-        className="pointer-events-none absolute inset-2 rounded-[24px]"
-        style={{ border: "1.5px solid #d9b25a", boxShadow: "0 0 20px rgba(217,178,90,0.55), inset 0 0 18px rgba(217,178,90,0.22)", animation: "hueShift 6s linear infinite" }}
-      />
-      <svg viewBox="0 0 300 420" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
-        <g fill="#d9b25a" opacity="0.5">
-          {Array.from({ length: 22 }).map((_, i) => (
-            <circle key={i} cx={(i * 53) % 300} cy={(i * 97) % 420} r={i % 4 === 0 ? 1.8 : 1} />
-          ))}
-        </g>
-      </svg>
-    </div>
   );
 }
 
@@ -520,32 +305,7 @@ const INK: Record<PatternKey, string> = {
 };
 
 function artFor(pattern: PatternKey): ReactNode {
-  switch (pattern) {
-    case "love":
-      return <LoveArt />;
-    case "friendship":
-      return <FriendshipArt />;
-    case "selfdev":
-      return <SelfDevArt />;
-    case "passions":
-      return <PassionsArt />;
-    case "introspection":
-      return <IntrospectionArt />;
-    case "plus_love":
-      return <PlusLoveArt />;
-    case "plus_spice":
-      return <PlusSpiceArt />;
-    case "plus_deep":
-      return <PlusDeepArt />;
-    case "plus_kinky":
-      return <PlusKinkyArt />;
-    case "uf_love_spice":
-      return <UfLoveSpiceArt />;
-    case "uf_after_dark":
-      return <UfAfterDarkArt />;
-    case "uf_no_limits":
-      return <UfNoLimitsArt />;
-  }
+  return <DeckArt pattern={pattern} />;
 }
 
 function emblemFor(pattern: PatternKey, ink: string): ReactNode {
