@@ -131,17 +131,15 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               </button>
             </div>
 
-            {/* Account (top) */}
-            {user && (
-              <Section title={lang === "pl" ? "Konto" : "Account"}>
-                <AccountPanel variant="compact" />
-              </Section>
-            )}
-            {!user && (
-              <p className="mb-5 rounded-xl px-3 py-2 text-[11px] leading-snug" style={{ background: "var(--panel-2)", color: "var(--muted-text)" }}>
-                {c.guestHint}
-              </p>
-            )}
+            {/* Account (top) — sign in / out directly from settings */}
+            <Section title={lang === "pl" ? "Konto" : "Account"}>
+              <AccountPanel variant="compact" />
+              {!user && (
+                <p className="mt-2 rounded-xl px-3 py-2 text-[11px] leading-snug" style={{ background: "var(--panel-2)", color: "var(--muted-text)" }}>
+                  {c.guestHint}
+                </p>
+              )}
+            </Section>
 
             {/* Language (top) */}
             <Section title={c.language}>
@@ -154,6 +152,26 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                     style={{ background: lang === l ? "var(--accent)" : "transparent", color: lang === l ? "var(--accent-ink)" : "var(--muted-text)" }}
                   >
                     {l}
+                  </button>
+                ))}
+              </div>
+            </Section>
+
+            {/* Appearance (light / dark) — right under language */}
+            <Section title={c.appearance}>
+              <div className="flex rounded-2xl p-1" style={{ background: "var(--panel-2)" }}>
+                {(["light", "dark"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-1.5 text-[13px] font-bold transition-all"
+                    style={{
+                      background: mode === m ? "var(--accent)" : "transparent",
+                      color: mode === m ? "var(--accent-ink)" : "var(--muted-text)",
+                    }}
+                  >
+                    {m === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {m === "light" ? c.light : c.dark}
                   </button>
                 ))}
               </div>
@@ -255,26 +273,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                   )}
                 </div>
               )}
-            </Section>
-
-            {/* Appearance (light / dark) */}
-            <Section title={c.appearance}>
-              <div className="flex rounded-2xl p-1" style={{ background: "var(--panel-2)" }}>
-                {(["light", "dark"] as const).map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setMode(m)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-1.5 text-[13px] font-bold transition-all"
-                    style={{
-                      background: mode === m ? "var(--accent)" : "transparent",
-                      color: mode === m ? "var(--accent-ink)" : "var(--muted-text)",
-                    }}
-                  >
-                    {m === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                    {m === "light" ? c.light : c.dark}
-                  </button>
-                ))}
-              </div>
             </Section>
 
             {/* Theme */}
