@@ -212,6 +212,29 @@ const DiamondEmblem = (ink: string) => (
     </g>
   </Emblem>
 );
+const RingsEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)" strokeWidth="1.8">
+      <circle cx="-12" cy="4" r="18" fill={ink} fillOpacity="0.1" />
+      <circle cx="12" cy="4" r="18" fill={ink} fillOpacity="0.1" />
+      <path d="M0 -24 C-3 -20 -3 -20 0 -16 C3 -20 3 -20 0 -24 Z" strokeWidth="1.2" fill={ink} />
+      <path d="M-30 -14 C-24 -20 -18 -22 -12 -22 M30 -14 C24 -20 18 -22 12 -22" strokeWidth="1" opacity="0.45" />
+    </g>
+  </Emblem>
+);
+const LipsEmblem = (ink: string) => (
+  <Emblem ink={ink}>
+    <g transform="translate(60 60)" strokeWidth="1.6">
+      <path
+        d="M-30 0 C-22 -14 -10 -14 -4 -6 C-2 -3 2 -3 4 -6 C10 -14 22 -14 30 0 C20 16 -20 16 -30 0 Z"
+        fill={ink}
+        fillOpacity="0.14"
+      />
+      <path d="M-30 0 L30 0" strokeWidth="1.1" opacity="0.55" />
+      <Sparkle x={26} y={-16} s={0.8} ink={ink} />
+    </g>
+  </Emblem>
+);
 
 /* ============================================================
    Unified reverse system — every deck shares the same
@@ -221,19 +244,21 @@ const DiamondEmblem = (ink: string) => (
    ============================================================ */
 type Palette = { from: string; via: string; to: string; glow: string; line: string };
 
+// Vivid, saturated palettes — one balanced luminance family per deck so the
+// whole set reads as equally bright and colourful.
 const PALETTE: Record<PatternKey, Palette> = {
-  love: { from: "#f2789b", via: "#c8294f", to: "#66101f", glow: "#ffc2d3", line: "#ffd9e2" },
-  friendship: { from: "#ffb877", via: "#f0736a", to: "#8e2340", glow: "#ffe0b8", line: "#fff0dc" },
-  selfdev: { from: "#cfe89b", via: "#7fb45d", to: "#2c4a2a", glow: "#f0ffce", line: "#e9ffd2" },
-  passions: { from: "#8fb4ff", via: "#4453d6", to: "#1a1352", glow: "#c6d8ff", line: "#e6efff" },
-  introspection: { from: "#cdb6ff", via: "#7f57e6", to: "#2c1a63", glow: "#e6dbff", line: "#f0e9ff" },
-  plus_love: { from: "#c05070", via: "#7d1938", to: "#33071a", glow: "#ffc3d2", line: "#f6d3dc" },
-  plus_spice: { from: "#ff8a5c", via: "#d81f3c", to: "#54061a", glow: "#ffd0a8", line: "#ffe0d0" },
-  plus_deep: { from: "#63d8cf", via: "#2a5cae", to: "#101b40", glow: "#bff3ee", line: "#d6f5f1" },
-  plus_kinky: { from: "#ff74e0", via: "#9b1cc0", to: "#2c0745", glow: "#ffc6f4", line: "#ffdcf6" },
-  uf_love_spice: { from: "#ff9bb0", via: "#b93659", to: "#240a16", glow: "#ffcfd8", line: "#ffe0cf" },
-  uf_after_dark: { from: "#a8408a", via: "#4a1447", to: "#120512", glow: "#eaa6cf", line: "#f6cfe4" },
-  uf_no_limits: { from: "#e6c884", via: "#7a5f2a", to: "#0b0a0e", glow: "#f4dfae", line: "#e7c877" },
+  love: { from: "#ff86b3", via: "#ff2d78", to: "#8a0f43", glow: "#ffd0e2", line: "#fff0f6" },
+  friendship: { from: "#ffd166", via: "#ff7a45", to: "#b02a5b", glow: "#ffeab5", line: "#fff6e6" },
+  selfdev: { from: "#b6f36a", via: "#22c55e", to: "#0d5c3c", glow: "#e2ffc7", line: "#f2fff0" },
+  passions: { from: "#8fd0ff", via: "#3b5bff", to: "#141a7a", glow: "#cfe6ff", line: "#f0f6ff" },
+  introspection: { from: "#d9b6ff", via: "#8b3dff", to: "#33127a", glow: "#ecdcff", line: "#f8f2ff" },
+  plus_love: { from: "#ff9ec4", via: "#e01f6b", to: "#6d0733", glow: "#ffd4e5", line: "#fff0f7" },
+  plus_spice: { from: "#ffb066", via: "#ff2f3f", to: "#75061f", glow: "#ffddb8", line: "#fff1e4" },
+  plus_deep: { from: "#79f2e4", via: "#149fdc", to: "#0a2a63", glow: "#c9fdf6", line: "#effffc" },
+  plus_kinky: { from: "#ff8ef0", via: "#b419e0", to: "#41086b", glow: "#ffd2fa", line: "#ffeffd" },
+  uf_love_spice: { from: "#ffa3a3", via: "#ff2e63", to: "#5c0a2a", glow: "#ffd6d6", line: "#fff0ee" },
+  uf_after_dark: { from: "#d95cc0", via: "#6d1a8a", to: "#1a0626", glow: "#f3b9e6", line: "#fde3f5" },
+  uf_no_limits: { from: "#ffe08a", via: "#c9962a", to: "#171018", glow: "#ffeec2", line: "#ffe9a8" },
 };
 
 function DeckArt({ pattern }: { pattern: PatternKey }) {
@@ -290,18 +315,18 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
 }
 
 const INK: Record<PatternKey, string> = {
-  love: "#ffe4ec",
-  friendship: "#3a1526",
-  selfdev: "#2f4020",
-  passions: "#eaf1ff",
-  introspection: "#f3ecff",
-  plus_love: "#f6d3dc",
-  plus_spice: "#ffe0d0",
-  plus_deep: "#d6f5f1",
-  plus_kinky: "#ffdcf6",
-  uf_love_spice: "#ffe0cf",
-  uf_after_dark: "#f6cfe4",
-  uf_no_limits: "#e7c877",
+  love: "#fff0f6",
+  friendship: "#fff6e6",
+  selfdev: "#f2fff0",
+  passions: "#f0f6ff",
+  introspection: "#f8f2ff",
+  plus_love: "#fff0f7",
+  plus_spice: "#fff1e4",
+  plus_deep: "#effffc",
+  plus_kinky: "#ffeffd",
+  uf_love_spice: "#fff0ee",
+  uf_after_dark: "#fde3f5",
+  uf_no_limits: "#ffe9a8",
 };
 
 function artFor(pattern: PatternKey): ReactNode {
@@ -321,7 +346,7 @@ function emblemFor(pattern: PatternKey, ink: string): ReactNode {
     case "introspection":
       return EyeEmblem(ink);
     case "plus_love":
-      return HeartEmblem(ink);
+      return RingsEmblem(ink);
     case "plus_spice":
       return FlameEmblem(ink);
     case "plus_deep":
@@ -329,7 +354,7 @@ function emblemFor(pattern: PatternKey, ink: string): ReactNode {
     case "plus_kinky":
       return KeyEmblem(ink);
     case "uf_love_spice":
-      return FlameEmblem(ink);
+      return LipsEmblem(ink);
     case "uf_after_dark":
       return MoonEmblem(ink);
     case "uf_no_limits":
