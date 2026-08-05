@@ -34,7 +34,7 @@ const t = {
     mpLeave: "Rozłącz",
     mpNotFound: "Nie znaleziono pokoju",
     mpShare: "Podaj ten kod partnerowi:",
-    guestHint: "Grasz jako gość — zaloguj się na ekranie startowym, aby zapisać postęp.",
+    guestHint: "Grasz jako gość — zaloguj się powyżej, aby zapisać postęp.",
     themes: { rose: "Różany Pastel", fairy: "Wróżkowa Zieleń", violet: "Fiolet", spicy: "Spicy Red" },
   },
   en: {
@@ -63,7 +63,7 @@ const t = {
     mpLeave: "Leave",
     mpNotFound: "Room not found",
     mpShare: "Share this code with your partner:",
-    guestHint: "You are a guest — sign in on the start screen to save your progress.",
+    guestHint: "You are a guest — sign in above to save your progress.",
     themes: { rose: "Rose Pastel", fairy: "Fairy Green", violet: "Violet", spicy: "Spicy Red" },
   },
 };
