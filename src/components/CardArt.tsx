@@ -9,260 +9,261 @@ export type PatternKey =
   | "uf_after_dark"
   | "uf_no_limits";
 
-const ID = () => Math.random().toString(36).slice(2, 8);
-
 /* ============================================================
-   Shared premium frame: art layer + readable labels (no big
-   background monogram — purely graphic reverse per category).
+   TAROT LINE-ART REVERSE SYSTEM
+   One coherent metaphysical family: liquid checkerboard waves,
+   scattered retro line-art starbursts, heavy procedural grain.
+   Decks differ only by central symbol + colour scheme.
    ============================================================ */
-function CardBack({
-  art,
-  ink,
-  emblem,
-  edition,
-  category,
-  hint,
-}: {
-  art: ReactNode;
-  ink: string;
-  emblem: ReactNode;
-  edition: string;
-  category: string;
-  hint: string;
-}) {
+
+type Palette = {
+  base: string; // deep field
+  check: string; // checker squares
+  wash: string; // aura wash
+  line: string; // line-art ink
+  ink: string; // label ink
+  gold?: string; // shimmering accent (unfiltered)
+};
+
+const PALETTE: Record<PatternKey, Palette> = {
+  // A. Edycja podstawowa
+  love: { base: "#A21836", check: "#FFC2D6", wash: "#FF6E9C", line: "#FFE7EF", ink: "#FFF0F5" },
+  friendship: { base: "#E8A200", check: "#FFD9A8", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC" },
+  selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0" },
+  passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF" },
+  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF" },
+  // B. Love & Spice
+  plus_love: { base: "#5E0A22", check: "#B02244", wash: "#8E1435", line: "#FFD9E3", ink: "#FFE9F0" },
+  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5" },
+  plus_deep: { base: "#B02563", check: "#FFB3D6", wash: "#F0559C", line: "#FFE6F2", ink: "#FFF0F8" },
+  plus_kinky: { base: "#5C0A55", check: "#C21FA8", wash: "#93168A", line: "#FFD8F7", ink: "#FFE9FB" },
+  // C. Unfiltered
+  uf_love_spice: { base: "#0C0A0D", check: "#6E0E24", wash: "#3A0812", line: "#F5D7A8", ink: "#FFEFD6", gold: "#F2C86B" },
+  uf_after_dark: { base: "#141216", check: "#5A0F2C", wash: "#2A0A18", line: "#F1D4A6", ink: "#FFEAD9", gold: "#E9C078" },
+  uf_no_limits: { base: "#080D0E", check: "#0B4C4C", wash: "#06322F", line: "#F3DBA4", ink: "#E9FBF6", gold: "#F0CE7C" },
+};
+
+/* ---------------- procedural defs ---------------- */
+function Defs({ id, p }: { id: string; p: Palette }) {
   return (
-    <div className="relative h-full w-full overflow-hidden">
-      {art}
-      <div
-        className="pointer-events-none absolute inset-[10px] rounded-[24px]"
-        style={{ border: `1.5px solid ${ink}`, opacity: 0.32 }}
-      />
-      <div
-        className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
-        style={{ color: ink }}
-      >
-        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.8 }}>
-          {edition}
-        </span>
-
-        <div className="flex flex-1 items-center justify-center">{emblem}</div>
-
-        <div className="flex flex-col items-center gap-2">
-          <span className="max-w-[85%] text-balance text-[17px] font-extrabold leading-tight tracking-tight">
-            {category}
-          </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.55 }}>
-            {hint}
-          </span>
-        </div>
-      </div>
-    </div>
+    <defs>
+      {/* liquid displacement for the checkerboard waves */}
+      <filter id={`liq-${id}`} x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.014" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      {/* heavy print grain */}
+      <filter id={`grain-${id}`} x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" result="g" />
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
+      {/* soft aura wash */}
+      <radialGradient id={`wash-${id}`} cx="50%" cy="36%" r="72%">
+        <stop offset="0%" stopColor={p.wash} stopOpacity="0.85" />
+        <stop offset="100%" stopColor={p.wash} stopOpacity="0" />
+      </radialGradient>
+      {/* checkerboard tile */}
+      <pattern id={`chk-${id}`} width="48" height="48" patternUnits="userSpaceOnUse">
+        <rect width="48" height="48" fill={p.base} />
+        <rect width="24" height="24" fill={p.check} fillOpacity="0.9" />
+        <rect x="24" y="24" width="24" height="24" fill={p.check} fillOpacity="0.9" />
+      </pattern>
+      {p.gold ? (
+        <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={p.gold} stopOpacity="0.15" />
+          <stop offset="45%" stopColor={p.gold} stopOpacity="0.85" />
+          <stop offset="100%" stopColor={p.gold} stopOpacity="0.2" />
+        </linearGradient>
+      ) : null}
+    </defs>
   );
 }
 
-/* ---------- Emblems: smooth tarot-style motifs (no letters) ----------
-   Refined line-art with soft fills, a delicate double halo and orbiting
-   sparkles so every category reads as an elegant sigil.                    */
-function Sparkle({ x, y, s = 1, ink }: { x: number; y: number; s?: number; ink: string }) {
+/* scattered retro line-art starburst */
+function Starburst({ x, y, s = 1, ink, rays = 12 }: { x: number; y: number; s?: number; ink: string; rays?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`} stroke={ink} strokeWidth="1" strokeLinecap="round" fill="none">
+      {Array.from({ length: rays }).map((_, i) => {
+        const a = (i / rays) * Math.PI * 2;
+        return (
+          <line
+            key={i}
+            x1={Math.cos(a) * 3.5}
+            y1={Math.sin(a) * 3.5}
+            x2={Math.cos(a) * (i % 2 ? 9 : 13)}
+            y2={Math.sin(a) * (i % 2 ? 9 : 13)}
+          />
+        );
+      })}
+      <circle r="2" fill={ink} stroke="none" />
+    </g>
+  );
+}
+
+/* four-point retro sparkle */
+function Spark({ x, y, s = 1, ink }: { x: number; y: number; s?: number; ink: string }) {
   return (
     <path
       transform={`translate(${x} ${y}) scale(${s})`}
-      d="M0 -6 C0.6 -2 2 -0.6 6 0 C2 0.6 0.6 2 0 6 C-0.6 2 -2 0.6 -6 0 C-2 -0.6 -0.6 -2 0 -6 Z"
+      d="M0 -7 C0.7 -2.4 2.4 -0.7 7 0 C2.4 0.7 0.7 2.4 0 7 C-0.7 2.4 -2.4 0.7 -7 0 C-2.4 -0.7 -0.7 -2.4 0 -7 Z"
       fill={ink}
-      stroke="none"
-      opacity="0.85"
+      opacity="0.8"
     />
   );
 }
 
-function Emblem({ ink, children }: { ink: string; children: ReactNode }) {
+/* ---------------- central symbols (clean line-art) ---------------- */
+const retroHeart =
+  "M0 26 C-5 19 -30 8 -30 -10 C-30 -25 -13 -29 -3 -17 C-1.5 -15 0 -12 0 -10 C0 -12 1.5 -15 3 -17 C13 -29 30 -25 30 -10 C30 8 5 19 0 26 Z";
+
+function Halo({ ink, gold }: { ink: string; gold?: string }) {
   return (
-    <svg
-      viewBox="0 0 120 120"
-      width="140"
-      height="140"
-      fill="none"
-      stroke={ink}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="60" cy="60" r="52" strokeWidth="0.7" opacity="0.28" />
-      <circle cx="60" cy="60" r="46" strokeWidth="0.5" opacity="0.16" strokeDasharray="1 5" />
-      <Sparkle x={60} y={4} s={1.1} ink={ink} />
-      <Sparkle x={112} y={68} s={0.7} ink={ink} />
-      <Sparkle x={12} y={54} s={0.8} ink={ink} />
-      {children}
-    </svg>
+    <g fill="none" stroke={gold ?? ink} strokeWidth="0.9" opacity={gold ? 0.7 : 0.42}>
+      <circle r="52" />
+      <circle r="60" strokeDasharray="1 6" opacity="0.6" />
+    </g>
   );
 }
 
-const HeartEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <path
-      transform="translate(60 62)"
-      d="M0 24 C-4 18 -30 6 -30 -12 C-30 -26 -14 -30 -4 -18 C-2 -15 0 -12 0 -10 C0 -12 2 -15 4 -18 C14 -30 30 -26 30 -12 C30 6 4 18 0 24 Z"
-      strokeWidth="1.8"
-      fill={ink}
-      fillOpacity="0.12"
-    />
-  </Emblem>
-);
-const DaisyEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      {Array.from({ length: 8 }).map((_, j) => (
-        <path
-          key={j}
-          transform={`rotate(${j * 45})`}
-          d="M0 -8 C7 -14 7 -28 0 -34 C-7 -28 -7 -14 0 -8 Z"
-          strokeWidth="1.5"
-          fill={ink}
-          fillOpacity="0.1"
-        />
-      ))}
-      <circle r="8" strokeWidth="1.6" fill={ink} fillOpacity="0.16" />
-    </g>
-  </Emblem>
-);
-const LeafEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      <path d="M0 30 C0 6 0 -14 0 -32" strokeWidth="1.6" />
-      <path d="M0 -6 C-16 -10 -26 -22 -24 -36 C-10 -36 2 -24 0 -6 Z" strokeWidth="1.5" fill={ink} fillOpacity="0.12" />
-      <path d="M0 8 C16 4 26 -8 24 -22 C10 -22 -2 -10 0 8 Z" strokeWidth="1.5" fill={ink} fillOpacity="0.12" />
-    </g>
-  </Emblem>
-);
-const StarEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      <path
-        d="M0 -32 C3 -12 12 -3 32 0 C12 3 3 12 0 32 C-3 12 -12 3 -32 0 C-12 -3 -3 -12 0 -32 Z"
-        strokeWidth="1.4"
-        fill={ink}
-        fillOpacity="0.14"
-      />
-      <circle r="4" fill={ink} stroke="none" />
-    </g>
-  </Emblem>
-);
-const EyeEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      <path d="M-32 0 C-16 -20 16 -20 32 0 C16 20 -16 20 -32 0 Z" strokeWidth="1.6" />
-      <circle r="10" strokeWidth="1.6" fill={ink} fillOpacity="0.14" />
-      <circle r="3.5" fill={ink} stroke="none" />
-      <path d="M-36 -12 C-40 -18 -40 -18 -42 -22 M36 -12 C40 -18 40 -18 42 -22" strokeWidth="1.2" opacity="0.5" />
-    </g>
-  </Emblem>
-);
-const FlameEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      <path
-        d="M0 30 C-18 22 -22 2 -6 -18 C-8 -30 2 -34 4 -30 C2 -18 14 -18 10 -6 C22 0 18 22 0 30 Z"
-        strokeWidth="1.6"
-        fill={ink}
-        fillOpacity="0.12"
-      />
-      <path d="M0 24 C-8 18 -8 6 0 -4 C6 4 6 16 0 24 Z" strokeWidth="1.2" opacity="0.55" />
-    </g>
-  </Emblem>
-);
-const InfinityEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="1.8">
-      <path
-        d="M0 0 C-8 -14 -30 -14 -30 0 C-30 14 -8 14 0 0 C8 -14 30 -14 30 0 C30 14 8 14 0 0 Z"
-        fill={ink}
-        fillOpacity="0.1"
-      />
-    </g>
-  </Emblem>
-);
-const KeyEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="1.8">
-      <circle cx="0" cy="-16" r="12" fill={ink} fillOpacity="0.12" />
-      <circle cx="0" cy="-16" r="4.5" strokeWidth="1.4" />
-      <path d="M0 -4 L0 30" />
-      <path d="M0 16 L9 16 M0 24 L7 24" />
-    </g>
-  </Emblem>
-);
-const MoonEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)">
-      <path
-        d="M10 -26 C-6 -20 -16 -4 -12 12 C-8 24 4 30 16 28 C4 24 -2 12 -2 0 C-2 -12 4 -22 10 -26 Z"
-        strokeWidth="1.6"
-        fill={ink}
-        fillOpacity="0.16"
-      />
-      <Sparkle x={16} y={-14} s={0.9} ink={ink} />
-    </g>
-  </Emblem>
-);
-const DiamondEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="1.6">
-      <path d="M-18 -10 L18 -10 L26 -2 L0 30 L-26 -2 Z" fill={ink} fillOpacity="0.12" />
-      <path d="M-26 -2 L26 -2 M-18 -10 L-8 -2 L0 30 L8 -2 L18 -10 M-8 -2 L8 -2" strokeWidth="1" opacity="0.5" />
-    </g>
-  </Emblem>
-);
-const RingsEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="1.8">
-      <circle cx="-12" cy="4" r="18" fill={ink} fillOpacity="0.1" />
-      <circle cx="12" cy="4" r="18" fill={ink} fillOpacity="0.1" />
-      <path d="M0 -24 C-3 -20 -3 -20 0 -16 C3 -20 3 -20 0 -24 Z" strokeWidth="1.2" fill={ink} />
-      <path d="M-30 -14 C-24 -20 -18 -22 -12 -22 M30 -14 C24 -20 18 -22 12 -22" strokeWidth="1" opacity="0.45" />
-    </g>
-  </Emblem>
-);
-const LipsEmblem = (ink: string) => (
-  <Emblem ink={ink}>
-    <g transform="translate(60 60)" strokeWidth="1.6">
-      <path
-        d="M-30 0 C-22 -14 -10 -14 -4 -6 C-2 -3 2 -3 4 -6 C10 -14 22 -14 30 0 C20 16 -20 16 -30 0 Z"
-        fill={ink}
-        fillOpacity="0.14"
-      />
-      <path d="M-30 0 L30 0" strokeWidth="1.1" opacity="0.55" />
-      <Sparkle x={26} y={-16} s={0.8} ink={ink} />
-    </g>
-  </Emblem>
-);
+function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
+  const ink = p.line;
+  const gold = p.gold;
+  const stroke = { stroke: ink, fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 
-/* ============================================================
-   Unified reverse system — every deck shares the same
-   composition (deep gradient, top halo, guilloché arc weave,
-   corner star dust). Only the palette + motif differ, so all
-   card backs read as one family.
-   ============================================================ */
-type Palette = { from: string; via: string; to: string; glow: string; line: string };
+  const body = () => {
+    switch (pattern) {
+      case "love": // retro heart lines + "Amor"
+        return (
+          <g {...stroke}>
+            <path d={retroHeart} />
+            <path d={retroHeart} transform="scale(0.74)" strokeWidth="1.1" opacity="0.7" />
+            <path d={retroHeart} transform="scale(0.48)" strokeWidth="0.9" opacity="0.45" />
+          </g>
+        );
+      case "friendship": // floral grid bloom + sun rays
+        return (
+          <g {...stroke}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ellipse key={i} rx="9" ry="22" transform={`rotate(${i * 45}) translate(0 -14)`} opacity="0.85" />
+            ))}
+            <circle r="8" />
+            {Array.from({ length: 16 }).map((_, i) => {
+              const a = (i / 16) * Math.PI * 2;
+              return <line key={i} x1={Math.cos(a) * 42} y1={Math.sin(a) * 42} x2={Math.cos(a) * 48} y2={Math.sin(a) * 48} strokeWidth="1" />;
+            })}
+          </g>
+        );
+      case "selfdev": // aura heart + sun-eye
+        return (
+          <g {...stroke}>
+            <path d={retroHeart} transform="scale(0.92)" opacity="0.9" />
+            <path d="M-26 0 C-13 -15 13 -15 26 0 C13 15 -13 15 -26 0 Z" transform="translate(0 -2) scale(0.72)" />
+            <circle cy="-1.5" r="6" />
+            <circle cy="-1.5" r="2.2" fill={ink} stroke="none" />
+          </g>
+        );
+      case "passions": // star line-work
+        return (
+          <g {...stroke}>
+            <path d="M0 -34 C3 -13 13 -3 34 0 C13 3 3 13 0 34 C-3 13 -13 3 -34 0 C-13 -3 -3 -13 0 -34 Z" />
+            <path d="M0 -20 C2 -8 8 -2 20 0 C8 2 2 8 0 20 C-2 8 -8 2 -20 0 C-8 -2 -2 -8 0 -20 Z" strokeWidth="1" opacity="0.7" />
+            <Spark x={30} y={-28} s={0.8} ink={ink} />
+            <Spark x={-30} y={26} s={0.7} ink={ink} />
+          </g>
+        );
+      case "introspection": // mystic eye
+        return (
+          <g {...stroke}>
+            <path d="M-36 0 C-18 -22 18 -22 36 0 C18 22 -18 22 -36 0 Z" />
+            <circle r="11" />
+            <circle r="4" fill={ink} stroke="none" />
+            {Array.from({ length: 9 }).map((_, i) => (
+              <line key={i} x1={-32 + i * 8} y1="14" x2={-34 + i * 8} y2="22" strokeWidth="1" opacity="0.65" />
+            ))}
+            <Spark x={0} y={-30} s={0.8} ink={ink} />
+          </g>
+        );
+      case "plus_love": // kissing silhouettes
+        return (
+          <g {...stroke}>
+            <path d="M-6 -30 C-16 -26 -22 -14 -20 -2 C-18 10 -12 20 -6 28" />
+            <path d="M6 -30 C16 -26 22 -14 20 -2 C18 10 12 20 6 28" />
+            <path d="M-6 -6 C-3 -9 -1 -9 0 -6 C1 -9 3 -9 6 -6 C4 0 -4 0 -6 -6 Z" />
+            <Spark x={0} y={-26} s={0.9} ink={ink} />
+          </g>
+        );
+      case "plus_spice": // retro heart on waves
+        return (
+          <g {...stroke}>
+            <path d={retroHeart} />
+            <path d="M-34 14 C-20 4 -12 24 0 14 C12 4 20 24 34 14" strokeWidth="1.1" opacity="0.7" />
+            <path d="M-34 24 C-20 14 -12 34 0 24 C12 14 20 34 34 24" strokeWidth="1" opacity="0.45" />
+          </g>
+        );
+      case "plus_deep": // procedural heart, fine linework
+        return (
+          <g {...stroke}>
+            <path d={retroHeart} transform="scale(1.04)" />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <path key={i} d={retroHeart} transform={`scale(${0.9 - i * 0.14})`} strokeWidth="0.8" opacity={0.55 - i * 0.06} />
+            ))}
+          </g>
+        );
+      case "plus_kinky": // heart + scattered line work
+        return (
+          <g {...stroke}>
+            <path d={retroHeart} transform="scale(0.9)" />
+            {Array.from({ length: 10 }).map((_, i) => {
+              const a = (i / 10) * Math.PI * 2;
+              return <line key={i} x1={Math.cos(a) * 34} y1={Math.sin(a) * 34} x2={Math.cos(a) * 46} y2={Math.sin(a) * 46} strokeWidth="1" opacity="0.7" />;
+            })}
+            <Spark x={34} y={-30} s={0.8} ink={ink} />
+          </g>
+        );
+      case "uf_love_spice": // hand holding torch + starry smoke
+        return (
+          <g {...stroke} stroke={gold}>
+            <path d="M-4 34 L-4 6 M6 34 L6 6" />
+            <path d="M-10 6 C-10 -2 10 -2 10 6 C10 12 -10 12 -10 6 Z" />
+            <path d="M0 -4 C-12 -12 -10 -26 0 -34 C10 -26 12 -12 0 -4 Z" />
+            <path d="M0 -10 C-5 -16 -4 -23 0 -28 C4 -23 5 -16 0 -10 Z" strokeWidth="1" opacity="0.8" />
+            <path d="M-18 -18 C-26 -26 -22 -36 -14 -40 M18 -18 C26 -26 22 -36 14 -40" strokeWidth="1" opacity="0.6" />
+            <Spark x={-22} y={-42} s={0.7} ink={gold!} />
+            <Spark x={22} y={-40} s={0.6} ink={gold!} />
+          </g>
+        );
+      case "uf_after_dark": // heart with gold border lines
+        return (
+          <g {...stroke} stroke={gold}>
+            <path d={retroHeart} transform="scale(0.95)" />
+            <path d={retroHeart} transform="scale(0.66)" strokeWidth="1" opacity="0.7" />
+            <path d="M-46 -46 L-30 -46 M-46 -46 L-46 -30 M46 46 L30 46 M46 46 L46 30" strokeWidth="1.2" opacity="0.8" />
+          </g>
+        );
+      case "uf_no_limits": // heart + retro waves + scattered work
+        return (
+          <g {...stroke} stroke={gold}>
+            <path d={retroHeart} transform="scale(0.85)" />
+            <path d="M-40 22 C-26 12 -14 32 0 22 C14 12 26 32 40 22" strokeWidth="1.1" opacity="0.75" />
+            <path d="M-40 32 C-26 22 -14 42 0 32 C14 22 26 42 40 32" strokeWidth="1" opacity="0.5" />
+            <Spark x={-34} y={-32} s={0.8} ink={gold!} />
+            <Spark x={34} y={-30} s={0.7} ink={gold!} />
+          </g>
+        );
+    }
+  };
 
-// Vivid, saturated palettes — one balanced luminance family per deck so the
-// whole set reads as equally bright and colourful.
-const PALETTE: Record<PatternKey, Palette> = {
-  love: { from: "#ff86b3", via: "#ff2d78", to: "#8a0f43", glow: "#ffd0e2", line: "#fff0f6" },
-  friendship: { from: "#ffd166", via: "#ff7a45", to: "#b02a5b", glow: "#ffeab5", line: "#fff6e6" },
-  selfdev: { from: "#b6f36a", via: "#22c55e", to: "#0d5c3c", glow: "#e2ffc7", line: "#f2fff0" },
-  passions: { from: "#8fd0ff", via: "#3b5bff", to: "#141a7a", glow: "#cfe6ff", line: "#f0f6ff" },
-  introspection: { from: "#d9b6ff", via: "#8b3dff", to: "#33127a", glow: "#ecdcff", line: "#f8f2ff" },
-  plus_love: { from: "#ff9ec4", via: "#e01f6b", to: "#6d0733", glow: "#ffd4e5", line: "#fff0f7" },
-  plus_spice: { from: "#ffb066", via: "#ff2f3f", to: "#75061f", glow: "#ffddb8", line: "#fff1e4" },
-  plus_deep: { from: "#79f2e4", via: "#149fdc", to: "#0a2a63", glow: "#c9fdf6", line: "#effffc" },
-  plus_kinky: { from: "#ff8ef0", via: "#b419e0", to: "#41086b", glow: "#ffd2fa", line: "#ffeffd" },
-  uf_love_spice: { from: "#ffa3a3", via: "#ff2e63", to: "#5c0a2a", glow: "#ffd6d6", line: "#fff0ee" },
-  uf_after_dark: { from: "#d95cc0", via: "#6d1a8a", to: "#1a0626", glow: "#f3b9e6", line: "#fde3f5" },
-  uf_no_limits: { from: "#ffe08a", via: "#c9962a", to: "#171018", glow: "#ffeec2", line: "#ffe9a8" },
-};
+  return (
+    <g transform="translate(150 200) scale(1.12)">
+      <Halo ink={ink} gold={gold} />
+      {body()}
+    </g>
+  );
+}
 
+/* ---------------- full reverse artwork ---------------- */
 function DeckArt({ pattern }: { pattern: PatternKey }) {
-  const id = ID();
+  const id = pattern;
   const p = PALETTE[pattern];
   return (
     <svg
@@ -271,95 +272,90 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       preserveAspectRatio="xMidYMid slice"
       aria-hidden
     >
-      <defs>
-        <linearGradient id={`g-${id}`} x1="0.1" y1="0" x2="0.9" y2="1">
-          <stop offset="0%" stopColor={p.from} />
-          <stop offset="52%" stopColor={p.via} />
-          <stop offset="100%" stopColor={p.to} />
-        </linearGradient>
-        <radialGradient id={`h-${id}`} cx="50%" cy="34%" r="68%">
-          <stop offset="0%" stopColor={p.glow} stopOpacity="0.5" />
-          <stop offset="100%" stopColor={p.glow} stopOpacity="0" />
-        </radialGradient>
-      </defs>
+      <Defs id={id} p={p} />
+      <rect width="300" height="420" fill={p.base} />
 
-      <rect width="300" height="420" fill={`url(#g-${id})`} />
-      <rect width="300" height="420" fill={`url(#h-${id})`} />
-
-      {/* guilloché arc weave — identical geometry across every deck */}
-      <g fill="none" stroke={p.line} strokeWidth="1.1" opacity="0.22">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <path key={`a${i}`} d={`M-20 ${34 + i * 48} Q 150 ${-4 + i * 48} 320 ${34 + i * 48}`} />
-        ))}
-        {Array.from({ length: 9 }).map((_, i) => (
-          <path key={`b${i}`} d={`M-20 ${58 + i * 48} Q 150 ${96 + i * 48} 320 ${58 + i * 48}`} />
+      {/* liquid checkerboard waves */}
+      <g filter={`url(#liq-${id})`} opacity="0.5">
+        <rect x="-40" y="-40" width="380" height="500" fill={`url(#chk-${id})`} />
+      </g>
+      {/* wave contour lines over the check */}
+      <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.18" filter={`url(#liq-${id})`}>
+        {Array.from({ length: 11 }).map((_, i) => (
+          <path key={i} d={`M-30 ${18 + i * 42} Q 80 ${-8 + i * 42} 150 ${18 + i * 42} T 330 ${18 + i * 42}`} />
         ))}
       </g>
 
-      {/* concentric halo behind the emblem */}
-      <g transform="translate(150 196)" fill="none" stroke={p.line} strokeWidth="1" opacity="0.2">
-        <circle r="86" />
-        <circle r="112" strokeDasharray="1 6" />
+      <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.55" />
+
+      {/* scattered retro starbursts */}
+      <g opacity="0.8">
+        <Starburst x={46} y={64} s={1} ink={p.line} />
+        <Starburst x={252} y={110} s={0.7} ink={p.line} rays={10} />
+        <Starburst x={40} y={330} s={0.8} ink={p.line} rays={10} />
+        <Starburst x={258} y={362} s={1} ink={p.line} />
+        <Spark x={150} y={44} s={0.9} ink={p.line} />
+        <Spark x={150} y={382} s={0.9} ink={p.line} />
+        <Spark x={274} y={220} s={0.7} ink={p.line} />
+        <Spark x={26} y={208} s={0.7} ink={p.line} />
       </g>
 
-      {/* corner star dust */}
-      <g fill={p.line} opacity="0.5">
-        {[[38, 52, 1.8], [262, 78, 1.2], [44, 366, 1.3], [258, 344, 1.8], [150, 30, 1], [150, 392, 1]].map(
-          ([x, y, r], i) => (
-            <circle key={i} cx={x} cy={y} r={r} />
-          ),
-        )}
-      </g>
+      <Symbol pattern={pattern} p={p} />
+
+      {/* gold shimmer smoke for unfiltered */}
+      {p.gold ? (
+        <g opacity="0.4" fill="none" stroke={`url(#gold-${id})`} strokeWidth="1.2">
+          <path d="M40 400 C90 340 60 280 110 230 C150 190 120 130 160 80" />
+          <path d="M262 396 C220 340 250 290 210 240 C176 198 206 140 176 92" opacity="0.7" />
+        </g>
+      ) : null}
+
+      {/* heavy procedural print grain */}
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.3" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.16" style={{ mixBlendMode: "multiply" }} />
     </svg>
   );
 }
 
-const INK: Record<PatternKey, string> = {
-  love: "#fff0f6",
-  friendship: "#fff6e6",
-  selfdev: "#f2fff0",
-  passions: "#f0f6ff",
-  introspection: "#f8f2ff",
-  plus_love: "#fff0f7",
-  plus_spice: "#fff1e4",
-  plus_deep: "#effffc",
-  plus_kinky: "#ffeffd",
-  uf_love_spice: "#fff0ee",
-  uf_after_dark: "#fde3f5",
-  uf_no_limits: "#ffe9a8",
-};
-
-function artFor(pattern: PatternKey): ReactNode {
-  return <DeckArt pattern={pattern} />;
-}
-
-function emblemFor(pattern: PatternKey, ink: string): ReactNode {
-  switch (pattern) {
-    case "love":
-      return HeartEmblem(ink);
-    case "friendship":
-      return DaisyEmblem(ink);
-    case "selfdev":
-      return LeafEmblem(ink);
-    case "passions":
-      return StarEmblem(ink);
-    case "introspection":
-      return EyeEmblem(ink);
-    case "plus_love":
-      return RingsEmblem(ink);
-    case "plus_spice":
-      return FlameEmblem(ink);
-    case "plus_deep":
-      return InfinityEmblem(ink);
-    case "plus_kinky":
-      return KeyEmblem(ink);
-    case "uf_love_spice":
-      return LipsEmblem(ink);
-    case "uf_after_dark":
-      return MoonEmblem(ink);
-    case "uf_no_limits":
-      return DiamondEmblem(ink);
-  }
+function CardBack({
+  pattern,
+  edition,
+  category,
+  hint,
+}: {
+  pattern: PatternKey;
+  edition: string;
+  category: string;
+  hint: string;
+}) {
+  const p = PALETTE[pattern];
+  const ink = p.ink;
+  return (
+    <div className="relative h-full w-full overflow-hidden" style={{ background: p.base }}>
+      <DeckArt pattern={pattern} />
+      <div
+        className="pointer-events-none absolute inset-[10px] rounded-[24px]"
+        style={{ border: `1.5px solid ${p.gold ?? ink}`, opacity: p.gold ? 0.55 : 0.34 }}
+      />
+      <div
+        className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
+        style={{ color: ink, fontFamily: "var(--font-sans)" }}
+      >
+        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.85 }}>
+          {edition}
+        </span>
+        <div className="flex-1" />
+        <div className="flex flex-col items-center gap-2">
+          <span className="max-w-[85%] text-balance text-[16px] font-extrabold uppercase leading-tight tracking-[0.08em]">
+            {category}
+          </span>
+          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.6 }}>
+            {hint}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function CardArt({
@@ -373,21 +369,10 @@ export function CardArt({
   category: string;
   hint: string;
 }) {
-  const ink = INK[pattern];
-  return (
-    <CardBack
-      art={artFor(pattern)}
-      ink={ink}
-      emblem={emblemFor(pattern, ink)}
-      edition={edition}
-      category={category}
-      hint={hint}
-    />
-  );
+  return <CardBack pattern={pattern} edition={edition} category={category} hint={hint} />;
 }
 
-/* Compact card-back preview for the deck selector (art + emblem, no copy).
-   Gently flips and catches a shimmer sweep while the user browses decks. */
+/* Compact card-back preview for the deck selector. */
 export function CardArtPreview({
   pattern,
   label,
@@ -397,12 +382,12 @@ export function CardArtPreview({
   label?: string;
   index?: number;
 }) {
-  const ink = INK[pattern];
+  const p = PALETTE[pattern];
   return (
     <div className="flex flex-col items-center gap-1.5" style={{ perspective: 700 }}>
       <motion.div
-        className="preserve-3d relative overflow-hidden rounded-2xl shadow-lg"
-        style={{ width: 74, aspectRatio: "5 / 7", boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
+        className="preserve-3d relative overflow-hidden rounded-2xl"
+        style={{ width: 74, aspectRatio: "5 / 7", background: p.base, boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
         initial={{ rotateY: -14, opacity: 0 }}
         animate={{ rotateY: [-6, 6, -6], opacity: 1 }}
         transition={{
@@ -411,31 +396,21 @@ export function CardArtPreview({
         }}
         whileHover={{ scale: 1.04, rotateY: 0 }}
       >
-        {artFor(pattern)}
+        <DeckArt pattern={pattern} />
         <div
           className="pointer-events-none absolute inset-[5px] rounded-[14px]"
-          style={{ border: `1px solid ${ink}`, opacity: 0.32 }}
+          style={{ border: `1px solid ${p.gold ?? p.ink}`, opacity: 0.4 }}
         />
-        <div className="absolute inset-0 flex items-center justify-center" style={{ color: ink }}>
-          <div style={{ transform: "scale(0.6)" }}>{emblemFor(pattern, ink)}</div>
-        </div>
-        {/* Shimmer sweep */}
         <motion.div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 48%, transparent 66%)",
+              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.5) 48%, transparent 66%)",
             mixBlendMode: "overlay",
           }}
           initial={{ x: "-130%" }}
           animate={{ x: "130%" }}
-          transition={{
-            duration: 2.2,
-            repeat: Infinity,
-            repeatDelay: 2.6,
-            ease: "easeInOut",
-            delay: index * 0.4,
-          }}
+          transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 2.6, ease: "easeInOut", delay: index * 0.4 }}
         />
       </motion.div>
       {label ? (

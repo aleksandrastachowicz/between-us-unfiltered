@@ -23,4 +23,6 @@ export const HAPTIC = {
   flip: 12,
   turn: [10, 40, 16] as number[],
   tap: 8,
+  /** Soft "paper snap" pulse when a new card is drawn. */
+  draw: [8, 26, 12] as number[],
 };

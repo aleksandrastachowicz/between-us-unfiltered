@@ -218,7 +218,9 @@ export const useGame = create<State>()(
           const nextPlayer = advanceTurn
             ? (st.currentPlayer + 1) % st.players.length
             : st.currentPlayer;
-          if (advanceTurn) haptic(HAPTIC.turn);
+          // Gentle "card snap" haptic on every draw; a slightly longer
+          // pattern when the turn passes to the next player.
+          haptic(advanceTurn ? HAPTIC.turn : HAPTIC.draw);
           const nextHistory = st.card
             ? [...st.history, { card: st.card, currentPlayer: st.currentPlayer }].slice(-50)
             : st.history;
@@ -311,7 +313,13 @@ export const useGame = create<State>()(
         currentPlayer: s.currentPlayer,
         drawCount: s.drawCount,
         stats: s.stats,
+        discard: Array.from(s.discard),
       }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const discard = Array.isArray(p.discard) ? new Set(p.discard as string[]) : current.discard;
+        return { ...current, ...(p as object), discard } as State;
+      },
       skipHydration: true,
     },
   ),
