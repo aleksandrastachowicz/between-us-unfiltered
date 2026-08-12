@@ -23,24 +23,25 @@ type Palette = {
   line: string; // line-art ink
   ink: string; // label ink
   gold?: string; // shimmering accent (unfiltered)
+  bg?: "checker" | "daisy" | "aura" | "fluid"; // background family
 };
 
 const PALETTE: Record<PatternKey, Palette> = {
   // A. Edycja podstawowa
   love: { base: "#A21836", check: "#FFC2D6", wash: "#FF6E9C", line: "#FFE7EF", ink: "#FFF0F5" },
-  friendship: { base: "#E8A200", check: "#FFD9A8", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC" },
-  selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0" },
-  passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF" },
-  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF" },
+  friendship: { base: "#E8A200", check: "#FFCF7A", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC", bg: "daisy" },
+  selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0", bg: "aura" },
+  passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF", bg: "fluid" },
+  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "aura" },
   // B. Love & Spice
   plus_love: { base: "#5E0A22", check: "#B02244", wash: "#8E1435", line: "#FFD9E3", ink: "#FFE9F0" },
   plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5" },
   plus_deep: { base: "#B02563", check: "#FFB3D6", wash: "#F0559C", line: "#FFE6F2", ink: "#FFF0F8" },
   plus_kinky: { base: "#5C0A55", check: "#C21FA8", wash: "#93168A", line: "#FFD8F7", ink: "#FFE9FB" },
   // C. Unfiltered
-  uf_love_spice: { base: "#0C0A0D", check: "#6E0E24", wash: "#3A0812", line: "#F5D7A8", ink: "#FFEFD6", gold: "#F2C86B" },
-  uf_after_dark: { base: "#141216", check: "#5A0F2C", wash: "#2A0A18", line: "#F1D4A6", ink: "#FFEAD9", gold: "#E9C078" },
-  uf_no_limits: { base: "#080D0E", check: "#0B4C4C", wash: "#06322F", line: "#F3DBA4", ink: "#E9FBF6", gold: "#F0CE7C" },
+  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D" },
+  uf_after_dark: { base: "#131217", check: "#5A0F2C", wash: "#2A0A18", line: "#FFE685", ink: "#FFEAF2", gold: "#FFDC5C" },
+  uf_no_limits: { base: "#0B0709", check: "#8A0F1E", wash: "#4A0713", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F" },
 };
 
 /* ---------------- procedural defs ---------------- */
@@ -67,6 +68,16 @@ function Defs({ id, p }: { id: string; p: Palette }) {
         <rect width="48" height="48" fill={p.base} />
         <rect width="24" height="24" fill={p.check} fillOpacity="0.9" />
         <rect x="24" y="24" width="24" height="24" fill={p.check} fillOpacity="0.9" />
+      </pattern>
+      {/* retro daisy grid tile */}
+      <pattern id={`daisy-${id}`} width="60" height="60" patternUnits="userSpaceOnUse">
+        <rect width="60" height="60" fill={p.base} />
+        <g transform="translate(30 30)" fill={p.check}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ellipse key={i} rx="5.5" ry="12" transform={`rotate(${i * 45}) translate(0 -12)`} />
+          ))}
+          <circle r="5" fill={p.wash} />
+        </g>
       </pattern>
       {p.gold ? (
         <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
