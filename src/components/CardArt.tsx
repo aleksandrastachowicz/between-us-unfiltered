@@ -254,7 +254,7 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
   };
 
   return (
-    <g transform="translate(150 200)">
+    <g transform="translate(150 200) scale(1.12)">
       <Halo ink={ink} gold={gold} />
       {body()}
     </g>
@@ -289,7 +289,7 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.55" />
 
       {/* scattered retro starbursts */}
-      <g opacity="0.55">
+      <g opacity="0.8">
         <Starburst x={46} y={64} s={1} ink={p.line} />
         <Starburst x={252} y={110} s={0.7} ink={p.line} rays={10} />
         <Starburst x={40} y={330} s={0.8} ink={p.line} rays={10} />
@@ -311,8 +311,8 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       ) : null}
 
       {/* heavy procedural print grain */}
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.16" style={{ mixBlendMode: "overlay" }} />
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.09" style={{ mixBlendMode: "multiply" }} />
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.3" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.16" style={{ mixBlendMode: "multiply" }} />
     </svg>
   );
 }
