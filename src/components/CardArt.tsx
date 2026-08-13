@@ -415,7 +415,11 @@ function CardBack({
       />
       <div
         className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
-        style={{ color: ink, fontFamily: "var(--font-sans)" }}
+        style={{
+          color: ink,
+          fontFamily: "var(--font-sans)",
+          textShadow: `0 1px 10px ${p.base}, 0 0 2px ${p.base}`,
+        }}
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.85 }}>
           {edition}
