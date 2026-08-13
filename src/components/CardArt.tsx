@@ -79,6 +79,25 @@ function Defs({ id, p }: { id: string; p: Palette }) {
           <circle r="5" fill={p.wash} />
         </g>
       </pattern>
+      {/* pulsating aura gradient field */}
+      <radialGradient id={`aura-${id}`} cx="50%" cy="34%" r="88%">
+        <stop offset="0%" stopColor={p.check} stopOpacity="0.95" />
+        <stop offset="45%" stopColor={p.wash} stopOpacity="0.7" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
+      </radialGradient>
+      {/* psychedelic fluid field */}
+      <linearGradient id={`fluid-${id}`} x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0%" stopColor={p.check} stopOpacity="0.85" />
+        <stop offset="55%" stopColor={p.wash} stopOpacity="0.8" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
+      </linearGradient>
+      {/* legibility scrim so category text always reads on the field */}
+      <linearGradient id={`scrim-${id}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={p.base} stopOpacity="0.55" />
+        <stop offset="30%" stopColor={p.base} stopOpacity="0.05" />
+        <stop offset="70%" stopColor={p.base} stopOpacity="0.25" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="0.78" />
+      </linearGradient>
       {p.gold ? (
         <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={p.gold} stopOpacity="0.15" />
@@ -273,6 +292,59 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
 }
 
 /* ---------------- full reverse artwork ---------------- */
+function Field({ id, p }: { id: string; p: Palette }) {
+  const family = p.bg ?? "checker";
+  if (family === "daisy") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#daisy-${id})`} opacity="0.9" />
+        <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.16">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <path key={i} d={`M-30 ${30 + i * 62} Q 90 ${0 + i * 62} 150 ${30 + i * 62} T 330 ${30 + i * 62}`} />
+          ))}
+        </g>
+      </>
+    );
+  }
+  if (family === "aura") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#aura-${id})`} />
+        <g fill="none" stroke={p.line} strokeWidth="0.8" opacity="0.2">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <circle key={i} cx="150" cy="150" r={54 + i * 26} />
+          ))}
+        </g>
+      </>
+    );
+  }
+  if (family === "fluid") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#fluid-${id})`} />
+        <g fill="none" stroke={p.line} strokeWidth="1.1" opacity="0.26" filter={`url(#liq-${id})`}>
+          {Array.from({ length: 13 }).map((_, i) => (
+            <path key={i} d={`M-30 ${10 + i * 36} Q 70 ${-24 + i * 36} 150 ${10 + i * 36} T 330 ${10 + i * 36}`} />
+          ))}
+        </g>
+      </>
+    );
+  }
+  return (
+    <>
+      <g filter={`url(#liq-${id})`} opacity="0.5">
+        <rect x="-40" y="-40" width="380" height="500" fill={`url(#chk-${id})`} />
+      </g>
+      <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.18" filter={`url(#liq-${id})`}>
+        {Array.from({ length: 11 }).map((_, i) => (
+          <path key={i} d={`M-30 ${18 + i * 42} Q 80 ${-8 + i * 42} 150 ${18 + i * 42} T 330 ${18 + i * 42}`} />
+        ))}
+      </g>
+      <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.55" />
+    </>
+  );
+}
+
 function DeckArt({ pattern }: { pattern: PatternKey }) {
   const id = pattern;
   const p = PALETTE[pattern];
@@ -286,18 +358,8 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       <Defs id={id} p={p} />
       <rect width="300" height="420" fill={p.base} />
 
-      {/* liquid checkerboard waves */}
-      <g filter={`url(#liq-${id})`} opacity="0.5">
-        <rect x="-40" y="-40" width="380" height="500" fill={`url(#chk-${id})`} />
-      </g>
-      {/* wave contour lines over the check */}
-      <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.18" filter={`url(#liq-${id})`}>
-        {Array.from({ length: 11 }).map((_, i) => (
-          <path key={i} d={`M-30 ${18 + i * 42} Q 80 ${-8 + i * 42} 150 ${18 + i * 42} T 330 ${18 + i * 42}`} />
-        ))}
-      </g>
-
-      <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.55" />
+      {/* per-deck background family: checker | daisy | aura | fluid */}
+      <Field id={id} p={p} />
 
       {/* scattered retro starbursts */}
       <g opacity="0.8">
@@ -321,9 +383,12 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
         </g>
       ) : null}
 
+      {/* legibility scrim under the top/bottom typography */}
+      <rect width="300" height="420" fill={`url(#scrim-${id})`} />
+
       {/* heavy procedural print grain */}
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.3" style={{ mixBlendMode: "overlay" }} />
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.16" style={{ mixBlendMode: "multiply" }} />
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.22" style={{ mixBlendMode: "overlay" }} />
+      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.1" style={{ mixBlendMode: "multiply" }} />
     </svg>
   );
 }
@@ -350,7 +415,11 @@ function CardBack({
       />
       <div
         className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
-        style={{ color: ink, fontFamily: "var(--font-sans)" }}
+        style={{
+          color: ink,
+          fontFamily: "var(--font-sans)",
+          textShadow: `0 1px 10px ${p.base}, 0 0 2px ${p.base}`,
+        }}
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.85 }}>
           {edition}
@@ -360,7 +429,7 @@ function CardBack({
           <span className="max-w-[85%] text-balance text-[16px] font-extrabold uppercase leading-tight tracking-[0.08em]">
             {category}
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.6 }}>
+          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.75 }}>
             {hint}
           </span>
         </div>
