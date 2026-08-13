@@ -79,6 +79,25 @@ function Defs({ id, p }: { id: string; p: Palette }) {
           <circle r="5" fill={p.wash} />
         </g>
       </pattern>
+      {/* pulsating aura gradient field */}
+      <radialGradient id={`aura-${id}`} cx="50%" cy="34%" r="88%">
+        <stop offset="0%" stopColor={p.check} stopOpacity="0.95" />
+        <stop offset="45%" stopColor={p.wash} stopOpacity="0.7" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
+      </radialGradient>
+      {/* psychedelic fluid field */}
+      <linearGradient id={`fluid-${id}`} x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0%" stopColor={p.check} stopOpacity="0.85" />
+        <stop offset="55%" stopColor={p.wash} stopOpacity="0.8" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
+      </linearGradient>
+      {/* legibility scrim so category text always reads on the field */}
+      <linearGradient id={`scrim-${id}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={p.base} stopOpacity="0.55" />
+        <stop offset="30%" stopColor={p.base} stopOpacity="0.05" />
+        <stop offset="70%" stopColor={p.base} stopOpacity="0.25" />
+        <stop offset="100%" stopColor={p.base} stopOpacity="0.78" />
+      </linearGradient>
       {p.gold ? (
         <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={p.gold} stopOpacity="0.15" />
