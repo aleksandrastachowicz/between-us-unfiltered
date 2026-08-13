@@ -429,7 +429,7 @@ function CardBack({
           <span className="max-w-[85%] text-balance text-[16px] font-extrabold uppercase leading-tight tracking-[0.08em]">
             {category}
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.6 }}>
+          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.75 }}>
             {hint}
           </span>
         </div>
