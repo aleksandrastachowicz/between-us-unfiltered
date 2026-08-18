@@ -361,6 +361,48 @@ function Field({ id, p }: { id: string; p: Palette }) {
       </>
     );
   }
+  if (family === "canvas") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#aura-${id})`} opacity="0.85" />
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.4" />
+        <g fill="none" stroke={p.line} strokeWidth="0.7" opacity="0.12">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <circle key={i} cx="150" cy="200" r={72 + i * 30} />
+          ))}
+        </g>
+      </>
+    );
+  }
+  if (family === "wave") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#fluid-${id})`} opacity="0.9" />
+        <g fill="none" stroke={p.check} strokeWidth="6" opacity="0.32" filter={`url(#liq-${id})`}>
+          {Array.from({ length: 9 }).map((_, i) => (
+            <path key={i} d={`M-30 ${24 + i * 50} Q 80 ${-12 + i * 50} 150 ${24 + i * 50} T 330 ${24 + i * 50}`} />
+          ))}
+        </g>
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
+      </>
+    );
+  }
+  if (family === "stardust") {
+    return (
+      <>
+        <rect width="300" height="420" fill={p.base} />
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
+        <g fill={p.gold ?? p.line} opacity="0.5">
+          {Array.from({ length: 42 }).map((_, i) => {
+            const x = ((i * 97) % 290) + 5;
+            const y = ((i * 173) % 405) + 8;
+            const r = i % 5 === 0 ? 1.5 : 0.8;
+            return <circle key={i} cx={x} cy={y} r={r} />;
+          })}
+        </g>
+      </>
+    );
+  }
   return (
     <>
       <g filter={`url(#liq-${id})`} opacity="0.5">
