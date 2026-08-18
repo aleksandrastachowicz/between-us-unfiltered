@@ -23,7 +23,7 @@ type Palette = {
   line: string; // line-art ink
   ink: string; // label ink
   gold?: string; // shimmering accent (unfiltered)
-  bg?: "checker" | "daisy" | "aura" | "fluid"; // background family
+  bg?: "checker" | "daisy" | "aura" | "fluid" | "canvas" | "wave" | "stardust"; // background family
 };
 
 const PALETTE: Record<PatternKey, Palette> = {
@@ -32,16 +32,16 @@ const PALETTE: Record<PatternKey, Palette> = {
   friendship: { base: "#E8A200", check: "#FFCF7A", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC", bg: "daisy" },
   selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0", bg: "aura" },
   passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF", bg: "fluid" },
-  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "aura" },
+  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "canvas" },
   // B. Love & Spice
   plus_love: { base: "#5E0A22", check: "#B02244", wash: "#8E1435", line: "#FFD9E3", ink: "#FFE9F0" },
-  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5" },
-  plus_deep: { base: "#B02563", check: "#FFB3D6", wash: "#F0559C", line: "#FFE6F2", ink: "#FFF0F8" },
+  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5", bg: "wave" },
+  plus_deep: { base: "#B0526B", check: "#FFC7D5", wash: "#E58AA3", line: "#FFEDF2", ink: "#FFF4F7", bg: "canvas" },
   plus_kinky: { base: "#5C0A55", check: "#C21FA8", wash: "#93168A", line: "#FFD8F7", ink: "#FFE9FB" },
   // C. Unfiltered
-  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D" },
+  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D", bg: "canvas" },
   uf_after_dark: { base: "#131217", check: "#5A0F2C", wash: "#2A0A18", line: "#FFE685", ink: "#FFEAF2", gold: "#FFDC5C" },
-  uf_no_limits: { base: "#0B0709", check: "#8A0F1E", wash: "#4A0713", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F" },
+  uf_no_limits: { base: "#08070A", check: "#1A1720", wash: "#12101A", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F", bg: "stardust" },
 };
 
 /* ---------------- procedural defs ---------------- */
