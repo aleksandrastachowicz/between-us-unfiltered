@@ -8,19 +8,19 @@ const PATTERNS: PatternKey[] = [
   "uf_love_spice", "uf_after_dark", "uf_no_limits",
 ];
 
-const EXPECTED_FIELD: Record<PatternKey, "chk" | "daisy" | "aura" | "fluid"> = {
+const EXPECTED_FIELD: Record<PatternKey, "chk" | "daisy" | "aura" | "fluid" | "wash"> = {
   love: "chk",
   friendship: "daisy",
   selfdev: "aura",
   passions: "fluid",
   introspection: "aura",
   plus_love: "chk",
-  plus_spice: "chk",
-  plus_deep: "chk",
+  plus_spice: "fluid",
+  plus_deep: "aura",
   plus_kinky: "chk",
-  uf_love_spice: "chk",
+  uf_love_spice: "aura",
   uf_after_dark: "chk",
-  uf_no_limits: "chk",
+  uf_no_limits: "wash",
 };
 
 const render = (pattern: PatternKey) =>
