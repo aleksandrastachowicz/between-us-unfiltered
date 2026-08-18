@@ -23,7 +23,7 @@ type Palette = {
   line: string; // line-art ink
   ink: string; // label ink
   gold?: string; // shimmering accent (unfiltered)
-  bg?: "checker" | "daisy" | "aura" | "fluid"; // background family
+  bg?: "checker" | "daisy" | "aura" | "fluid" | "canvas" | "wave" | "stardust"; // background family
 };
 
 const PALETTE: Record<PatternKey, Palette> = {
@@ -32,16 +32,16 @@ const PALETTE: Record<PatternKey, Palette> = {
   friendship: { base: "#E8A200", check: "#FFCF7A", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC", bg: "daisy" },
   selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0", bg: "aura" },
   passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF", bg: "fluid" },
-  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "aura" },
+  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "canvas" },
   // B. Love & Spice
   plus_love: { base: "#5E0A22", check: "#B02244", wash: "#8E1435", line: "#FFD9E3", ink: "#FFE9F0" },
-  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5" },
-  plus_deep: { base: "#B02563", check: "#FFB3D6", wash: "#F0559C", line: "#FFE6F2", ink: "#FFF0F8" },
+  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5", bg: "wave" },
+  plus_deep: { base: "#B0526B", check: "#FFC7D5", wash: "#E58AA3", line: "#FFEDF2", ink: "#FFF4F7", bg: "canvas" },
   plus_kinky: { base: "#5C0A55", check: "#C21FA8", wash: "#93168A", line: "#FFD8F7", ink: "#FFE9FB" },
   // C. Unfiltered
-  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D" },
+  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D", bg: "canvas" },
   uf_after_dark: { base: "#131217", check: "#5A0F2C", wash: "#2A0A18", line: "#FFE685", ink: "#FFEAF2", gold: "#FFDC5C" },
-  uf_no_limits: { base: "#0B0709", check: "#8A0F1E", wash: "#4A0713", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F" },
+  uf_no_limits: { base: "#08070A", check: "#1A1720", wash: "#12101A", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F", bg: "stardust" },
 };
 
 /* ---------------- procedural defs ---------------- */
@@ -167,87 +167,110 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
           <g {...stroke}>
             <path d={retroHeart} />
             <path d={retroHeart} transform="scale(0.74)" strokeWidth="1.1" opacity="0.7" />
-            <path d={retroHeart} transform="scale(0.48)" strokeWidth="0.9" opacity="0.45" />
+            <text
+              x="0"
+              y="6"
+              textAnchor="middle"
+              stroke="none"
+              fill={ink}
+              opacity="0.85"
+              style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 700, letterSpacing: "0.26em" }}
+            >
+              AMOR
+            </text>
           </g>
         );
-      case "friendship": // floral grid bloom + sun rays
+      case "friendship": // minimal line-art sunburst
         return (
           <g {...stroke}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <ellipse key={i} rx="9" ry="22" transform={`rotate(${i * 45}) translate(0 -14)`} opacity="0.85" />
-            ))}
-            <circle r="8" />
-            {Array.from({ length: 16 }).map((_, i) => {
-              const a = (i / 16) * Math.PI * 2;
-              return <line key={i} x1={Math.cos(a) * 42} y1={Math.sin(a) * 42} x2={Math.cos(a) * 48} y2={Math.sin(a) * 48} strokeWidth="1" />;
+            <circle r="17" />
+            <circle r="24" strokeWidth="1" opacity="0.5" />
+            {Array.from({ length: 20 }).map((_, i) => {
+              const a = (i / 20) * Math.PI * 2;
+              const outer = i % 2 ? 36 : 46;
+              return (
+                <line
+                  key={i}
+                  x1={Math.cos(a) * 28}
+                  y1={Math.sin(a) * 28}
+                  x2={Math.cos(a) * outer}
+                  y2={Math.sin(a) * outer}
+                  strokeWidth={i % 2 ? 1 : 1.5}
+                  opacity={i % 2 ? 0.6 : 0.9}
+                />
+              );
             })}
           </g>
         );
-      case "selfdev": // aura heart + sun-eye
+      case "selfdev": // anatomical heart blended with an eye
         return (
           <g {...stroke}>
-            <path d={retroHeart} transform="scale(0.92)" opacity="0.9" />
-            <path d="M-26 0 C-13 -15 13 -15 26 0 C13 15 -13 15 -26 0 Z" transform="translate(0 -2) scale(0.72)" />
-            <circle cy="-1.5" r="6" />
-            <circle cy="-1.5" r="2.2" fill={ink} stroke="none" />
+            <path d={retroHeart} transform="scale(1.02)" opacity="0.9" />
+            <path d="M-14 -22 C-10 -32 2 -32 4 -22 M8 -24 C14 -30 24 -26 22 -18" strokeWidth="1.2" opacity="0.7" />
+            <path d="M-26 0 C-13 -14 13 -14 26 0 C13 14 -13 14 -26 0 Z" transform="translate(0 -1) scale(0.7)" />
+            <circle cy="-1" r="5.5" />
+            <circle cy="-1" r="2" fill={ink} stroke="none" />
+            <path d="M-8 16 C-4 22 4 22 8 16" strokeWidth="1" opacity="0.6" />
           </g>
         );
-      case "passions": // star line-work
+      case "passions": // sharp 4-pointed star vector
         return (
           <g {...stroke}>
-            <path d="M0 -34 C3 -13 13 -3 34 0 C13 3 3 13 0 34 C-3 13 -13 3 -34 0 C-13 -3 -3 -13 0 -34 Z" />
-            <path d="M0 -20 C2 -8 8 -2 20 0 C8 2 2 8 0 20 C-2 8 -8 2 -20 0 C-8 -2 -2 -8 0 -20 Z" strokeWidth="1" opacity="0.7" />
-            <Spark x={30} y={-28} s={0.8} ink={ink} />
-            <Spark x={-30} y={26} s={0.7} ink={ink} />
+            <path d="M0 -46 L9 -9 L46 0 L9 9 L0 46 L-9 9 L-46 0 L-9 -9 Z" strokeWidth="1.8" />
+            <path d="M0 -26 L5 -5 L26 0 L5 5 L0 26 L-5 5 L-26 0 L-5 -5 Z" strokeWidth="1" opacity="0.65" />
+            <Spark x={32} y={-30} s={0.8} ink={ink} />
+            <Spark x={-32} y={28} s={0.7} ink={ink} />
           </g>
         );
-      case "introspection": // mystic eye
+      case "introspection": // third eye nestled in a crescent moon
         return (
           <g {...stroke}>
-            <path d="M-36 0 C-18 -22 18 -22 36 0 C18 22 -18 22 -36 0 Z" />
-            <circle r="11" />
-            <circle r="4" fill={ink} stroke="none" />
-            {Array.from({ length: 9 }).map((_, i) => (
-              <line key={i} x1={-32 + i * 8} y1="14" x2={-34 + i * 8} y2="22" strokeWidth="1" opacity="0.65" />
-            ))}
-            <Spark x={0} y={-30} s={0.8} ink={ink} />
+            <path d="M22 -40 A46 46 0 1 0 22 40 A36 36 0 1 1 22 -40 Z" strokeWidth="1.3" opacity="0.75" />
+            <path d="M-30 0 C-15 -18 15 -18 30 0 C15 18 -15 18 -30 0 Z" />
+            <circle r="9.5" />
+            <circle r="3.5" fill={ink} stroke="none" />
+            <Spark x={0} y={-30} s={0.75} ink={ink} />
+            <Spark x={26} y={22} s={0.6} ink={ink} />
           </g>
         );
-      case "plus_love": // kissing silhouettes
+      case "plus_love": // kissing lips silhouette
         return (
           <g {...stroke}>
-            <path d="M-6 -30 C-16 -26 -22 -14 -20 -2 C-18 10 -12 20 -6 28" />
-            <path d="M6 -30 C16 -26 22 -14 20 -2 C18 10 12 20 6 28" />
-            <path d="M-6 -6 C-3 -9 -1 -9 0 -6 C1 -9 3 -9 6 -6 C4 0 -4 0 -6 -6 Z" />
-            <Spark x={0} y={-26} s={0.9} ink={ink} />
+            <path d="M-34 0 C-24 -16 -10 -18 0 -8 C10 -18 24 -16 34 0 C22 16 -22 16 -34 0 Z" strokeWidth="1.8" />
+            <path d="M-34 0 C-18 -5 18 -5 34 0" strokeWidth="1.1" opacity="0.8" />
+            <path d="M-22 8 C-10 12 10 12 22 8" strokeWidth="1" opacity="0.5" />
+            <Spark x={0} y={-28} s={0.85} ink={ink} />
           </g>
         );
-      case "plus_spice": // retro heart on waves
+      case "plus_spice": // flame with starbursts
         return (
           <g {...stroke}>
-            <path d={retroHeart} />
-            <path d="M-34 14 C-20 4 -12 24 0 14 C12 4 20 24 34 14" strokeWidth="1.1" opacity="0.7" />
-            <path d="M-34 24 C-20 14 -12 34 0 24 C12 14 20 34 34 24" strokeWidth="1" opacity="0.45" />
+            <path d="M0 -40 C16 -18 26 -8 26 6 C26 22 14 32 0 32 C-14 32 -26 22 -26 6 C-26 -6 -16 -14 -10 -26 C-8 -14 -2 -12 0 -18 C2 -24 0 -32 0 -40 Z" strokeWidth="1.8" />
+            <path d="M0 -10 C8 2 12 8 12 14 C12 22 6 26 0 26 C-6 26 -12 22 -12 14 C-12 6 -6 0 0 -10 Z" strokeWidth="1" opacity="0.7" />
+            <Spark x={-30} y={-24} s={0.75} ink={ink} />
+            <Spark x={30} y={-18} s={0.65} ink={ink} />
           </g>
         );
-      case "plus_deep": // procedural heart, fine linework
+      case "plus_deep": // two intertwined hands
         return (
           <g {...stroke}>
-            <path d={retroHeart} transform="scale(1.04)" />
-            {Array.from({ length: 6 }).map((_, i) => (
-              <path key={i} d={retroHeart} transform={`scale(${0.9 - i * 0.14})`} strokeWidth="0.8" opacity={0.55 - i * 0.06} />
-            ))}
+            <path d="M-34 22 C-30 8 -22 -2 -10 -8 C-4 -11 2 -10 6 -6" strokeWidth="1.7" />
+            <path d="M34 -22 C30 -8 22 2 10 8 C4 11 -2 10 -6 6" strokeWidth="1.7" />
+            <path d="M-14 -6 C-8 -12 0 -14 8 -12 M14 6 C8 12 0 14 -8 12" strokeWidth="1.1" opacity="0.75" />
+            <path d="M-6 -2 C-2 -6 2 -6 6 -2 C2 2 -2 2 -6 -2 Z" strokeWidth="1" opacity="0.85" />
+            <Spark x={26} y={26} s={0.7} ink={ink} />
+            <Spark x={-26} y={-26} s={0.6} ink={ink} />
           </g>
         );
-      case "plus_kinky": // heart + scattered line work
+      case "plus_kinky": // abstract silhouette figures
         return (
           <g {...stroke}>
-            <path d={retroHeart} transform="scale(0.9)" />
-            {Array.from({ length: 10 }).map((_, i) => {
-              const a = (i / 10) * Math.PI * 2;
-              return <line key={i} x1={Math.cos(a) * 34} y1={Math.sin(a) * 34} x2={Math.cos(a) * 46} y2={Math.sin(a) * 46} strokeWidth="1" opacity="0.7" />;
-            })}
-            <Spark x={34} y={-30} s={0.8} ink={ink} />
+            <circle cx="-14" cy="-24" r="8" />
+            <path d="M-14 -16 C-26 -12 -30 2 -26 18 C-24 26 -18 30 -12 30" strokeWidth="1.7" />
+            <circle cx="14" cy="-20" r="8" />
+            <path d="M14 -12 C26 -8 30 6 26 22 C24 28 18 32 12 32" strokeWidth="1.7" />
+            <path d="M-12 4 C-2 -2 6 -2 14 4" strokeWidth="1.1" opacity="0.75" />
+            <Spark x={34} y={-32} s={0.75} ink={ink} />
           </g>
         );
       case "uf_love_spice": // hand holding torch + starry smoke
@@ -262,22 +285,30 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
             <Spark x={22} y={-40} s={0.6} ink={gold!} />
           </g>
         );
-      case "uf_after_dark": // heart with gold border lines
+      case "uf_after_dark": // third eye in a crescent moon, gold frame
         return (
           <g {...stroke} stroke={gold}>
-            <path d={retroHeart} transform="scale(0.95)" />
-            <path d={retroHeart} transform="scale(0.66)" strokeWidth="1" opacity="0.7" />
-            <path d="M-46 -46 L-30 -46 M-46 -46 L-46 -30 M46 46 L30 46 M46 46 L46 30" strokeWidth="1.2" opacity="0.8" />
+            <path d="M20 -42 A46 46 0 1 0 20 42 A36 36 0 1 1 20 -42 Z" strokeWidth="1.3" opacity="0.8" />
+            <path d="M-28 0 C-14 -17 14 -17 28 0 C14 17 -14 17 -28 0 Z" strokeWidth="1.7" />
+            <circle r="9" strokeWidth="1.4" />
+            <circle r="3.4" fill={gold} stroke="none" />
+            <Spark x={0} y={-32} s={0.7} ink={gold!} />
           </g>
         );
-      case "uf_no_limits": // heart + retro waves + scattered work
+      case "uf_no_limits": // geometric 8-pointed starburst
         return (
           <g {...stroke} stroke={gold}>
-            <path d={retroHeart} transform="scale(0.85)" />
-            <path d="M-40 22 C-26 12 -14 32 0 22 C14 12 26 32 40 22" strokeWidth="1.1" opacity="0.75" />
-            <path d="M-40 32 C-26 22 -14 42 0 32 C14 22 26 42 40 32" strokeWidth="1" opacity="0.5" />
-            <Spark x={-34} y={-32} s={0.8} ink={gold!} />
-            <Spark x={34} y={-30} s={0.7} ink={gold!} />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <path key={i} d="M0 -46 L7 -8 L0 0 L-7 -8 Z" transform={`rotate(${i * 45})`} strokeWidth="1.4" />
+            ))}
+            <circle r="9" strokeWidth="1.2" />
+            <circle r="3" fill={gold} stroke="none" />
+            {Array.from({ length: 8 }).map((_, i) => {
+              const a = ((i + 0.5) / 8) * Math.PI * 2;
+              return (
+                <line key={`r${i}`} x1={Math.cos(a) * 16} y1={Math.sin(a) * 16} x2={Math.cos(a) * 30} y2={Math.sin(a) * 30} strokeWidth="1" opacity="0.6" />
+              );
+            })}
           </g>
         );
     }
@@ -326,6 +357,48 @@ function Field({ id, p }: { id: string; p: Palette }) {
           {Array.from({ length: 13 }).map((_, i) => (
             <path key={i} d={`M-30 ${10 + i * 36} Q 70 ${-24 + i * 36} 150 ${10 + i * 36} T 330 ${10 + i * 36}`} />
           ))}
+        </g>
+      </>
+    );
+  }
+  if (family === "canvas") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#aura-${id})`} opacity="0.85" />
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.4" />
+        <g fill="none" stroke={p.line} strokeWidth="0.7" opacity="0.12">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <circle key={i} cx="150" cy="200" r={72 + i * 30} />
+          ))}
+        </g>
+      </>
+    );
+  }
+  if (family === "wave") {
+    return (
+      <>
+        <rect width="300" height="420" fill={`url(#fluid-${id})`} opacity="0.9" />
+        <g fill="none" stroke={p.check} strokeWidth="6" opacity="0.32" filter={`url(#liq-${id})`}>
+          {Array.from({ length: 9 }).map((_, i) => (
+            <path key={i} d={`M-30 ${24 + i * 50} Q 80 ${-12 + i * 50} 150 ${24 + i * 50} T 330 ${24 + i * 50}`} />
+          ))}
+        </g>
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
+      </>
+    );
+  }
+  if (family === "stardust") {
+    return (
+      <>
+        <rect width="300" height="420" fill={p.base} />
+        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
+        <g fill={p.gold ?? p.line} opacity="0.5">
+          {Array.from({ length: 42 }).map((_, i) => {
+            const x = ((i * 97) % 290) + 5;
+            const y = ((i * 173) % 405) + 8;
+            const r = i % 5 === 0 ? 1.5 : 0.8;
+            return <circle key={i} cx={x} cy={y} r={r} />;
+          })}
         </g>
       </>
     );
