@@ -53,6 +53,10 @@ describe("card backs", () => {
     expect(html).toContain(`url(#grain-${pattern})`);
   });
 
+  it.each(PATTERNS)("%s declares its own central symbol", (pattern) => {
+    expect(render(pattern)).toContain(`data-card-symbol="${pattern}"`);
+  });
+
   it("renders unfiltered gold accents only on unfiltered decks", () => {
     for (const p of PATTERNS) {
       const hasGold = render(p).includes(`gold-${p}`);

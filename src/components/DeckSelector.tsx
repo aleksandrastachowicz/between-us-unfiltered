@@ -24,7 +24,6 @@ const t = {
       "Poziom wybierasz w trakcie gry — steruje intensywnością i wpływa też na pozostałe losowane pytania.",
     start: "Rozpocznij grę",
     none: "Wybierz przynajmniej jedną talię",
-    adult: "18+",
   },
   en: {
     title: "Between Us",
@@ -42,7 +41,6 @@ const t = {
       "You pick the level during play — it drives intensity and also shapes the other questions drawn.",
     start: "Start playing",
     none: "Select at least one deck",
-    adult: "18+",
   },
 };
 
@@ -199,7 +197,7 @@ export function DeckSelector() {
             </div>
           )}
         </DeckCard>
-        <DeckCard id="unfiltered" title={c.unf} desc={c.unfD} badge={c.adult}>
+        <DeckCard id="unfiltered" title={c.unf} desc={c.unfD}>
           {decks.unfiltered && (
             <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
               <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
