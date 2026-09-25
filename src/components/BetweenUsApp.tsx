@@ -17,9 +17,14 @@ export function BetweenUsApp() {
   usePlayerProfileSync();
 
   useEffect(() => {
-    useGame.persist.rehydrate();
-    void resumeRoom();
-    setReady(true);
+    let active = true;
+    void useGame.persist.rehydrate().then(async () => {
+      await resumeRoom();
+      if (active) setReady(true);
+    });
+    return () => {
+      active = false;
+    };
   }, [resumeRoom]);
 
   useEffect(() => {
