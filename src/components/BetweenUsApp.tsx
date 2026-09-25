@@ -18,7 +18,7 @@ export function BetweenUsApp() {
 
   useEffect(() => {
     let active = true;
-    void useGame.persist.rehydrate().then(async () => {
+    void Promise.resolve(useGame.persist.rehydrate()).then(async () => {
       await resumeRoom();
       if (active) setReady(true);
     });
