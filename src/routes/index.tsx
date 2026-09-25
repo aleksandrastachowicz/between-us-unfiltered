@@ -17,8 +17,6 @@ export const Route = createFileRoute("/")({
         content:
           "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,

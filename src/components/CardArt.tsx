@@ -285,14 +285,14 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
             <Spark x={22} y={-40} s={0.6} ink={gold!} />
           </g>
         );
-      case "uf_after_dark": // open eye, falling tear and protective arches
+      case "uf_after_dark": // third eye in a crescent moon, gold frame
         return (
           <g {...stroke} stroke={gold}>
-            <path d="M-42 -4 C-20 -28 20 -28 42 -4 C20 20 -20 20 -42 -4 Z" strokeWidth="1.8" />
-            <circle cy="-4" r="11" strokeWidth="1.4" />
-            <circle cy="-4" r="4" fill={gold} stroke="none" />
-            <path d="M0 9 C-8 20 -8 29 0 36 C8 29 8 20 0 9 Z" strokeWidth="1.3" />
-            <path d="M-34 -28 Q0 -48 34 -28 M-28 26 Q0 46 28 26" strokeWidth="1" opacity="0.7" />
+            <path d="M20 -42 A46 46 0 1 0 20 42 A36 36 0 1 1 20 -42 Z" strokeWidth="1.3" opacity="0.8" />
+            <path d="M-28 0 C-14 -17 14 -17 28 0 C14 17 -14 17 -28 0 Z" strokeWidth="1.7" />
+            <circle r="9" strokeWidth="1.4" />
+            <circle r="3.4" fill={gold} stroke="none" />
+            <Spark x={0} y={-32} s={0.7} ink={gold!} />
           </g>
         );
       case "uf_no_limits": // geometric 8-pointed starburst
@@ -315,7 +315,7 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
   };
 
   return (
-    <g data-card-symbol={pattern} transform="translate(150 200) scale(1.12)">
+    <g transform="translate(150 200) scale(1.12)">
       <Halo ink={ink} gold={gold} />
       {body()}
     </g>
@@ -434,6 +434,18 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       {/* per-deck background family: checker | daisy | aura | fluid */}
       <Field id={id} p={p} />
 
+      {/* scattered retro starbursts */}
+      <g opacity="0.8">
+        <Starburst x={46} y={64} s={1} ink={p.line} />
+        <Starburst x={252} y={110} s={0.7} ink={p.line} rays={10} />
+        <Starburst x={40} y={330} s={0.8} ink={p.line} rays={10} />
+        <Starburst x={258} y={362} s={1} ink={p.line} />
+        <Spark x={150} y={44} s={0.9} ink={p.line} />
+        <Spark x={150} y={382} s={0.9} ink={p.line} />
+        <Spark x={274} y={220} s={0.7} ink={p.line} />
+        <Spark x={26} y={208} s={0.7} ink={p.line} />
+      </g>
+
       <Symbol pattern={pattern} p={p} />
 
       {/* gold shimmer smoke for unfiltered */}
@@ -475,23 +487,19 @@ function CardBack({
         style={{ border: `1.5px solid ${p.gold ?? ink}`, opacity: p.gold ? 0.55 : 0.34 }}
       />
       <div
-        className="relative z-10 flex h-full flex-col items-center justify-between px-5 py-6 text-center"
+        className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
         style={{
           color: ink,
           fontFamily: "var(--font-sans)",
           textShadow: `0 1px 10px ${p.base}, 0 0 2px ${p.base}`,
         }}
       >
-        <span
-          className="rounded-full px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.28em]"
-          style={{ background: `color-mix(in srgb, ${p.base} 82%, transparent)`, border: `1px solid color-mix(in srgb, ${ink} 34%, transparent)` }}
-        >{edition}</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.85 }}>
+          {edition}
+        </span>
         <div className="flex-1" />
-        <div
-          className="flex max-w-full flex-col items-center gap-2 rounded-2xl px-4 py-3"
-          style={{ background: `color-mix(in srgb, ${p.base} 88%, transparent)`, border: `1px solid color-mix(in srgb, ${ink} 28%, transparent)` }}
-        >
-          <span className="max-w-[92%] text-balance text-[16px] font-black uppercase leading-tight tracking-[0.06em]">
+        <div className="flex flex-col items-center gap-2">
+          <span className="max-w-[85%] text-balance text-[16px] font-extrabold uppercase leading-tight tracking-[0.08em]">
             {category}
           </span>
           <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.75 }}>
