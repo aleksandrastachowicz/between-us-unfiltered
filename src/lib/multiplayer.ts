@@ -79,6 +79,7 @@ interface MpState {
   error: string | null;
   createRoom: () => Promise<string | null>;
   joinRoom: (code: string) => Promise<boolean>;
+  resumeRoom: () => Promise<boolean>;
   leaveRoom: () => void;
 }
 
@@ -87,6 +88,15 @@ let unsubStore: (() => void) | null = null;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 let lastPushed: string = "";
 let hostToken: string | null = null;
+const ROOM_STORAGE_KEY = "between-us-room";
+
+function rememberRoom(code: string) {
+  if (typeof window !== "undefined") window.sessionStorage.setItem(ROOM_STORAGE_KEY, code);
+}
+
+function forgetRoom() {
+  if (typeof window !== "undefined") window.sessionStorage.removeItem(ROOM_STORAGE_KEY);
+}
 
 function teardown() {
   if (channel) {
@@ -143,7 +153,7 @@ function startSyncing(code: string) {
     .subscribe();
 }
 
-export const useMultiplayer = create<MpState>((set) => ({
+export const useMultiplayer = create<MpState>((set, get) => ({
   code: null,
   status: "idle",
   isHost: false,
@@ -166,6 +176,7 @@ export const useMultiplayer = create<MpState>((set) => ({
     }
     hostToken = row.host_token;
     startSyncing(row.code);
+    rememberRoom(row.code);
     set({ code: row.code, status: "connected", isHost: true });
     return row.code;
   },
@@ -187,12 +198,24 @@ export const useMultiplayer = create<MpState>((set) => ({
     lastPushed = JSON.stringify(row.state);
     applyShared(row.state);
     startSyncing(code);
+    rememberRoom(code);
     set({ code, status: "connected", isHost: false });
     return true;
   },
 
+  resumeRoom: async () => {
+    if (typeof window === "undefined") return false;
+    if (get().status === "connected" || get().status === "connecting") return true;
+    const savedCode = window.sessionStorage.getItem(ROOM_STORAGE_KEY);
+    if (!savedCode) return false;
+    const joined = await get().joinRoom(savedCode);
+    if (!joined) forgetRoom();
+    return joined;
+  },
+
   leaveRoom: () => {
     teardown();
+    forgetRoom();
     lastPushed = "";
     set({ code: null, status: "idle", isHost: false, error: null });
   },

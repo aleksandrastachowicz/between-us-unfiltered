@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useGame } from "@/lib/store";
 import { setHapticsEnabled } from "@/lib/haptics";
 import { usePlayerProfileSync } from "@/lib/profile";
+import { useMultiplayer } from "@/lib/multiplayer";
 import { AuraBackground } from "./AuraBackground";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
@@ -12,12 +13,14 @@ export function BetweenUsApp() {
   const mode = useGame((s) => s.mode);
   const screen = useGame((s) => s.screen);
   const hapticsEnabled = useGame((s) => s.hapticsEnabled);
+  const resumeRoom = useMultiplayer((s) => s.resumeRoom);
   usePlayerProfileSync();
 
   useEffect(() => {
     useGame.persist.rehydrate();
+    void resumeRoom();
     setReady(true);
-  }, []);
+  }, [resumeRoom]);
 
   useEffect(() => {
     setHapticsEnabled(hapticsEnabled);
