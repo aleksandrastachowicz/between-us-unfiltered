@@ -14,11 +14,55 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_session_events: {
+        Row: {
+          action: string
+          action_id: string
+          code: string
+          created_at: string
+          narrator: Json
+          revision: number
+          round_number: number
+          state: Json
+        }
+        Insert: {
+          action: string
+          action_id: string
+          code: string
+          created_at?: string
+          narrator: Json
+          revision: number
+          round_number: number
+          state: Json
+        }
+        Update: {
+          action?: string
+          action_id?: string
+          code?: string
+          created_at?: string
+          narrator?: Json
+          revision?: number
+          round_number?: number
+          state?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_session_events_code_fkey"
+            columns: ["code"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       game_sessions: {
         Row: {
           code: string
           created_at: string
           host_token: string
+          narrator: Json
+          revision: number
+          round_number: number
           state: Json
           updated_at: string
         }
@@ -26,6 +70,9 @@ export type Database = {
           code: string
           created_at?: string
           host_token?: string
+          narrator?: Json
+          revision?: number
+          round_number?: number
           state?: Json
           updated_at?: string
         }
@@ -33,6 +80,9 @@ export type Database = {
           code?: string
           created_at?: string
           host_token?: string
+          narrator?: Json
+          revision?: number
+          round_number?: number
           state?: Json
           updated_at?: string
         }
@@ -64,6 +114,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      commit_session_v2: {
+        Args: {
+          _action: string
+          _action_id: string
+          _code: string
+          _expected_revision: number
+          _narrator: Json
+          _state: Json
+          _token: string
+        }
+        Returns: Json
+      }
       create_session: {
         Args: { _state: Json }
         Returns: {
@@ -78,6 +140,10 @@ export type Database = {
           host_token: string
           state: Json
         }[]
+      }
+      read_session_v2: {
+        Args: { _code: string; _token: string }
+        Returns: Json
       }
       update_session: {
         Args: { _code: string; _host_token: string; _state: Json }
