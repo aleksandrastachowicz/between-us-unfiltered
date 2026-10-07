@@ -4,6 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/auth")({
+  head: () => ({ meta: [
+    { title: "Sign In — Between Us" },
+    { name: "description", content: "Sign in to Between Us to save your players and conversation game preferences." },
+    { property: "og:title", content: "Sign In — Between Us" },
+    { property: "og:description", content: "Keep your Between Us players and conversation preferences together." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
     next: typeof s.next === "string" ? s.next : "",
