@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { memo } from "react";
+import { CARD_TEXTURES } from "./card-textures";
 import { motion } from "motion/react";
 import type { CategoryId } from "@/data/questions";
 import type { UnfilteredQuestion } from "@/data/unfiltered";
@@ -48,49 +49,6 @@ const PALETTE: Record<PatternKey, Palette> = {
 function Defs({ id, p }: { id: string; p: Palette }) {
   return (
     <defs>
-      {/* liquid displacement for the checkerboard waves */}
-      <filter id={`liq-${id}`} x="-20%" y="-20%" width="140%" height="140%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.014" numOctaves="2" seed="7" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-      {/* heavy print grain */}
-      <filter id={`grain-${id}`} x="0" y="0" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" result="g" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      {/* soft aura wash */}
-      <radialGradient id={`wash-${id}`} cx="50%" cy="36%" r="72%">
-        <stop offset="0%" stopColor={p.wash} stopOpacity="0.85" />
-        <stop offset="100%" stopColor={p.wash} stopOpacity="0" />
-      </radialGradient>
-      {/* checkerboard tile */}
-      <pattern id={`chk-${id}`} width="48" height="48" patternUnits="userSpaceOnUse">
-        <rect width="48" height="48" fill={p.base} />
-        <rect width="24" height="24" fill={p.check} fillOpacity="0.9" />
-        <rect x="24" y="24" width="24" height="24" fill={p.check} fillOpacity="0.9" />
-      </pattern>
-      {/* retro daisy grid tile */}
-      <pattern id={`daisy-${id}`} width="60" height="60" patternUnits="userSpaceOnUse">
-        <rect width="60" height="60" fill={p.base} />
-        <g transform="translate(30 30)" fill={p.check}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <ellipse key={i} rx="5.5" ry="12" transform={`rotate(${i * 45}) translate(0 -12)`} />
-          ))}
-          <circle r="5" fill={p.wash} />
-        </g>
-      </pattern>
-      {/* pulsating aura gradient field */}
-      <radialGradient id={`aura-${id}`} cx="50%" cy="34%" r="88%">
-        <stop offset="0%" stopColor={p.check} stopOpacity="0.95" />
-        <stop offset="45%" stopColor={p.wash} stopOpacity="0.7" />
-        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
-      </radialGradient>
-      {/* psychedelic fluid field */}
-      <linearGradient id={`fluid-${id}`} x1="0" y1="0" x2="0.4" y2="1">
-        <stop offset="0%" stopColor={p.check} stopOpacity="0.85" />
-        <stop offset="55%" stopColor={p.wash} stopOpacity="0.8" />
-        <stop offset="100%" stopColor={p.base} stopOpacity="1" />
-      </linearGradient>
       {/* legibility scrim so category text always reads on the field */}
       <linearGradient id={`scrim-${id}`} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor={p.base} stopOpacity="0.55" />
@@ -281,8 +239,8 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
             <path d="M0 -4 C-12 -12 -10 -26 0 -34 C10 -26 12 -12 0 -4 Z" />
             <path d="M0 -10 C-5 -16 -4 -23 0 -28 C4 -23 5 -16 0 -10 Z" strokeWidth="1" opacity="0.8" />
             <path d="M-18 -18 C-26 -26 -22 -36 -14 -40 M18 -18 C26 -26 22 -36 14 -40" strokeWidth="1" opacity="0.6" />
-            <Spark x={-22} y={-42} s={0.7} ink={gold!} />
-            <Spark x={22} y={-40} s={0.6} ink={gold!} />
+            <Spark x={-22} y={-42} s={0.7} ink={gold ?? ink} />
+            <Spark x={22} y={-40} s={0.6} ink={gold ?? ink} />
           </g>
         );
       case "uf_after_dark": // third eye in a crescent moon, gold frame
@@ -292,7 +250,7 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
             <path d="M-28 0 C-14 -17 14 -17 28 0 C14 17 -14 17 -28 0 Z" strokeWidth="1.7" />
             <circle r="9" strokeWidth="1.4" />
             <circle r="3.4" fill={gold} stroke="none" />
-            <Spark x={0} y={-32} s={0.7} ink={gold!} />
+            <Spark x={0} y={-32} s={0.7} ink={gold ?? ink} />
           </g>
         );
       case "uf_no_limits": // geometric 8-pointed starburst
@@ -315,7 +273,7 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
   };
 
   return (
-    <g transform="translate(150 200) scale(1.12)">
+    <g transform="translate(150 200) scale(1.12)" data-central-symbol={pattern}>
       <Halo ink={ink} gold={gold} />
       {body()}
     </g>
@@ -323,116 +281,27 @@ function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
 }
 
 /* ---------------- full reverse artwork ---------------- */
-function Field({ id, p }: { id: string; p: Palette }) {
-  const family = p.bg ?? "checker";
-  if (family === "daisy") {
-    return (
-      <>
-        <rect width="300" height="420" fill={`url(#daisy-${id})`} opacity="0.9" />
-        <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.16">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <path key={i} d={`M-30 ${30 + i * 62} Q 90 ${0 + i * 62} 150 ${30 + i * 62} T 330 ${30 + i * 62}`} />
-          ))}
-        </g>
-      </>
-    );
-  }
-  if (family === "aura") {
-    return (
-      <>
-        <rect width="300" height="420" fill={`url(#aura-${id})`} />
-        <g fill="none" stroke={p.line} strokeWidth="0.8" opacity="0.2">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <circle key={i} cx="150" cy="150" r={54 + i * 26} />
-          ))}
-        </g>
-      </>
-    );
-  }
-  if (family === "fluid") {
-    return (
-      <>
-        <rect width="300" height="420" fill={`url(#fluid-${id})`} />
-        <g fill="none" stroke={p.line} strokeWidth="1.1" opacity="0.26" filter={`url(#liq-${id})`}>
-          {Array.from({ length: 13 }).map((_, i) => (
-            <path key={i} d={`M-30 ${10 + i * 36} Q 70 ${-24 + i * 36} 150 ${10 + i * 36} T 330 ${10 + i * 36}`} />
-          ))}
-        </g>
-      </>
-    );
-  }
-  if (family === "canvas") {
-    return (
-      <>
-        <rect width="300" height="420" fill={`url(#aura-${id})`} opacity="0.85" />
-        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.4" />
-        <g fill="none" stroke={p.line} strokeWidth="0.7" opacity="0.12">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <circle key={i} cx="150" cy="200" r={72 + i * 30} />
-          ))}
-        </g>
-      </>
-    );
-  }
-  if (family === "wave") {
-    return (
-      <>
-        <rect width="300" height="420" fill={`url(#fluid-${id})`} opacity="0.9" />
-        <g fill="none" stroke={p.check} strokeWidth="6" opacity="0.32" filter={`url(#liq-${id})`}>
-          {Array.from({ length: 9 }).map((_, i) => (
-            <path key={i} d={`M-30 ${24 + i * 50} Q 80 ${-12 + i * 50} 150 ${24 + i * 50} T 330 ${24 + i * 50}`} />
-          ))}
-        </g>
-        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
-      </>
-    );
-  }
-  if (family === "stardust") {
-    return (
-      <>
-        <rect width="300" height="420" fill={p.base} />
-        <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.35" />
-        <g fill={p.gold ?? p.line} opacity="0.5">
-          {Array.from({ length: 42 }).map((_, i) => {
-            const x = ((i * 97) % 290) + 5;
-            const y = ((i * 173) % 405) + 8;
-            const r = i % 5 === 0 ? 1.5 : 0.8;
-            return <circle key={i} cx={x} cy={y} r={r} />;
-          })}
-        </g>
-      </>
-    );
-  }
-  return (
-    <>
-      <g filter={`url(#liq-${id})`} opacity="0.5">
-        <rect x="-40" y="-40" width="380" height="500" fill={`url(#chk-${id})`} />
-      </g>
-      <g fill="none" stroke={p.line} strokeWidth="0.9" opacity="0.18" filter={`url(#liq-${id})`}>
-        {Array.from({ length: 11 }).map((_, i) => (
-          <path key={i} d={`M-30 ${18 + i * 42} Q 80 ${-8 + i * 42} 150 ${18 + i * 42} T 330 ${18 + i * 42}`} />
-        ))}
-      </g>
-      <rect width="300" height="420" fill={`url(#wash-${id})`} opacity="0.55" />
-    </>
-  );
-}
-
-function DeckArt({ pattern }: { pattern: PatternKey }) {
+const DeckArt = memo(function DeckArt({ pattern }: { pattern: PatternKey }) {
   const id = pattern;
   const p = PALETTE[pattern];
   return (
     <svg
       viewBox="0 0 300 420"
-      className="absolute inset-0 h-full w-full"
+      className="absolute inset-0 h-full w-full transform-gpu"
+      data-card-pattern={pattern}
+      data-background-family={p.bg ?? "checker"}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden
     >
       <Defs id={id} p={p} />
-      <rect width="300" height="420" fill={p.base} />
-
-      {/* per-deck background family: checker | daisy | aura | fluid */}
-      <Field id={id} p={p} />
+      {/* Grain and displacement are baked once, decoded/cached by the browser. */}
+      <image
+        href={CARD_TEXTURES[pattern]}
+        width="300"
+        height="420"
+        preserveAspectRatio="xMidYMid slice"
+        data-cached-texture={pattern}
+      />
 
       {/* scattered retro starbursts */}
       <g opacity="0.8">
@@ -459,12 +328,9 @@ function DeckArt({ pattern }: { pattern: PatternKey }) {
       {/* legibility scrim under the top/bottom typography */}
       <rect width="300" height="420" fill={`url(#scrim-${id})`} />
 
-      {/* heavy procedural print grain */}
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.22" style={{ mixBlendMode: "overlay" }} />
-      <rect width="300" height="420" filter={`url(#grain-${id})`} opacity="0.1" style={{ mixBlendMode: "multiply" }} />
     </svg>
   );
-}
+});
 
 function CardBack({
   pattern,
@@ -511,7 +377,7 @@ function CardBack({
   );
 }
 
-export function CardArt({
+export const CardArt = memo(function CardArt({
   pattern,
   edition,
   category,
@@ -523,7 +389,7 @@ export function CardArt({
   hint: string;
 }) {
   return <CardBack pattern={pattern} edition={edition} category={category} hint={hint} />;
-}
+});
 
 /* Compact card-back preview for the deck selector. */
 export function CardArtPreview({

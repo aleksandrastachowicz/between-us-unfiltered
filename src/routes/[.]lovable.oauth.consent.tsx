@@ -17,6 +17,14 @@ type OAuthApi = {
 const oauth = (supabase.auth as unknown as { oauth: OAuthApi }).oauth;
 
 export const Route = createFileRoute("/.lovable/oauth/consent")({
+  head: () => ({ meta: [
+    { title: "Authorize a Connection — Between Us" },
+    { name: "description", content: "Review and authorize an app connection to your Between Us account." },
+    { property: "og:title", content: "Authorize a Connection — Between Us" },
+    { property: "og:description", content: "Review access before connecting an app to Between Us." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
     authorization_id: typeof s.authorization_id === "string" ? s.authorization_id : "",
