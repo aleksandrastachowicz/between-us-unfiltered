@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -34,7 +35,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -87,8 +88,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Between Us — Conversation Game for Deep Connections" },
       { name: "twitter:description", content: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/29156246-1d42-45e5-9710-ac209bf4c11d/id-preview-be996769--3fca52ab-4ba1-45c0-9177-984f603c1fbd.lovable.app-1783416359781.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/29156246-1d42-45e5-9710-ac209bf4c11d/id-preview-be996769--3fca52ab-4ba1-45c0-9177-984f603c1fbd.lovable.app-1783416359781.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
