@@ -4,7 +4,13 @@
 - [x] Apply required package update and check the app.
 
 # Durable multiplayer rounds
+- Prior request remains separate from the current visual/translation QA; unfinished gameplay work is deferred.
 - [ ] Persist versioned sessions and round records in the cloud with atomic updates.
 - [ ] Add multiplayer round actions, interactive narrator and next-round control.
 - [ ] Restore sessions after refresh or interrupted connections without losing rounds.
 - [ ] Test two-player play, concurrent actions and reconnect recovery.
+
+# Mobile, themes and English QA
+- [ ] Test phone layouts and fix clipping, card text overflow and motion issues.
+- [ ] Verify theme contrast and all card-back patterns.
+- [ ] Simplify inaccurate or awkward English questions and verify regressions.
