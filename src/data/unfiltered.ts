@@ -73,7 +73,7 @@ const TOPICS: Record<UnfilteredLevel, Frag[]> = {
     { pl: "moment, gdy poczułeś/aś prawdziwą chemię", en: "the moment you felt real chemistry" },
     { pl: "subtelne gesty, które Cię urzekają", en: "the subtle gestures that win you over" },
     { pl: "napięcie tuż przed pierwszym pocałunkiem", en: "the tension right before a first kiss" },
-    { pl: "rodzaj uwagi, który sprawia, że tajesz", en: "the kind of attention that melts you" },
+    { pl: "rodzaj uwagi, który sprawia, że tajesz", en: "the kind of attention that makes you melt" },
   ],
   after_dark: [
     { pl: "poczucie bezpieczeństwa przy drugiej osobie", en: "feeling safe with another person" },
