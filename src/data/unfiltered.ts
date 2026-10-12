@@ -55,7 +55,7 @@ const SEED: Record<UnfilteredLevel, QuestionText[]> = {
     { pl: "Czym dla Ciebie jest bezpieczeństwo emocjonalne w bliskich relacjach?", en: "What does emotional safety mean to you in close relationships?" },
   ],
   no_limits: [
-    { pl: "Jakie jest pragnienie, którego nigdy w pełni nie wyraziłeś/aś głośno?", en: "What's a desire you've never fully expressed?" },
+    { pl: "Jakie jest pragnienie, którego nigdy w pełni nie wyraziłeś/aś głośno?", en: "What's a desire you've never fully expressed out loud?" },
     { pl: "Jak myślisz, jakich tematów ludzie najbardziej unikają w rozmowach o związkach?", en: "What's something you think people avoid talking about in relationships?" },
     { pl: "Co oznacza dla Ciebie prawdziwe dopasowanie i kompatybilność?", en: "What does true compatibility mean to you?" },
     { pl: "Jakie przekonanie na temat relacji zmieniłeś/aś wraz z upływem czasu?", en: "What's a belief about relationships you've changed over time?" },
@@ -97,7 +97,7 @@ const FRAMES: Frag[] = [
   { pl: "Co {topic} mówi o tym, czego naprawdę szukasz?", en: "What does {topic} reveal about what you're really looking for?" },
   { pl: "Opowiedz o chwili, kiedy {topic} całkowicie Cię zaskoczyło.", en: "Tell me about a time {topic} caught you completely off guard." },
   { pl: "Jak zmieniło się Twoje podejście do tego, czym jest {topic}?", en: "How has your understanding of {topic} changed over time?" },
-  { pl: "Czego chciałbyś/ałabyś, żeby druga osoba zrozumiała o {topic} w Twoim przypadku?", en: "What do you wish a partner understood about {topic} for you?" },
+  { pl: "Czego chciałbyś/ałabyś, żeby druga osoba zrozumiała o {topic} w Twoim przypadku?", en: "What do you wish a partner understood about your experience with {topic}?" },
   { pl: "Kiedy ostatnio naprawdę poczułeś/aś {topic}?", en: "When did you last truly feel {topic}?" },
   { pl: "Co sprawia, że {topic} jest dla Ciebie bezpieczne i ekscytujące zarazem?", en: "What makes {topic} feel both safe and exciting for you?" },
 ];

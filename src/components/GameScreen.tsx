@@ -11,6 +11,7 @@ import { FavoritesView } from "./FavoritesView";
 import { InsightsView } from "./InsightsView";
 import { useAuth } from "@/lib/useAuth";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { Button } from "./ui/button";
 
 const t = {
   pl: {
@@ -56,16 +57,16 @@ export function GameScreen() {
 
   return (
     <div
-      className="relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 sm:px-5"
+      className="game-screen relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 sm:px-5"
       style={{
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
       }}
     >
-      <header className="mb-2 flex items-center justify-between">
-        <button onClick={handleBack} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
+      <header className="mb-2 grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
+        <Button variant="secondary" size="icon" aria-label={lang === "pl" ? "Wróć do wyboru talii" : "Back to deck selection"} onClick={handleBack} className="h-11 w-11 rounded-full">
           <ChevronLeft className="h-5 w-5" />
-        </button>
+        </Button>
         {players.length > 0 ? (
           <AnimatePresence mode="wait">
             <motion.div
@@ -73,7 +74,7 @@ export function GameScreen() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
-              className="rounded-full px-4 py-2 text-sm font-bold"
+              className="min-w-0 truncate rounded-full px-3 py-2 text-center text-sm font-bold"
               style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
             >
               {c.turn}: {players[currentPlayer]}
@@ -89,14 +90,14 @@ export function GameScreen() {
             Between Us
           </button>
         )}
-        <button onClick={() => setSettingsOpen(true)} className="rounded-full p-2.5" style={{ background: "var(--panel)" }}>
+        <Button variant="secondary" size="icon" aria-label={lang === "pl" ? "Ustawienia" : "Settings"} onClick={() => setSettingsOpen(true)} className="h-11 w-11 rounded-full">
           <Cog className="h-5 w-5" />
-        </button>
+        </Button>
       </header>
 
       {activeTab === "play" && decks.unfiltered && (
         <div className="mb-4 rounded-2xl p-3" style={{ background: "var(--panel)" }}>
-          <div className="mb-1.5 flex items-center justify-between text-xs">
+          <div className="mb-1.5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-xs">
             <span className="font-bold">{lvlMeta.emoji} {lvlMeta.label[lang]}</span>
             <span style={{ color: "var(--muted-text)" }}>{c.progress}: {progress}</span>
           </div>
@@ -107,11 +108,12 @@ export function GameScreen() {
             value={progress}
             onChange={(e) => setProgress(Number(e.target.value))}
             className="w-full accent-[var(--accent)]"
+            aria-label={c.progress}
           />
         </div>
       )}
 
-      <div className="flex flex-1 flex-col items-center justify-center overflow-visible py-2">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible py-1">
         {activeTab === "play" && (
           <AnimatePresence mode="wait">
             {card && (
@@ -121,7 +123,7 @@ export function GameScreen() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92, y: -20 }}
                 transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                className="w-full px-2 py-4"
+                className="w-full px-2 py-2"
               >
                 <PlayingCard card={card} />
               </motion.div>
@@ -134,7 +136,7 @@ export function GameScreen() {
       </div>
 
       {activeTab === "play" && (
-      <div className="mt-6 flex items-center gap-3">
+      <div className="mt-3 flex shrink-0 items-center gap-3">
         <AnimatePresence initial={false}>
           {canGoBack && (
             <motion.button
