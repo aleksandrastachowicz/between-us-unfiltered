@@ -11,6 +11,6 @@
 - [ ] Test two-player play, concurrent actions and reconnect recovery.
 
 # Mobile, themes and English QA
-- [ ] Test phone layouts and fix clipping, card text overflow and motion issues.
-- [ ] Verify theme contrast and all card-back patterns.
-- [ ] Simplify inaccurate or awkward English questions and verify regressions.
+- [x] Test phone layouts and fix clipping, card text overflow and motion issues.
+- [x] Verify theme contrast and all card-back patterns.
+- [x] Simplify inaccurate or awkward English questions and verify regressions.
