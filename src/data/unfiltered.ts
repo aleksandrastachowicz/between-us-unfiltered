@@ -49,14 +49,14 @@ const SEED: Record<UnfilteredLevel, QuestionText[]> = {
   ],
   after_dark: [
     { pl: "Co pomaga Ci poczuć się całkowicie bezpiecznie, gdy otwierasz się przed drugą osobą?", en: "What helps you feel completely safe opening up to someone?" },
-    { pl: "Czego się dowiedziałeś/aś o swoich własnych potrzebach intymnych w związkach?", en: "What's something you've learned about your own needs in relationships?" },
+    { pl: "Czego się dowiedziałeś/aś o swoich własnych potrzebach intymnych w związkach?", en: "What have you learned about your needs for intimacy in relationships?" },
     { pl: "Co sprawia, że czujesz się naprawdę pożądany/a w relacji?", en: "What makes you feel truly desired in a relationship?" },
-    { pl: "Co było dla Ciebie najtrudniejsze do skomunikowania w sferze intymnej?", en: "What's something you've found hard to communicate in intimacy?" },
+    { pl: "Co było dla Ciebie najtrudniejsze do skomunikowania w sferze intymnej?", en: "What has been hardest for you to communicate about intimacy?" },
     { pl: "Czym dla Ciebie jest bezpieczeństwo emocjonalne w bliskich relacjach?", en: "What does emotional safety mean to you in close relationships?" },
   ],
   no_limits: [
     { pl: "Jakie jest pragnienie, którego nigdy w pełni nie wyraziłeś/aś głośno?", en: "What's a desire you've never fully expressed out loud?" },
-    { pl: "Jak myślisz, jakich tematów ludzie najbardziej unikają w rozmowach o związkach?", en: "What's something you think people avoid talking about in relationships?" },
+    { pl: "Jak myślisz, jakich tematów ludzie najbardziej unikają w rozmowach o związkach?", en: "Which topics do you think people avoid most when talking about relationships?" },
     { pl: "Co oznacza dla Ciebie prawdziwe dopasowanie i kompatybilność?", en: "What does true compatibility mean to you?" },
     { pl: "Jakie przekonanie na temat relacji zmieniłeś/aś wraz z upływem czasu?", en: "What's a belief about relationships you've changed over time?" },
     { pl: "Jaki rodzaj emocjonalnej szczerości przychodzi Ci z największym trudem?", en: "What kind of emotional honesty feels hardest for you?" },
@@ -79,7 +79,7 @@ const TOPICS: Record<UnfilteredLevel, Frag[]> = {
     { pl: "poczucie bezpieczeństwa przy drugiej osobie", en: "feeling safe with another person" },
     { pl: "komunikowanie swoich potrzeb intymnych", en: "communicating your intimate needs" },
     { pl: "granice, które są dla Ciebie ważne", en: "the boundaries that matter to you" },
-    { pl: "to, co sprawia, że czujesz się pożądany/a", en: "what makes you feel truly desired" },
+    { pl: "to, co sprawia, że czujesz się pożądany/a", en: "what makes you feel desired" },
     { pl: "zaufanie, które buduje bliskość", en: "the trust that builds closeness" },
     { pl: "pragnienia, o których trudno mówić", en: "desires that are hard to talk about" },
   ],
@@ -88,18 +88,18 @@ const TOPICS: Record<UnfilteredLevel, Frag[]> = {
     { pl: "prawdziwa kompatybilność na dłuższą metę", en: "real long-term compatibility" },
     { pl: "lęki, które ukrywasz w związkach", en: "the fears you hide in relationships" },
     { pl: "wartości, których nigdy byś nie poświęcił/a", en: "values you would never compromise" },
-    { pl: "wrażliwość, którą rzadko komuś pokazujesz", en: "the vulnerability you rarely show" },
-    { pl: "szczerość, która przychodzi z największym trudem", en: "the honesty that comes hardest" },
+    { pl: "wrażliwość, którą rzadko komuś pokazujesz", en: "the vulnerability you rarely show others" },
+    { pl: "szczerość, która przychodzi z największym trudem", en: "the honesty you find hardest to express" },
   ],
 };
 
 const FRAMES: Frag[] = [
-  { pl: "Co {topic} mówi o tym, czego naprawdę szukasz?", en: "What does {topic} reveal about what you're really looking for?" },
-  { pl: "Opowiedz o chwili, kiedy {topic} całkowicie Cię zaskoczyło.", en: "Tell me about a time {topic} caught you completely off guard." },
-  { pl: "Jak zmieniło się Twoje podejście do tego, czym jest {topic}?", en: "How has your understanding of {topic} changed over time?" },
-  { pl: "Czego chciałbyś/ałabyś, żeby druga osoba zrozumiała o {topic} w Twoim przypadku?", en: "What do you wish a partner understood about your experience with {topic}?" },
-  { pl: "Kiedy ostatnio naprawdę poczułeś/aś {topic}?", en: "When did you last truly feel {topic}?" },
-  { pl: "Co sprawia, że {topic} jest dla Ciebie bezpieczne i ekscytujące zarazem?", en: "What makes {topic} feel both safe and exciting for you?" },
+  { pl: "Co {topic} mówi o tym, czego naprawdę szukasz?", en: "When you think about {topic}, what does it tell you about what you're really looking for?" },
+  { pl: "Opowiedz o chwili, kiedy {topic} całkowicie Cię zaskoczyło.", en: "Thinking about {topic}, tell me about a time it completely surprised you." },
+  { pl: "Jak zmieniło się Twoje podejście do tego, czym jest {topic}?", en: "How has your view of {topic} changed?" },
+  { pl: "Czego chciałbyś/ałabyś, żeby druga osoba zrozumiała o {topic} w Twoim przypadku?", en: "What would you like the other person to understand about your experience with {topic}?" },
+  { pl: "Kiedy ostatnio naprawdę poczułeś/aś {topic}?", en: "Thinking about {topic}, when did you last really experience this?" },
+  { pl: "Co sprawia, że {topic} jest dla Ciebie bezpieczne i ekscytujące zarazem?", en: "When it comes to {topic}, what helps you feel both safe and excited?" },
 ];
 
 function fill(tmpl: Frag, topic: Frag): Frag {

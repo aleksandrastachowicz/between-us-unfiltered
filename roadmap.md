@@ -13,4 +13,4 @@
 # Mobile, themes and English QA
 - [x] Test phone layouts and fix clipping, card text overflow and motion issues.
 - [x] Verify theme contrast and all card-back patterns.
-- [x] Simplify inaccurate or awkward English questions and verify regressions.
+- [ ] Review every Polish–English question pair, correct meaning and naturalness, and test the English cards (current priority).
