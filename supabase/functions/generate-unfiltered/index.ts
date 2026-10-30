@@ -10,24 +10,27 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const LEVELS: Record<string, { name: string; guide: string; intensity: [number, number] }> = {
+const LEVELS: Record<string, { name: string; guide: string; intensity: [number, number]; examples: string[] }> = {
   love_spice: {
-    name: "Level I — Love & Spice",
+    name: "Level I — Iskra / Spark",
     guide:
-      "Light, warm, flirtatious. About attraction, chemistry, romance, playful tension. Keep it sweet and inviting.",
+      "Light, warm, flirtatious. Attraction, chemistry, first dates, compliments, playful tension. Fun to answer in the first minutes of a game.",
     intensity: [1, 2],
+    examples: ["Po czym poznajesz, że ktoś z Tobą flirtuje?", "Jaki komplement działa na Ciebie najmocniej?", "Co jako pierwsze przyciąga Twoją uwagę u drugiej osoby?", "Jaki drobny gest potrafi Cię oczarować?", "Jak wygląda Twoja idealna pierwsza randka?", "Co sprawia, że rozmowa z kimś nagle zaczyna iskrzyć?", "Wolisz flirt przez wiadomości czy na żywo? Dlaczego?", "Jaki zapach kojarzy Ci się z kimś, kto Ci się podobał?"],
   },
   after_dark: {
-    name: "Level II — After Dark",
+    name: "Level II — Bliżej / Closer",
     guide:
-      "Deeper emotional intimacy. About desire, safety, vulnerability, needs, trust in closeness. Sensual but never explicit.",
+      "Emotional and physical closeness, trust, tenderness, needs, boundaries and consent. Sensual but never explicit.",
     intensity: [2, 4],
+    examples: ["Jaki dotyk daje Ci największe poczucie bezpieczeństwa?", "Jak bez słów pokazujesz komuś, że go pragniesz?", "Czym dla Ciebie różni się bliskość od intymności?", "Czego potrzebujesz, żeby powiedzieć „nie” bez poczucia winy?", "Wolisz rozmawiać o granicach zanim coś się wydarzy, czy w trakcie?", "Co sprawia, że czujesz się naprawdę widziany/a przez partnera?", "Jaki moment czułości został z Tobą na długo?", "Jak przez lata zmieniały się Twoje potrzeby w bliskości?"],
   },
   no_limits: {
-    name: "Level III — No Limits",
+    name: "Level III — Bez tajemnic / No Secrets",
     guide:
-      "Most vulnerable and revealing. About unspoken desires, fears, compatibility, radical honesty. Provocative in emotional depth, still non-explicit.",
+      "Most vulnerable: fears, secrets, regrets, unspoken desires, jealousy, what love means. Deep emotional honesty, still non-explicit.",
     intensity: [3, 5],
+    examples: ["Czego najbardziej boisz się pokazać w związku?", "Jakie słowa od partnera znaczyłyby dla Ciebie najwięcej, choć nigdy o nie nie poprosisz?", "Na jaki kompromis nie pójdziesz nawet z miłości?", "Jaka prawda o Tobie mogłaby kogoś zaskoczyć?", "Kiedy ostatnio udawałeś/aś, że wszystko jest w porządku?", "Jaki lęk najczęściej sabotuje Twoje związki?", "Gdyby w Twoim związku przez tydzień obowiązywała pełna szczerość – co by się zmieniło?", "Jaki wzorzec z domu rodzinnego powtarzasz w miłości?"],
   },
 };
 
@@ -53,16 +56,23 @@ Deno.serve(async (req) => {
 Generate thought-provoking, open-ended conversation questions for: ${meta.name}.
 Tone/scope for this level: ${meta.guide}
 
+Style examples of good Polish questions for this level (match their tone, do NOT copy them):
+${meta.examples.map((e) => "- " + e).join("\n")}
+
 STRICT RULES:
-- NEVER explicit, graphic, or pornographic. No describing sexual acts or body parts crudely.
-- Emotionally intimate and psychologically insightful, not vulgar.
-- Each question must be answerable in conversation, open-ended (no yes/no).
-- Provide BOTH natural Polish (pl) and natural English (en) — real translations, not literal.
-- Vary phrasing; avoid clichés. Do not repeat any question in the avoid list.
+- NEVER explicit, graphic, or pornographic. No describing sexual acts or body parts.
+- Emotionally intimate and psychologically insightful, never vulgar.
+- Open-ended, answerable in conversation (no yes/no). One question per card, max 120 characters.
+- Polish (pl) is the primary language: natural, everyday Polish, NOT a translation from English.
+  Address the player as "Ty" with capital letters (Ty, Ci, Cię, Twój).
+  Prefer gender-neutral phrasing (e.g. "Co sprawia, że…", "Jak…", "Kiedy ostatnio…"); if a gendered verb is unavoidable, write "zrobiłeś/aś", "pewien/pewna".
+  No calques from English (e.g. avoid "podróż", "wewnętrzny żart", "być poważnym wobec kogoś").
+- English (en) is a natural translation of the meaning, not word-for-word.
+- Vary topics and phrasing; avoid clichés. Do not repeat or closely paraphrase anything in the avoid list.
 - Assign an "intensity" integer within [${meta.intensity[0]}, ${meta.intensity[1]}].`;
 
     const user = `Generate ${count} distinct questions.${
-      avoid.length ? ` Avoid anything similar to: ${avoid.slice(0, 20).join(" | ")}` : ""
+      avoid.length ? ` Avoid anything similar to: ${avoid.slice(0, 40).join(" | ")}` : ""
     }`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
