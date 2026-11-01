@@ -138,7 +138,7 @@ function DeckCard({
         }
       }}
       whileTap={{ scale: 0.99 }}
-      className="flex w-full cursor-pointer flex-col gap-2.5 rounded-[20px] p-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      className="flex w-full cursor-pointer flex-col gap-2.5 rounded-[20px] p-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] md:h-full md:gap-4 md:p-5"
       style={{
         background: "var(--card-surface)",
         border: active ? "2px solid var(--ink)" : "2px solid var(--border)",
@@ -227,27 +227,27 @@ export function DeckSelector() {
 
   return (
     <div
-      className="mx-auto flex min-h-dvh w-full max-w-lg flex-col"
+      className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl lg:max-w-5xl"
       style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
     >
-      <header className="flex items-center justify-between px-5 pt-6">
-        <h1 className="text-[26px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+      <header className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-14">
+        <h1 className="text-[26px] leading-none md:text-[44px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
           between us
         </h1>
         <AccountButton onOpen={() => setSettingsOpen(true)} />
       </header>
-      <p className="px-5 pt-2 text-[14px]" style={{ color: "var(--muted-text)" }}>
+      <p className="px-5 pt-2 text-[14px] md:px-8 md:pt-3 md:text-[18px]" style={{ color: "var(--muted-text)" }}>
         {c.tagline}
       </p>
 
       <h2
-        className="px-5 pb-3 pt-6 text-[11px] font-extrabold uppercase tracking-[0.24em]"
+        className="px-5 pb-3 pt-6 text-[11px] font-extrabold uppercase tracking-[0.24em] md:px-8 md:pb-4 md:pt-12 md:text-[12px]"
         style={{ color: "var(--muted-text)" }}
       >
         {c.pick}
       </h2>
 
-      <div className="flex flex-col gap-3 px-4 pb-36">
+      <div className="flex flex-col gap-3 px-4 pb-36 md:grid md:grid-cols-2 lg:grid-cols-3 md:items-stretch md:gap-5 md:px-8 md:pb-8">
         <DeckCard id="basic" title={c.basic} desc={c.basicD} fan={["friendship", "introspection", "love"]}>
           {BASIC_CATEGORIES.map((cat) => (
             <Chip key={cat} on={decks.basic && categories[cat]} onClick={() => toggleCat("basic", cat)}>
@@ -280,10 +280,10 @@ export function DeckSelector() {
       </div>
 
       <div
-        className="fixed inset-x-0 bottom-0 z-20"
-        style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}
+        className="fixed inset-x-0 bottom-0 z-20 border-t bg-[var(--bg)] md:static md:border-t-0 md:bg-transparent"
+        style={{ borderColor: "var(--border)" }}
       >
-        <div className="mx-auto w-full max-w-lg px-4 pt-3.5" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
+        <div className="mx-auto w-full max-w-lg px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3.5 md:max-w-sm md:px-0 md:pb-16 md:pt-4">
           <button
             type="button"
             disabled={!anyDeck}

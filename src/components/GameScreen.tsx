@@ -153,7 +153,7 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 lg:max-w-xl"
       style={{
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
@@ -194,7 +194,7 @@ export function GameScreen() {
         </RoundButton>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-3">
+      <div className={`flex min-h-0 flex-1 flex-col items-center py-3 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
         {activeTab === "play" && (
           <AnimatePresence mode="wait">
             {card && (
@@ -204,7 +204,8 @@ export function GameScreen() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -16 }}
                 transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                className="w-full max-w-[340px] px-1"
+                className="px-1"
+                style={{ width: "min(100%, 400px, calc((100dvh - 290px) * 5 / 7))" }}
               >
                 <PlayingCard card={card} />
               </motion.div>
