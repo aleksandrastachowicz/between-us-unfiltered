@@ -1,0 +1,365 @@
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import {
+  QUESTIONS,
+  type CategoryId,
+  type DeckId,
+  type Lang,
+  type Question,
+} from "@/data/questions";
+import { LEVEL_UP_CARD, nextLevel, type UnfilteredQuestion } from "@/data/unfiltered";
+import type { UnfilteredLevel } from "@/data/questions";
+import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
+import { haptic, HAPTIC } from "@/lib/haptics";
+
+export type ThemeId = "rose" | "sage" | "lavender";
+export const THEMES: ThemeId[] = ["rose", "sage", "lavender"];
+
+/** Unfiltered level → the progress value the question generator expects. */
+const LEVEL_PROGRESS: Record<UnfilteredLevel, number> = { love_spice: 15, after_dark: 50, no_limits: 85 };
+export type Mode = "light" | "dark";
+export type Screen = "deck" | "game";
+export type Tab = "play" | "history" | "favorites" | "insights";
+
+export interface DrawnCard {
+  id: string;
+  pl: string;
+  en: string;
+  category: CategoryId | "unfiltered";
+  unfilteredLevel?: UnfilteredQuestion["level"];
+  intensity?: number;
+}
+
+interface State {
+  // settings
+  lang: Lang;
+  theme: ThemeId;
+  mode: Mode;
+  animations: boolean;
+  hapticsEnabled: boolean;
+  reducedMotion: boolean;
+  players: string[];
+  // decks
+  decks: Record<DeckId, boolean>;
+  categories: Record<CategoryId, boolean>;
+  // session
+  screen: Screen;
+  currentPlayer: number;
+  progress: number; // derived from ufLevel, used by the question generator
+  ufLevel: UnfilteredLevel;
+  sinceLevelOffer: number;
+  levelUpOpen: boolean;
+  card: DrawnCard | null;
+  flipped: boolean;
+  discard: Set<string>;
+  drawCount: number;
+  history: { card: DrawnCard; currentPlayer: number }[];
+  favorites: string[];
+  activeTab: Tab;
+  stats: {
+    totalDraws: number;
+    categoryCounts: Record<string, number>;
+  };
+
+  // actions
+  setLang: (l: Lang) => void;
+  setTheme: (t: ThemeId) => void;
+  setMode: (m: Mode) => void;
+  toggleMode: () => void;
+  toggleAnimations: () => void;
+  toggleHaptics: () => void;
+  toggleReducedMotion: () => void;
+  setPlayers: (p: string[]) => void;
+  toggleDeck: (d: DeckId) => void;
+  toggleCategory: (c: CategoryId) => void;
+  startGame: () => void;
+  backToDecks: () => void;
+  drawCard: () => void;
+  goBack: () => void;
+  flip: () => void;
+  setProgress: (n: number) => void;
+  setUfLevel: (l: UnfilteredLevel) => void;
+  acceptLevelUp: () => void;
+  declineLevelUp: () => void;
+  toggleFavorite: (id: string) => void;
+  setTab: (t: Tab) => void;
+  flushGuestSession: () => void;
+}
+
+// Draw-variety trackers (module-scoped; reset on reload).
+let lastStaticCategory: CategoryId | null = null;
+let lastWasUnfiltered = false;
+
+/**
+ * Picks a static question with strong category variety: choose a category
+ * first (uniformly, avoiding the previous one when possible) so decks with
+ * many questions in one category don't dominate the draw.
+ */
+function pickStatic(state: State): Question | null {
+  const avail = QUESTIONS.filter((q) => {
+    if (!state.decks[q.deck]) return false;
+    if (!state.categories[q.category]) return false;
+    return !state.discard.has(q.id);
+  });
+  if (avail.length === 0) return null;
+
+  const cats = Array.from(new Set(avail.map((q) => q.category)));
+  let choices = cats;
+  if (cats.length > 1 && lastStaticCategory) {
+    const filtered = cats.filter((c) => c !== lastStaticCategory);
+    if (filtered.length) choices = filtered;
+  }
+  const cat = choices[Math.floor(Math.random() * choices.length)];
+  lastStaticCategory = cat;
+
+  const inCat = avail.filter((q) => q.category === cat);
+  return inCat[Math.floor(Math.random() * inCat.length)];
+}
+
+export const useGame = create<State>()(
+  persist(
+    (set, get) => ({
+      lang: "pl",
+      theme: "rose",
+      mode: "light",
+      animations: true,
+      hapticsEnabled: true,
+      reducedMotion: false,
+      players: [],
+      decks: { basic: true, plus: false, unfiltered: false },
+      categories: {
+        love: true,
+        friendship: true,
+        selfdev: true,
+        passions: true,
+        introspection: true,
+        plus_love: true,
+        plus_spice: true,
+        plus_deep: true,
+        plus_kinky: true,
+      },
+      screen: "deck",
+      currentPlayer: 0,
+      progress: LEVEL_PROGRESS.love_spice,
+      ufLevel: "love_spice",
+      sinceLevelOffer: 0,
+      levelUpOpen: false,
+      card: null,
+      flipped: false,
+      discard: new Set<string>(),
+      drawCount: 0,
+      history: [],
+      favorites: [],
+      activeTab: "play",
+      stats: { totalDraws: 0, categoryCounts: {} },
+
+      setLang: (lang) => set({ lang }),
+      setTheme: (theme) => set({ theme }),
+      setMode: (mode) => set({ mode }),
+      toggleMode: () => set((s) => ({ mode: s.mode === "light" ? "dark" : "light" })),
+      toggleAnimations: () => set((s) => ({ animations: !s.animations })),
+      toggleHaptics: () => set((s) => ({ hapticsEnabled: !s.hapticsEnabled })),
+      toggleReducedMotion: () =>
+        set((s) => ({ reducedMotion: !s.reducedMotion })),
+      setPlayers: (players) => set({ players }),
+      toggleDeck: (d) =>
+        set((s) => ({ decks: { ...s.decks, [d]: !s.decks[d] } })),
+      toggleCategory: (c) =>
+        set((s) => ({ categories: { ...s.categories, [c]: !s.categories[c] } })),
+
+      startGame: () => {
+        const s = get();
+        if (s.decks.unfiltered) primeUnfiltered(s.progress);
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [], activeTab: "play", sinceLevelOffer: 0, levelUpOpen: false, progress: LEVEL_PROGRESS[s.ufLevel] });
+        get().drawCard();
+      },
+      backToDecks: () => set({ screen: "deck", activeTab: "play" }),
+
+      flushGuestSession: () =>
+        set({
+          players: [],
+          currentPlayer: 0,
+          ufLevel: "love_spice",
+          progress: LEVEL_PROGRESS.love_spice,
+          sinceLevelOffer: 0,
+          levelUpOpen: false,
+          card: null,
+          flipped: false,
+          discard: new Set(),
+          drawCount: 0,
+          history: [],
+        }),
+
+
+      drawCard: () => {
+        const s = get();
+        const anyStatic = s.decks.basic || s.decks.plus;
+        let useUnfiltered: boolean;
+        if (!s.decks.unfiltered) useUnfiltered = false;
+        else if (!anyStatic) useUnfiltered = true;
+        else useUnfiltered = Math.random() < (lastWasUnfiltered ? 0.3 : 0.55);
+        lastWasUnfiltered = useUnfiltered;
+
+        let card: DrawnCard | null = null;
+        if (useUnfiltered) {
+          const q = nextUnfiltered(s.progress);
+          card = {
+            id: q.id,
+            pl: q.pl,
+            en: q.en,
+            category: "unfiltered",
+            unfilteredLevel: q.level,
+            intensity: q.intensity,
+          };
+        } else {
+          const q = pickStatic(s);
+          if (q) {
+            card = { id: q.id, pl: q.pl, en: q.en, category: q.category };
+          } else if (s.decks.unfiltered) {
+            const u = nextUnfiltered(s.progress);
+            card = { id: u.id, pl: u.pl, en: u.en, category: "unfiltered", unfilteredLevel: u.level, intensity: u.intensity };
+          }
+        }
+
+        if (!card) {
+          // pool exhausted: reset discard and retry once
+          set({ discard: new Set() });
+          const q = pickStatic({ ...s, discard: new Set() } as State);
+          if (q) card = { id: q.id, pl: q.pl, en: q.en, category: q.category };
+        }
+
+        set((st) => {
+          const nextDiscard = new Set(st.discard);
+          if (card) nextDiscard.add(card.id);
+          const advanceTurn = st.players.length > 0 && st.drawCount > 0;
+          const nextPlayer = advanceTurn
+            ? (st.currentPlayer + 1) % st.players.length
+            : st.currentPlayer;
+          // Gentle "card snap" haptic on every draw; a slightly longer
+          // pattern when the turn passes to the next player.
+          haptic(advanceTurn ? HAPTIC.turn : HAPTIC.draw);
+          const nextHistory = st.card
+            ? [...st.history, { card: st.card, currentPlayer: st.currentPlayer }].slice(-50)
+            : st.history;
+          const catKey = card?.category ?? "unknown";
+          const nextStats = card
+            ? {
+                totalDraws: st.stats.totalDraws + 1,
+                categoryCounts: {
+                  ...st.stats.categoryCounts,
+                  [catKey]: (st.stats.categoryCounts[catKey] ?? 0) + 1,
+                },
+              }
+            : st.stats;
+          return {
+            card,
+            flipped: false,
+            discard: nextDiscard,
+            drawCount: st.drawCount + 1,
+            currentPlayer: nextPlayer,
+            history: nextHistory,
+            stats: nextStats,
+          };
+        });
+        // "One Step Deeper": every N cards offer the next Unfiltered level.
+        const after = get();
+        if (after.decks.unfiltered && card && nextLevel(after.ufLevel)) {
+          const n = after.sinceLevelOffer + 1;
+          if (n >= LEVEL_UP_CARD.every) set({ sinceLevelOffer: 0, levelUpOpen: true });
+          else set({ sinceLevelOffer: n });
+        }
+        if (get().decks.unfiltered) primeUnfiltered(get().progress);
+      },
+
+      goBack: () => {
+        const s = get();
+        if (s.history.length === 0) return;
+        const prev = s.history[s.history.length - 1];
+        haptic(HAPTIC.tap);
+        set({
+          card: prev.card,
+          currentPlayer: prev.currentPlayer,
+          flipped: false,
+          history: s.history.slice(0, -1),
+        });
+      },
+
+      flip: () => {
+        haptic(HAPTIC.flip);
+        set((s) => ({ flipped: !s.flipped }));
+      },
+      setProgress: (n) => set({ progress: Math.max(0, Math.min(100, n)) }),
+      setUfLevel: (ufLevel) => {
+        set({ ufLevel, progress: LEVEL_PROGRESS[ufLevel], sinceLevelOffer: 0 });
+        primeUnfiltered(LEVEL_PROGRESS[ufLevel]);
+      },
+      acceptLevelUp: () => {
+        const next = nextLevel(get().ufLevel);
+        haptic(HAPTIC.turn);
+        set({ levelUpOpen: false });
+        if (next) get().setUfLevel(next);
+      },
+      declineLevelUp: () => set({ levelUpOpen: false, sinceLevelOffer: 0 }),
+      toggleFavorite: (id) =>
+        set((s) => ({
+          favorites: s.favorites.includes(id)
+            ? s.favorites.filter((f) => f !== id)
+            : [...s.favorites, id],
+        })),
+      setTab: (activeTab) => set({ activeTab }),
+    }),
+    {
+      name: "between-us",
+      version: 4,
+      storage: createJSONStorage(() => localStorage),
+      migrate: (persisted) => {
+        const s = (persisted ?? {}) as Record<string, unknown>;
+        const oldThemes: Record<string, ThemeId> = { fairy: "sage", violet: "lavender", spicy: "rose" };
+        if (typeof s.theme === "string" && oldThemes[s.theme]) s.theme = oldThemes[s.theme];
+        if (!THEMES.includes(s.theme as ThemeId)) s.theme = "rose";
+        if (!["love_spice", "after_dark", "no_limits"].includes(s.ufLevel as string)) s.ufLevel = "love_spice";
+        s.progress = LEVEL_PROGRESS[s.ufLevel as UnfilteredLevel];
+        if (s.mode !== "light" && s.mode !== "dark") s.mode = "light";
+        const cats = (s.categories ?? {}) as Record<string, boolean>;
+        if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
+        if (typeof cats.plus_kinky !== "boolean") cats.plus_kinky = true;
+        s.categories = cats;
+        if (typeof s.hapticsEnabled !== "boolean") s.hapticsEnabled = true;
+        if (typeof s.reducedMotion !== "boolean") s.reducedMotion = false;
+        if (!Array.isArray(s.favorites)) s.favorites = [];
+        if (!Array.isArray(s.history)) s.history = [];
+        const st = s.stats as { totalDraws?: number; categoryCounts?: Record<string, number> } | undefined;
+        if (!st || typeof st.totalDraws !== "number") {
+          s.stats = { totalDraws: 0, categoryCounts: {} };
+        }
+        return s;
+      },
+      partialize: (s) => ({
+        lang: s.lang,
+        theme: s.theme,
+        mode: s.mode,
+        animations: s.animations,
+        hapticsEnabled: s.hapticsEnabled,
+        reducedMotion: s.reducedMotion,
+        players: s.players,
+        decks: s.decks,
+        categories: s.categories,
+        progress: s.progress,
+        ufLevel: s.ufLevel,
+        favorites: s.favorites,
+        history: s.history,
+        card: s.card,
+        currentPlayer: s.currentPlayer,
+        drawCount: s.drawCount,
+        stats: s.stats,
+        discard: Array.from(s.discard),
+      }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const discard = Array.isArray(p.discard) ? new Set(p.discard as string[]) : current.discard;
+        return { ...current, ...(p as object), discard } as State;
+      },
+      skipHydration: true,
+    },
+  ),
+);
