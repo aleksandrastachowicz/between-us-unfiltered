@@ -47,7 +47,7 @@ export const LEVEL_ORDER: UnfilteredLevel[] = ["love_spice", "after_dark", "no_l
 /** "One Step Deeper" card: shown every `every` cards; both players must agree to level up. */
 export const LEVEL_UP_CARD = {
   title: { pl: "Krok głębiej", en: "One Step Deeper" },
-  body: { pl: "Oboje gotowi pójść dalej?", en: "Are you both ready to go deeper?" },
+  body: { pl: "Gotowi pójść dalej?", en: "Ready to go deeper?" },
   yes: { pl: "Idziemy dalej", en: "Let's go" },
   no: { pl: "Zostańmy tu jeszcze", en: "Stay here a bit longer" },
   every: 8,

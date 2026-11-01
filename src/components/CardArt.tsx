@@ -1,5 +1,4 @@
-import { memo } from "react";
-import { CARD_TEXTURES } from "./card-textures";
+import { memo, useId } from "react";
 import { motion } from "motion/react";
 import type { CategoryId } from "@/data/questions";
 import type { UnfilteredQuestion } from "@/data/unfiltered";
@@ -11,323 +10,270 @@ export type PatternKey =
   | "uf_no_limits";
 
 /* ============================================================
-   TAROT LINE-ART REVERSE SYSTEM
-   One coherent metaphysical family: liquid checkerboard waves,
-   scattered retro line-art starbursts, heavy procedural grain.
-   Decks differ only by central symbol + colour scheme.
+   CARD BACKS — one layout for every deck:
+   label pill on top, full-bleed motif, cream plaque at the bottom
+   with the category name and "tap to reveal".
+   Each category has its own motif (hearts, flowers, swirls…).
    ============================================================ */
 
-type Palette = {
-  base: string; // deep field
-  check: string; // checker squares
-  wash: string; // aura wash
-  line: string; // line-art ink
-  ink: string; // label ink
-  gold?: string; // shimmering accent (unfiltered)
-  bg?: "checker" | "daisy" | "aura" | "fluid" | "canvas" | "wave" | "stardust"; // background family
+export const DISPLAY_FONT = "'Archivo Black', 'Inter', sans-serif";
+
+const HEART = "M22 38 C8 29 3 21 4 13 C5 5 15 2 22 11 C28 2 39 4 40 13 C41 22 34 30 22 38z";
+const HEART_ROUND = "M22 36 C10 28 5 21 5 14 a8.5 8.5 0 0 1 17 -2 a8.5 8.5 0 0 1 17 2 c0 7 -5 14 -17 22z";
+const STAR = "M0 -10 C1 -3 3 -1 10 0 C3 1 1 3 0 10 C-1 3 -3 1 -10 0 C-3 -1 -1 -3 0 -10z";
+const LIP_TOP = "M-17 0 C-11 -9 -4 -9 0 -4 C4 -9 11 -9 17 0 C9 1 -9 1 -17 0z";
+const LIP_BOTTOM = "M-17 2 C-10 12 10 12 17 2 C9 4 -9 4 -17 2z";
+
+/** Background colour (shown while the art loads) and the accent used on the pill and plaque. */
+export const BACK_COLORS: Record<PatternKey, { base: string; accent: string; hint: string }> = {
+  love: { base: "#FBF1E4", accent: "#B0141A", hint: "#955E6A" },
+  friendship: { base: "#E9788F", accent: "#B23A57", hint: "#90626F" },
+  selfdev: { base: "#B7CB8F", accent: "#4F6B37", hint: "#67755B" },
+  passions: { base: "#9EC5F5", accent: "#2457B0", hint: "#5B6F90" },
+  introspection: { base: "#AE95EE", accent: "#5B3BAE", hint: "#75689A" },
+  plus_love: { base: "#F5A9B8", accent: "#AD0A23", hint: "#A45A66" },
+  plus_spice: { base: "#EC84A8", accent: "#AD0A23", hint: "#A45A66" },
+  plus_deep: { base: "#FFE3EA", accent: "#AD0A23", hint: "#A45A66" },
+  plus_kinky: { base: "#EC84A8", accent: "#AD0A23", hint: "#A45A66" },
+  uf_love_spice: { base: "#A3101E", accent: "#A3101E", hint: "#A45A66" },
+  uf_after_dark: { base: "#6E2A3E", accent: "#6E2A3E", hint: "#8B626E" },
+  uf_no_limits: { base: "#0F0C0D", accent: "#1E1418", hint: "#7D6E59" },
 };
 
-const PALETTE: Record<PatternKey, Palette> = {
-  // A. Edycja podstawowa
-  love: { base: "#A21836", check: "#FFC2D6", wash: "#FF6E9C", line: "#FFE7EF", ink: "#FFF0F5" },
-  friendship: { base: "#E8A200", check: "#FFCF7A", wash: "#FFD429", line: "#FFF6E2", ink: "#FFF8EC", bg: "daisy" },
-  selfdev: { base: "#5E8F1F", check: "#CAE774", wash: "#A8DB49", line: "#FBFFE9", ink: "#FCFFF0", bg: "aura" },
-  passions: { base: "#1B3FCB", check: "#A4C7FF", wash: "#4C86FF", line: "#EAF2FF", ink: "#F0F6FF", bg: "fluid" },
-  introspection: { base: "#5B34C7", check: "#D3C0FF", wash: "#9A7BFF", line: "#F4EEFF", ink: "#F8F2FF", bg: "canvas" },
-  // B. Love & Spice
-  plus_love: { base: "#5E0A22", check: "#B02244", wash: "#8E1435", line: "#FFD9E3", ink: "#FFE9F0" },
-  plus_spice: { base: "#A21836", check: "#FFB7CE", wash: "#E8305C", line: "#FFE4EC", ink: "#FFF0F5", bg: "wave" },
-  plus_deep: { base: "#B0526B", check: "#FFC7D5", wash: "#E58AA3", line: "#FFEDF2", ink: "#FFF4F7", bg: "canvas" },
-  plus_kinky: { base: "#5C0A55", check: "#C21FA8", wash: "#93168A", line: "#FFD8F7", ink: "#FFE9FB" },
-  // C. Unfiltered
-  uf_love_spice: { base: "#070C0D", check: "#0E5455", wash: "#063A38", line: "#FFE47A", ink: "#EAFFFA", gold: "#FFD84D", bg: "canvas" },
-  uf_after_dark: { base: "#131217", check: "#5A0F2C", wash: "#2A0A18", line: "#FFE685", ink: "#FFEAF2", gold: "#FFDC5C" },
-  uf_no_limits: { base: "#08070A", check: "#1A1720", wash: "#12101A", line: "#FFE788", ink: "#FFF0EE", gold: "#FFD94F", bg: "stardust" },
-};
+const PLAQUE = "#FFF6F0";
 
-/* ---------------- procedural defs ---------------- */
-function Defs({ id, p }: { id: string; p: Palette }) {
+/* ---------------- the motifs ---------------- */
+
+function Rings() {
+  const cols = ["#AE95EE", "#E9E0FF", "#B7A2EE", "#F4EFFF"];
+  const rings: { r: number; c: string }[] = [];
+  for (let r = 320, i = 0; r > 6; r -= 16, i++) rings.push({ r, c: cols[i % 4] });
   return (
-    <defs>
-      {/* legibility scrim so category text always reads on the field */}
-      <linearGradient id={`scrim-${id}`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={p.base} stopOpacity="0.55" />
-        <stop offset="30%" stopColor={p.base} stopOpacity="0.05" />
-        <stop offset="70%" stopColor={p.base} stopOpacity="0.25" />
-        <stop offset="100%" stopColor={p.base} stopOpacity="0.78" />
-      </linearGradient>
-      {p.gold ? (
-        <linearGradient id={`gold-${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={p.gold} stopOpacity="0.15" />
-          <stop offset="45%" stopColor={p.gold} stopOpacity="0.85" />
-          <stop offset="100%" stopColor={p.gold} stopOpacity="0.2" />
-        </linearGradient>
-      ) : null}
-    </defs>
+    <>
+      {rings.map((ring) => (
+        <circle key={ring.r} cx="110" cy="132" r={ring.r} fill={ring.c} />
+      ))}
+    </>
   );
 }
 
-/* scattered retro line-art starburst */
-function Starburst({ x, y, s = 1, ink, rays = 12 }: { x: number; y: number; s?: number; ink: string; rays?: number }) {
+function SunRays() {
+  const cx = 110, cy = 330, R = 520, n = 16, step = Math.PI / n;
+  let d = "";
+  for (let i = 0; i < n; i++) {
+    const a0 = Math.PI + i * step, a1 = a0 + step / 2;
+    d += `M${cx} ${cy} L${(cx + R * Math.cos(a0)).toFixed(1)} ${(cy + R * Math.sin(a0)).toFixed(1)} L${(cx + R * Math.cos(a1)).toFixed(1)} ${(cy + R * Math.sin(a1)).toFixed(1)} Z `;
+  }
+  return <path d={d} fill="#BFD8F8" />;
+}
+
+function StarField({ id, base, dot }: { id: string; base: string; dot: string }) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`} stroke={ink} strokeWidth="1" strokeLinecap="round" fill="none">
-      {Array.from({ length: rays }).map((_, i) => {
-        const a = (i / rays) * Math.PI * 2;
-        return (
-          <line
-            key={i}
-            x1={Math.cos(a) * 3.5}
-            y1={Math.sin(a) * 3.5}
-            x2={Math.cos(a) * (i % 2 ? 9 : 13)}
-            y2={Math.sin(a) * (i % 2 ? 9 : 13)}
-          />
-        );
-      })}
-      <circle r="2" fill={ink} stroke="none" />
-    </g>
+    <>
+      <defs>
+        <pattern id={id} width="40" height="40" patternUnits="userSpaceOnUse">
+          <rect width="40" height="40" fill={base} />
+          <path transform="translate(10 10) scale(0.5)" d={STAR} fill={dot} />
+          <circle cx="30" cy="30" r="1.6" fill={dot} />
+        </pattern>
+      </defs>
+      <rect width="220" height="308" fill={`url(#${id})`} />
+    </>
   );
 }
 
-/* four-point retro sparkle */
-function Spark({ x, y, s = 1, ink }: { x: number; y: number; s?: number; ink: string }) {
-  return (
-    <path
-      transform={`translate(${x} ${y}) scale(${s})`}
-      d="M0 -7 C0.7 -2.4 2.4 -0.7 7 0 C2.4 0.7 0.7 2.4 0 7 C-0.7 2.4 -2.4 0.7 -7 0 C-2.4 -0.7 -0.7 -2.4 0 -7 Z"
-      fill={ink}
-      opacity="0.8"
-    />
-  );
-}
-
-/* ---------------- central symbols (clean line-art) ---------------- */
-const retroHeart =
-  "M0 26 C-5 19 -30 8 -30 -10 C-30 -25 -13 -29 -3 -17 C-1.5 -15 0 -12 0 -10 C0 -12 1.5 -15 3 -17 C13 -29 30 -25 30 -10 C30 8 5 19 0 26 Z";
-
-function Halo({ ink, gold }: { ink: string; gold?: string }) {
-  return (
-    <g fill="none" stroke={gold ?? ink} strokeWidth="0.9" opacity={gold ? 0.7 : 0.42}>
-      <circle r="52" />
-      <circle r="60" strokeDasharray="1 6" opacity="0.6" />
-    </g>
-  );
-}
-
-function Symbol({ pattern, p }: { pattern: PatternKey; p: Palette }) {
-  const ink = p.line;
-  const gold = p.gold;
-  const stroke = { stroke: ink, fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-
-  const body = () => {
-    switch (pattern) {
-      case "love": // retro heart lines + "Amor"
-        return (
-          <g {...stroke}>
-            <path d={retroHeart} />
-            <path d={retroHeart} transform="scale(0.74)" strokeWidth="1.1" opacity="0.7" />
-            <text
-              x="0"
-              y="6"
-              textAnchor="middle"
-              stroke="none"
-              fill={ink}
-              opacity="0.85"
-              style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 700, letterSpacing: "0.26em" }}
-            >
-              AMOR
-            </text>
-          </g>
-        );
-      case "friendship": // minimal line-art sunburst
-        return (
-          <g {...stroke}>
-            <circle r="17" />
-            <circle r="24" strokeWidth="1" opacity="0.5" />
-            {Array.from({ length: 20 }).map((_, i) => {
-              const a = (i / 20) * Math.PI * 2;
-              const outer = i % 2 ? 36 : 46;
-              return (
-                <line
-                  key={i}
-                  x1={Math.cos(a) * 28}
-                  y1={Math.sin(a) * 28}
-                  x2={Math.cos(a) * outer}
-                  y2={Math.sin(a) * outer}
-                  strokeWidth={i % 2 ? 1 : 1.5}
-                  opacity={i % 2 ? 0.6 : 0.9}
-                />
-              );
-            })}
-          </g>
-        );
-      case "selfdev": // anatomical heart blended with an eye
-        return (
-          <g {...stroke}>
-            <path d={retroHeart} transform="scale(1.02)" opacity="0.9" />
-            <path d="M-14 -22 C-10 -32 2 -32 4 -22 M8 -24 C14 -30 24 -26 22 -18" strokeWidth="1.2" opacity="0.7" />
-            <path d="M-26 0 C-13 -14 13 -14 26 0 C13 14 -13 14 -26 0 Z" transform="translate(0 -1) scale(0.7)" />
-            <circle cy="-1" r="5.5" />
-            <circle cy="-1" r="2" fill={ink} stroke="none" />
-            <path d="M-8 16 C-4 22 4 22 8 16" strokeWidth="1" opacity="0.6" />
-          </g>
-        );
-      case "passions": // sharp 4-pointed star vector
-        return (
-          <g {...stroke}>
-            <path d="M0 -46 L9 -9 L46 0 L9 9 L0 46 L-9 9 L-46 0 L-9 -9 Z" strokeWidth="1.8" />
-            <path d="M0 -26 L5 -5 L26 0 L5 5 L0 26 L-5 5 L-26 0 L-5 -5 Z" strokeWidth="1" opacity="0.65" />
-            <Spark x={32} y={-30} s={0.8} ink={ink} />
-            <Spark x={-32} y={28} s={0.7} ink={ink} />
-          </g>
-        );
-      case "introspection": // third eye nestled in a crescent moon
-        return (
-          <g {...stroke}>
-            <path d="M22 -40 A46 46 0 1 0 22 40 A36 36 0 1 1 22 -40 Z" strokeWidth="1.3" opacity="0.75" />
-            <path d="M-30 0 C-15 -18 15 -18 30 0 C15 18 -15 18 -30 0 Z" />
-            <circle r="9.5" />
-            <circle r="3.5" fill={ink} stroke="none" />
-            <Spark x={0} y={-30} s={0.75} ink={ink} />
-            <Spark x={26} y={22} s={0.6} ink={ink} />
-          </g>
-        );
-      case "plus_love": // kissing lips silhouette
-        return (
-          <g {...stroke}>
-            <path d="M-34 0 C-24 -16 -10 -18 0 -8 C10 -18 24 -16 34 0 C22 16 -22 16 -34 0 Z" strokeWidth="1.8" />
-            <path d="M-34 0 C-18 -5 18 -5 34 0" strokeWidth="1.1" opacity="0.8" />
-            <path d="M-22 8 C-10 12 10 12 22 8" strokeWidth="1" opacity="0.5" />
-            <Spark x={0} y={-28} s={0.85} ink={ink} />
-          </g>
-        );
-      case "plus_spice": // flame with starbursts
-        return (
-          <g {...stroke}>
-            <path d="M0 -40 C16 -18 26 -8 26 6 C26 22 14 32 0 32 C-14 32 -26 22 -26 6 C-26 -6 -16 -14 -10 -26 C-8 -14 -2 -12 0 -18 C2 -24 0 -32 0 -40 Z" strokeWidth="1.8" />
-            <path d="M0 -10 C8 2 12 8 12 14 C12 22 6 26 0 26 C-6 26 -12 22 -12 14 C-12 6 -6 0 0 -10 Z" strokeWidth="1" opacity="0.7" />
-            <Spark x={-30} y={-24} s={0.75} ink={ink} />
-            <Spark x={30} y={-18} s={0.65} ink={ink} />
-          </g>
-        );
-      case "plus_deep": // two intertwined hands
-        return (
-          <g {...stroke}>
-            <path d="M-34 22 C-30 8 -22 -2 -10 -8 C-4 -11 2 -10 6 -6" strokeWidth="1.7" />
-            <path d="M34 -22 C30 -8 22 2 10 8 C4 11 -2 10 -6 6" strokeWidth="1.7" />
-            <path d="M-14 -6 C-8 -12 0 -14 8 -12 M14 6 C8 12 0 14 -8 12" strokeWidth="1.1" opacity="0.75" />
-            <path d="M-6 -2 C-2 -6 2 -6 6 -2 C2 2 -2 2 -6 -2 Z" strokeWidth="1" opacity="0.85" />
-            <Spark x={26} y={26} s={0.7} ink={ink} />
-            <Spark x={-26} y={-26} s={0.6} ink={ink} />
-          </g>
-        );
-      case "plus_kinky": // abstract silhouette figures
-        return (
-          <g {...stroke}>
-            <circle cx="-14" cy="-24" r="8" />
-            <path d="M-14 -16 C-26 -12 -30 2 -26 18 C-24 26 -18 30 -12 30" strokeWidth="1.7" />
-            <circle cx="14" cy="-20" r="8" />
-            <path d="M14 -12 C26 -8 30 6 26 22 C24 28 18 32 12 32" strokeWidth="1.7" />
-            <path d="M-12 4 C-2 -2 6 -2 14 4" strokeWidth="1.1" opacity="0.75" />
-            <Spark x={34} y={-32} s={0.75} ink={ink} />
-          </g>
-        );
-      case "uf_love_spice": // hand holding torch + starry smoke
-        return (
-          <g {...stroke} stroke={gold}>
-            <path d="M-4 34 L-4 6 M6 34 L6 6" />
-            <path d="M-10 6 C-10 -2 10 -2 10 6 C10 12 -10 12 -10 6 Z" />
-            <path d="M0 -4 C-12 -12 -10 -26 0 -34 C10 -26 12 -12 0 -4 Z" />
-            <path d="M0 -10 C-5 -16 -4 -23 0 -28 C4 -23 5 -16 0 -10 Z" strokeWidth="1" opacity="0.8" />
-            <path d="M-18 -18 C-26 -26 -22 -36 -14 -40 M18 -18 C26 -26 22 -36 14 -40" strokeWidth="1" opacity="0.6" />
-            <Spark x={-22} y={-42} s={0.7} ink={gold ?? ink} />
-            <Spark x={22} y={-40} s={0.6} ink={gold ?? ink} />
-          </g>
-        );
-      case "uf_after_dark": // third eye in a crescent moon, gold frame
-        return (
-          <g {...stroke} stroke={gold}>
-            <path d="M20 -42 A46 46 0 1 0 20 42 A36 36 0 1 1 20 -42 Z" strokeWidth="1.3" opacity="0.8" />
-            <path d="M-28 0 C-14 -17 14 -17 28 0 C14 17 -14 17 -28 0 Z" strokeWidth="1.7" />
-            <circle r="9" strokeWidth="1.4" />
-            <circle r="3.4" fill={gold} stroke="none" />
-            <Spark x={0} y={-32} s={0.7} ink={gold ?? ink} />
-          </g>
-        );
-      case "uf_no_limits": // geometric 8-pointed starburst
-        return (
-          <g {...stroke} stroke={gold}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <path key={i} d="M0 -46 L7 -8 L0 0 L-7 -8 Z" transform={`rotate(${i * 45})`} strokeWidth="1.4" />
-            ))}
-            <circle r="9" strokeWidth="1.2" />
-            <circle r="3" fill={gold} stroke="none" />
-            {Array.from({ length: 8 }).map((_, i) => {
-              const a = ((i + 0.5) / 8) * Math.PI * 2;
-              return (
-                <line key={`r${i}`} x1={Math.cos(a) * 16} y1={Math.sin(a) * 16} x2={Math.cos(a) * 30} y2={Math.sin(a) * 30} strokeWidth="1" opacity="0.6" />
-              );
-            })}
-          </g>
-        );
+function Motif({ pattern, uid }: { pattern: PatternKey; uid: string }) {
+  const id = (name: string) => `${name}-${uid}`;
+  switch (pattern) {
+    case "love":
+      return (
+        <>
+          <defs>
+            <pattern id={id("p")} width="96" height="96" patternUnits="userSpaceOnUse">
+              <rect width="96" height="96" fill="#FBF1E4" />
+              <path transform="translate(4 2) rotate(-22 22 22) scale(0.9)" d={HEART} fill="#D7191F" />
+              <path transform="translate(52 6) rotate(28 22 22) scale(0.62)" d={HEART} fill="#D7191F" />
+              <path transform="translate(40 46) rotate(-8 22 22) scale(1.05)" d={HEART} fill="#D7191F" />
+              <path transform="translate(2 60) rotate(40 22 22) scale(0.55)" d={HEART} fill="#D7191F" />
+            </pattern>
+          </defs>
+          <rect width="220" height="308" fill={`url(#${id("p")})`} />
+        </>
+      );
+    case "friendship": {
+      const flower = (
+        <>
+          <circle cx="0" cy="-9" r="7" />
+          <circle cx="8.6" cy="-2.8" r="7" />
+          <circle cx="5.3" cy="7.3" r="7" />
+          <circle cx="-5.3" cy="7.3" r="7" />
+          <circle cx="-8.6" cy="-2.8" r="7" />
+          <circle r="4.5" fill="#E9788F" />
+        </>
+      );
+      return (
+        <>
+          <defs>
+            <pattern id={id("p")} width="88" height="88" patternUnits="userSpaceOnUse">
+              <rect width="88" height="88" fill="#E9788F" />
+              <g transform="translate(22 22)" fill="#FFF3E8">{flower}</g>
+              <g transform="translate(66 64) scale(0.7) rotate(20)" fill="#FFF3E8">{flower}</g>
+              <circle cx="68" cy="18" r="3" fill="#FFF3E8" />
+              <circle cx="18" cy="70" r="3" fill="#FFF3E8" />
+            </pattern>
+          </defs>
+          <rect width="220" height="308" fill={`url(#${id("p")})`} />
+        </>
+      );
     }
-  };
-
-  return (
-    <g transform="translate(150 200) scale(1.12)" data-central-symbol={pattern}>
-      <Halo ink={ink} gold={gold} />
-      {body()}
-    </g>
-  );
+    case "selfdev":
+      return (
+        <>
+          <defs>
+            <pattern id={id("p")} width="40" height="136" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
+              <rect width="40" height="34" fill="#F6E8D6" />
+              <rect y="34" width="40" height="34" fill="#F6A3BE" />
+              <rect y="68" width="40" height="34" fill="#B7CB8F" />
+              <rect y="102" width="40" height="34" fill="#86A170" />
+            </pattern>
+            <filter id={id("f")} x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves={1} seed={12} />
+              <feDisplacementMap in="SourceGraphic" scale={120} />
+            </filter>
+          </defs>
+          <rect x="-80" y="-80" width="380" height="470" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
+        </>
+      );
+    case "passions":
+      return (
+        <>
+          <rect width="220" height="308" fill="#9EC5F5" />
+          <SunRays />
+          <circle cx="110" cy="330" r="96" fill="#F9C84A" />
+          <circle cx="110" cy="330" r="70" fill="#FF8A3D" />
+        </>
+      );
+    case "introspection":
+      return <Rings />;
+    case "plus_love":
+      return (
+        <>
+          <defs>
+            <pattern id={id("p")} width="64" height="64" patternUnits="userSpaceOnUse">
+              <rect width="64" height="64" fill="#F5A9B8" />
+              <rect width="32" height="32" fill="#AD0A23" />
+              <rect x="32" y="32" width="32" height="32" fill="#AD0A23" />
+            </pattern>
+            <filter id={id("f")} x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.007" numOctaves={1} seed={9} />
+              <feDisplacementMap in="SourceGraphic" scale={44} />
+            </filter>
+          </defs>
+          <rect x="-40" y="-40" width="300" height="390" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
+        </>
+      );
+    case "plus_spice":
+      return (
+        <>
+          <rect width="220" height="308" fill="#EC84A8" />
+          <text x="110" y="122" textAnchor="middle" fontFamily={DISPLAY_FONT} fontSize="74" fill="#C1121F">HOT</text>
+          <text x="110" y="187" textAnchor="middle" fontFamily={DISPLAY_FONT} fontSize="74" fill="#C1121F">HOT</text>
+        </>
+      );
+    case "plus_deep":
+      return (
+        <>
+          <rect width="220" height="308" fill="#FFE3EA" />
+          <path transform="translate(-30 -6) scale(2.6)" d={HEART_ROUND} fill="#B00D22" />
+          <path transform="translate(150 50) scale(1.2) rotate(18 22 22)" d={HEART_ROUND} fill="#B00D22" />
+          <path transform="translate(120 140) scale(2.2) rotate(-15 22 22)" d={HEART_ROUND} fill="#B00D22" />
+          <path transform="translate(14 150) scale(1.1) rotate(-20 22 22)" d={HEART_ROUND} fill="#B00D22" />
+        </>
+      );
+    case "plus_kinky":
+      return (
+        <>
+          <defs>
+            <pattern id={id("p")} width="70" height="62" patternUnits="userSpaceOnUse">
+              <rect width="70" height="62" fill="#EC84A8" />
+              <g transform="translate(18 16) rotate(-14)" fill="#C1121F"><path d={LIP_TOP} /><path d={LIP_BOTTOM} /></g>
+              <g transform="translate(52 46) rotate(12)" fill="#C1121F"><path d={LIP_TOP} /><path d={LIP_BOTTOM} /></g>
+            </pattern>
+          </defs>
+          <rect width="220" height="308" fill={`url(#${id("p")})`} />
+        </>
+      );
+    case "uf_love_spice":
+      return (
+        <>
+          <StarField id={id("s")} base="#A3101E" dot="#C8303C" />
+          <g transform="translate(110 140) scale(0.82) translate(-110 -160)">
+            <circle cx="110" cy="160" r="54" fill="none" stroke="#FFF1E0" strokeWidth="2" strokeDasharray="0.1 7" strokeLinecap="round" />
+            <circle cx="110" cy="160" r="36" fill="#A3101E" stroke="#FFF1E0" strokeWidth="1.6" />
+            <path d="M116 136 a24 24 0 1 0 0 48 a19 19 0 1 1 0 -48z" fill="#FFF1E0" />
+            <path transform="translate(124 152) scale(0.7)" d={STAR} fill="#FFF1E0" />
+            <path transform="translate(168 108) scale(0.9)" d={STAR} fill="#FFF1E0" />
+            <path transform="translate(52 214) scale(0.8)" d={STAR} fill="#FFF1E0" />
+          </g>
+        </>
+      );
+    case "uf_after_dark":
+      return (
+        <>
+          <StarField id={id("s")} base="#6E2A3E" dot="#8A4256" />
+          <g transform="translate(110 140) scale(0.76) translate(-110 -160)" fill="none" stroke="#F4C7B4" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M110 112 V232" />
+            <path d="M88 96 Q110 80 132 96 Q110 112 88 96z" />
+            <circle cx="110" cy="96" r="6" />
+            <path d="M110 74 V64 M98 77 L93 68 M122 77 L127 68 M88 82 L80 76 M132 82 L140 76" />
+            <ellipse cx="110" cy="162" rx="9" ry="13" />
+            <path d="M70 162 H98 M122 162 H150" />
+            <circle cx="58" cy="162" r="13" />
+            <circle cx="162" cy="162" r="13" />
+            <path d="M58 141 V136 M58 183 V188 M37 162 H32 M162 141 V136 M162 183 V188 M183 162 H188" />
+            <path d="M96 222 a16 16 0 0 0 28 0" />
+            <path d="M92 216 a20 20 0 0 0 36 0" />
+            <path d="M76 118 Q60 160 76 206 M144 118 Q160 160 144 206" strokeDasharray="0.1 6" strokeWidth="2.4" />
+          </g>
+        </>
+      );
+    case "uf_no_limits":
+      return (
+        <>
+          <StarField id={id("s")} base="#0F0C0D" dot="#3A2F22" />
+          <g transform="translate(110 140) scale(0.76) translate(-110 -160)">
+            <g fill="none" stroke="#D9B26F" strokeWidth="1.8" strokeLinecap="round">
+              <path d="M90 70 q4 8 0 16 q-4 8 0 16 M102 64 q4 8 0 16 q-4 8 0 16 M118 64 q4 8 0 16 q-4 8 0 16 M130 70 q4 8 0 16 q-4 8 0 16" />
+              <path d="M96 112 Q110 102 124 112 Q110 122 96 112z" />
+              <circle cx="110" cy="112" r="3.5" />
+              <path d="M110 122 V238" />
+              <ellipse cx="110" cy="162" rx="62" ry="12" strokeDasharray="3 4" />
+              <ellipse cx="110" cy="162" rx="30" ry="5" />
+              <path d="M92 196 a20 20 0 1 0 36 0" />
+              <path d="M97 194 a14 14 0 1 0 26 0" />
+              <circle cx="110" cy="248" r="4" />
+            </g>
+            <circle cx="48" cy="162" r="4.5" fill="#D9B26F" />
+            <circle cx="168" cy="160" r="3.5" fill="#D9B26F" />
+            <circle cx="128" cy="166" r="2.5" fill="#D9B26F" />
+          </g>
+        </>
+      );
+  }
 }
 
-/* ---------------- full reverse artwork ---------------- */
-const DeckArt = memo(function DeckArt({ pattern }: { pattern: PatternKey }) {
-  const id = pattern;
-  const p = PALETTE[pattern];
+/** Full-bleed artwork of a card back (no text). */
+export const DeckArt = memo(function DeckArt({ pattern }: { pattern: PatternKey }) {
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   return (
     <svg
-      viewBox="0 0 300 420"
-      className="absolute inset-0 h-full w-full transform-gpu"
-      data-card-pattern={pattern}
-      data-background-family={p.bg ?? "checker"}
+      viewBox="0 0 220 308"
       preserveAspectRatio="xMidYMid slice"
-      aria-hidden
+      className="absolute inset-0 h-full w-full"
+      aria-hidden="true"
+      data-card-pattern={pattern}
     >
-      <Defs id={id} p={p} />
-      {/* Grain and displacement are baked once, decoded/cached by the browser. */}
-      <image
-        href={CARD_TEXTURES[pattern]}
-        width="300"
-        height="420"
-        preserveAspectRatio="xMidYMid slice"
-        data-cached-texture={pattern}
-      />
-
-      {/* scattered retro starbursts */}
-      <g opacity="0.8">
-        <Starburst x={46} y={64} s={1} ink={p.line} />
-        <Starburst x={252} y={110} s={0.7} ink={p.line} rays={10} />
-        <Starburst x={40} y={330} s={0.8} ink={p.line} rays={10} />
-        <Starburst x={258} y={362} s={1} ink={p.line} />
-        <Spark x={150} y={44} s={0.9} ink={p.line} />
-        <Spark x={150} y={382} s={0.9} ink={p.line} />
-        <Spark x={274} y={220} s={0.7} ink={p.line} />
-        <Spark x={26} y={208} s={0.7} ink={p.line} />
-      </g>
-
-      <Symbol pattern={pattern} p={p} />
-
-      {/* gold shimmer smoke for unfiltered */}
-      {p.gold ? (
-        <g opacity="0.4" fill="none" stroke={`url(#gold-${id})`} strokeWidth="1.2">
-          <path d="M40 400 C90 340 60 280 110 230 C150 190 120 130 160 80" />
-          <path d="M262 396 C220 340 250 290 210 240 C176 198 206 140 176 92" opacity="0.7" />
-        </g>
-      ) : null}
-
-      {/* legibility scrim under the top/bottom typography */}
-      <rect width="300" height="420" fill={`url(#scrim-${id})`} />
-
+      <Motif pattern={pattern} uid={uid} />
     </svg>
   );
 });
@@ -343,32 +289,28 @@ function CardBack({
   category: string;
   hint: string;
 }) {
-  const p = PALETTE[pattern];
-  const ink = p.ink;
+  const c = BACK_COLORS[pattern];
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ background: p.base }}>
+    <div className="relative h-full w-full overflow-hidden" style={{ background: c.base }}>
       <DeckArt pattern={pattern} />
-      <div
-        className="pointer-events-none absolute inset-[10px] rounded-[24px]"
-        style={{ border: `1.5px solid ${p.gold ?? ink}`, opacity: p.gold ? 0.55 : 0.34 }}
-      />
-      <div
-        className="relative z-10 flex h-full flex-col items-center justify-between px-6 py-7 text-center"
-        style={{
-          color: ink,
-          fontFamily: "var(--font-sans)",
-          textShadow: `0 1px 10px ${p.base}, 0 0 2px ${p.base}`,
-        }}
-      >
-        <span className="text-[10px] font-bold uppercase tracking-[0.42em]" style={{ opacity: 0.85 }}>
+      <div className="relative z-10 flex h-full flex-col items-center justify-between px-[7%] pb-[6%] pt-[7%] text-center">
+        <span
+          className="rounded-full px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.3em]"
+          style={{ background: PLAQUE, color: c.accent }}
+        >
           {edition}
         </span>
-        <div className="flex-1" />
-        <div className="flex flex-col items-center gap-2">
-          <span className="max-w-[85%] text-balance text-[16px] font-extrabold uppercase leading-tight tracking-[0.08em]">
+        <div
+          className="flex w-full flex-col items-center gap-2 rounded-[20px] px-3 pb-3.5 pt-4"
+          style={{ background: PLAQUE }}
+        >
+          <span
+            className="text-balance text-[22px] uppercase leading-[1.05]"
+            style={{ fontFamily: DISPLAY_FONT, color: c.accent }}
+          >
             {category}
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.34em]" style={{ opacity: 0.75 }}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: c.hint }}>
             {hint}
           </span>
         </div>
@@ -401,42 +343,25 @@ export function CardArtPreview({
   label?: string;
   index?: number;
 }) {
-  const p = PALETTE[pattern];
   return (
-    <div className="flex flex-col items-center gap-1.5" style={{ perspective: 700 }}>
+    <div className="flex flex-col items-center gap-1.5">
       <motion.div
-        className="preserve-3d relative overflow-hidden rounded-2xl"
-        style={{ width: 74, aspectRatio: "5 / 7", background: p.base, boxShadow: "0 10px 22px -12px rgba(0,0,0,0.45)" }}
-        initial={{ rotateY: -14, opacity: 0 }}
-        animate={{ rotateY: [-6, 6, -6], opacity: 1 }}
-        transition={{
-          rotateY: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.35 },
-          opacity: { duration: 0.5, delay: index * 0.08 },
+        className="relative overflow-hidden rounded-xl"
+        style={{
+          width: 52,
+          aspectRatio: "5 / 7",
+          background: BACK_COLORS[pattern].base,
+          border: "2px solid #FFFFFF",
+          boxShadow: "0 6px 14px -8px rgba(0,0,0,0.4)",
         }}
-        whileHover={{ scale: 1.04, rotateY: 0 }}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.06 }}
       >
         <DeckArt pattern={pattern} />
-        <div
-          className="pointer-events-none absolute inset-[5px] rounded-[14px]"
-          style={{ border: `1px solid ${p.gold ?? p.ink}`, opacity: 0.4 }}
-        />
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.5) 48%, transparent 66%)",
-            mixBlendMode: "overlay",
-          }}
-          initial={{ x: "-130%" }}
-          animate={{ x: "130%" }}
-          transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 2.6, ease: "easeInOut", delay: index * 0.4 }}
-        />
       </motion.div>
       {label ? (
-        <span
-          className="max-w-[80px] text-center text-[9px] font-semibold leading-tight"
-          style={{ color: "var(--muted-text)" }}
-        >
+        <span className="max-w-[72px] text-center text-[9px] font-semibold leading-tight" style={{ color: "var(--muted-text)" }}>
           {label}
         </span>
       ) : null}
@@ -454,4 +379,63 @@ export function patternFor(
     return "uf_love_spice";
   }
   return category;
+}
+
+/* ============================================================
+   CARD FRONTS — calm, one colour per deck, one small symbol,
+   the question in the centre and a quiet footer.
+   ============================================================ */
+
+type FrontStyle = { bg: string; ink: string; sub: string; foot: string; symbol: "heart" | "flower" | "leaf" | "star" | "circle" | "flame" | "lips" | "moon"; symbolColor: string };
+
+export const FRONT_STYLES: Record<PatternKey, FrontStyle> = {
+  love: { bg: "#FFF8F0", ink: "#B0141A", sub: "#85666A", foot: "#9A6168", symbol: "heart", symbolColor: "#D7191F" },
+  friendship: { bg: "#FFF4F6", ink: "#9E2F4C", sub: "#85616C", foot: "#90626F", symbol: "flower", symbolColor: "#E9788F" },
+  selfdev: { bg: "#F6FAF1", ink: "#3E5A2E", sub: "#62725A", foot: "#67755B", symbol: "leaf", symbolColor: "#86A170" },
+  passions: { bg: "#F2F7FE", ink: "#1D4A9A", sub: "#5B6D8F", foot: "#596D90", symbol: "star", symbolColor: "#2457B0" },
+  introspection: { bg: "#F8F5FE", ink: "#4F2FA0", sub: "#6E6490", foot: "#75689A", symbol: "circle", symbolColor: "#9B82E6" },
+  plus_love: { bg: "#FFF3F6", ink: "#8E0B20", sub: "#8A4A58", foot: "#9B5D6A", symbol: "heart", symbolColor: "#AD0A23" },
+  plus_spice: { bg: "#FFF3F6", ink: "#9E0E1C", sub: "#8A4A58", foot: "#9B5D6A", symbol: "flame", symbolColor: "#C1121F" },
+  plus_deep: { bg: "#FFF3F6", ink: "#8E0B20", sub: "#8A4A58", foot: "#9B5D6A", symbol: "heart", symbolColor: "#B00D22" },
+  plus_kinky: { bg: "#FFF3F6", ink: "#8E0B20", sub: "#8A4A58", foot: "#9B5D6A", symbol: "lips", symbolColor: "#C1121F" },
+  uf_love_spice: { bg: "#FFF9F2", ink: "#8E0B1C", sub: "#816661", foot: "#856A64", symbol: "moon", symbolColor: "#A3101E" },
+  uf_after_dark: { bg: "#FFF9F2", ink: "#5E2235", sub: "#816661", foot: "#856A64", symbol: "moon", symbolColor: "#6E2A3E" },
+  uf_no_limits: { bg: "#FFF9F2", ink: "#4A1726", sub: "#816661", foot: "#856A64", symbol: "moon", symbolColor: "#B0852F" },
+};
+
+export function FrontSymbol({ symbol, color, size = 22 }: { symbol: FrontStyle["symbol"]; color: string; size?: number }) {
+  switch (symbol) {
+    case "heart":
+      return <svg width={size} height={size} viewBox="0 0 44 44" aria-hidden="true"><path d={HEART} fill={color} /></svg>;
+    case "flower":
+      return (
+        <svg width={size} height={size} viewBox="-17 -17 34 34" aria-hidden="true" fill={color}>
+          <circle cx="0" cy="-9" r="7" /><circle cx="8.6" cy="-2.8" r="7" /><circle cx="5.3" cy="7.3" r="7" /><circle cx="-5.3" cy="7.3" r="7" /><circle cx="-8.6" cy="-2.8" r="7" />
+        </svg>
+      );
+    case "leaf":
+      return (
+        <svg width={size} height={size} viewBox="0 0 44 44" aria-hidden="true" fill={color}>
+          <path d="M21 40 V22 C21 12 13 5 4 5 C4 15 11 22 21 22 M23 34 V18 C23 9 30 3 40 3 C40 12 33 18 23 18" stroke={color} strokeWidth="3" strokeLinejoin="round" />
+        </svg>
+      );
+    case "star":
+      return <svg width={size} height={size} viewBox="-11 -11 22 22" aria-hidden="true"><path d={STAR} fill={color} /></svg>;
+    case "circle":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke={color} strokeWidth="2.4" /><circle cx="12" cy="12" r="4.5" fill={color} />
+        </svg>
+      );
+    case "flame":
+      return <svg width={size} height={size} viewBox="0 0 44 44" aria-hidden="true"><path d="M22 41c-8 0-13-5-13-12 0-8 7-11 8-20 5 4 6 8 6 11 2-1 3-4 3-7 5 4 9 9 9 16 0 7-5 12-13 12z" fill={color} /></svg>;
+    case "lips":
+      return (
+        <svg width={size} height={size} viewBox="-19 -12 38 24" aria-hidden="true" fill={color}>
+          <path d={LIP_TOP} /><path d={LIP_BOTTOM} />
+        </svg>
+      );
+    case "moon":
+      return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2 a10 10 0 1 0 0 20 a8 8 0 1 1 0 -20z" fill={color} /></svg>;
+  }
 }

@@ -1,29 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "motion/react";
-import { Button } from "./ui/button";
 import { Heart } from "lucide-react";
 import { useGame, type DrawnCard } from "@/lib/store";
 import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
-import { CardArt, patternFor } from "./CardArt";
+import { CardArt, DISPLAY_FONT, FRONT_STYLES, FrontSymbol, patternFor } from "./CardArt";
 
-const accentVar: Record<string, string> = {
-  love: "var(--color-cat-love)",
-  friendship: "var(--color-cat-friendship)",
-  selfdev: "var(--color-cat-selfdev)",
-  passions: "var(--color-cat-passions)",
-  introspection: "var(--color-cat-introspection)",
-  plus_love: "var(--color-cat-plus_love)",
-  plus_spice: "var(--color-cat-plus_spice)",
-  plus_deep: "var(--color-cat-plus_deep)",
-  plus_kinky: "var(--color-cat-plus_kinky)",
-  unfiltered: "var(--color-cat-unfiltered)",
-};
+const FAV_RED = "#C1121F";
 
 function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
   if (card.category === "unfiltered") {
     const lvl = card.unfilteredLevel ?? "love_spice";
-    return `${UNFILTERED_LEVELS[lvl].emoji} ${UNFILTERED_LEVELS[lvl].label[lang]}`;
+    return UNFILTERED_LEVELS[lvl].label[lang];
   }
   return CATEGORY_META[card.category].label[lang];
 }
@@ -36,10 +24,11 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   const systemReducedMotion = useReducedMotion();
   const use3d = animations && !reducedMotion && !systemReducedMotion;
   const questionRef = useRef<HTMLDivElement>(null);
+
   const pattern = patternFor(card.category, card.unfilteredLevel);
+  const front = FRONT_STYLES[pattern];
   const primary = lang === "pl" ? card.pl : card.en;
   const secondary = lang === "pl" ? card.en : card.pl;
-  const accent = accentVar[card.category];
 
   const edition = EDITION_META[editionForCategory(card.category)][lang];
   const categoryLabel = categoryLabelFor(card, lang);
@@ -51,6 +40,7 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     ? (isFav ? "Usuń z ulubionych" : "Dodaj do ulubionych")
     : (isFav ? "Remove from favorites" : "Add to favorites");
 
+  // Shrink the question until it fits the card (long questions, small phones).
   useEffect(() => {
     const box = questionRef.current;
     if (!box) return;
@@ -58,18 +48,18 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       const primaryText = box.querySelector<HTMLElement>("[data-primary-question]");
       const secondaryText = box.querySelector<HTMLElement>("[data-secondary-question]");
       if (!primaryText || !secondaryText) return;
-      for (let size = 26; size >= 16; size--) {
+      for (let size = 26; size >= 15; size--) {
         primaryText.style.fontSize = `${size}px`;
-        secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.6))}px`;
+        secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.58))}px`;
         if (box.scrollHeight <= box.clientHeight + 1) break;
       }
     };
     const observer = new ResizeObserver(fit);
     observer.observe(box);
     fit();
-    document.fonts.ready.then(fit);
+    document.fonts?.ready.then(fit);
     return () => observer.disconnect();
-  }, [primary, secondary, categoryLabel]);
+  }, [primary, secondary]);
 
   useEffect(() => () => {
     if (clickTimer.current) clearTimeout(clickTimer.current);
@@ -81,13 +71,17 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     }
   };
 
+  const favorite = () => {
+    toggleFavorite(card.id);
+    setHeartBurst((n) => n + 1);
+  };
+
   const handleTap = () => {
     if (clickTimer.current) {
       // double-tap → favorite
       clearTimeout(clickTimer.current);
       clickTimer.current = null;
-      toggleFavorite(card.id);
-      setHeartBurst((n) => n + 1);
+      favorite();
       return;
     }
     clickTimer.current = setTimeout(() => {
@@ -103,19 +97,20 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     }
   };
 
+  const shadow = "0 24px 48px -20px rgba(101,15,35,0.45)";
+
   return (
     <div className="playing-card relative mx-auto select-none" style={{ perspective: use3d ? 1600 : undefined, aspectRatio: "5 / 7" }}>
       <motion.div
-        className="preserve-3d transform-gpu will-change-transform relative h-full w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-[32px]"
+        className="preserve-3d transform-gpu will-change-transform relative h-full w-full cursor-pointer rounded-[28px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
         style={{ willChange: "transform" }}
         role="button"
         tabIndex={0}
         aria-pressed={flipped}
-        aria-expanded={flipped}
         aria-label={flipLabel}
         onKeyDown={handleKeyDown}
         onClick={handleTap}
-        drag={use3d ? true : false}
+        drag={use3d}
         dragSnapToOrigin
         dragElastic={0.14}
         onDragEnd={onDragEnd}
@@ -127,13 +122,11 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         }
         whileTap={use3d ? { scale: 0.98 } : undefined}
       >
-        {/* BACK (reverse) — shown first */}
+        {/* BACK — shown first */}
         <motion.div
-          className="backface-hidden transform-gpu absolute inset-0 overflow-hidden rounded-[32px] shadow-2xl"
+          className="backface-hidden transform-gpu absolute inset-0 overflow-hidden rounded-[28px]"
           style={{
-            boxShadow: isFav
-              ? "0 30px 60px -20px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,59,107,0.55), 0 0 40px -6px rgba(255,59,107,0.55)"
-              : "0 30px 60px -20px rgba(0,0,0,0.4)",
+            boxShadow: isFav ? `${shadow}, 0 0 0 3px ${FAV_RED}` : shadow,
             willChange: "transform",
             pointerEvents: flipped ? "none" : "auto",
           }}
@@ -141,23 +134,16 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           animate={{ opacity: use3d ? 1 : flipped ? 0 : 1 }}
           transition={{ duration: use3d ? 0 : 0.18 }}
         >
-          <CardArt
-            pattern={pattern}
-            edition={edition}
-            category={categoryLabel}
-            hint={hint}
-          />
-
+          <CardArt pattern={pattern} edition={edition} category={categoryLabel} hint={hint} />
         </motion.div>
 
-        {/* FRONT (facing) */}
+        {/* FRONT — calm: one symbol, the question in the middle, a quiet footer */}
         <motion.div
-          className="backface-hidden transform-gpu absolute inset-0 flex flex-col rounded-[32px] p-5 sm:p-7"
+          className="backface-hidden transform-gpu absolute inset-0 flex flex-col items-center overflow-hidden rounded-[28px] px-[9%] pb-[7%] pt-[8%] text-center"
           style={{
             transform: use3d ? "rotateY(180deg)" : "none",
-            background: "var(--card-surface)",
-            color: "var(--card-ink)",
-            boxShadow: "0 30px 60px -20px rgba(0,0,0,0.35)",
+            background: front.bg,
+            boxShadow: shadow,
             willChange: "transform",
             pointerEvents: flipped ? "auto" : "none",
           }}
@@ -165,55 +151,62 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           animate={{ opacity: use3d ? 1 : flipped ? 1 : 0 }}
           transition={{ duration: use3d ? 0 : 0.18 }}
         >
-          <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <span
-                className="text-[9px] font-bold uppercase tracking-[0.34em]"
-                style={{ color: "var(--muted-text)" }}
-              >
-                {edition}
-              </span>
-              <span
-                className="max-w-full w-fit rounded-lg px-2 py-1 text-[10px] font-bold leading-snug"
-                style={{ background: accent, color: `var(--cat-ink-${card.category})` }}
-              >
-                {categoryLabel}
-              </span>
-            </div>
-            {card.intensity ? (
-              <span className="mt-1 flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: i < (card.intensity ?? 0) ? accent : "var(--border)" }}
-                  />
-                ))}
-              </span>
-            ) : null}
+          <div className="shrink-0">
+            <FrontSymbol symbol={front.symbol} color={front.symbolColor} size={24} />
           </div>
 
-          <div ref={questionRef} className="question-copy my-3 min-h-0 flex-1 overflow-y-auto text-center">
-            <p data-primary-question className="text-balance text-[26px] font-extrabold leading-tight">
+          <div
+            ref={questionRef}
+            className="question-copy my-4 flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 overflow-hidden"
+          >
+            <p
+              data-primary-question
+              className="text-balance leading-[1.2]"
+              style={{ fontFamily: DISPLAY_FONT, fontSize: 26, color: front.ink }}
+            >
               {primary}
             </p>
-            <p data-secondary-question className="mt-3 text-balance text-[16px] font-medium leading-snug" style={{ color: "var(--muted-text)" }}>
+            <p
+              data-secondary-question
+              className="text-balance font-medium leading-[1.38]"
+              style={{ fontSize: 15, color: front.sub }}
+            >
               {secondary}
             </p>
           </div>
 
-          <p className="text-center text-[10px] font-semibold uppercase tracking-[0.4em]" style={{ opacity: 0.35 }}>
-            Between Us
-          </p>
-          {/* Favorite indicator — top-right of the FRONT face. */}
-          {isFav && (
-            <div className="pointer-events-none absolute right-4 top-4 z-20">
-              <Heart className="h-5 w-5" fill="#ff3b6b" stroke="#ff3b6b" />
-            </div>
-          )}
+          <div className="flex shrink-0 flex-col items-center gap-1.5" style={{ color: front.foot }}>
+            <span className="text-[12px] tracking-[0.04em]" style={{ fontFamily: DISPLAY_FONT }}>
+              between us
+            </span>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.2em]">
+              {categoryLabel} · {edition}
+            </span>
+          </div>
+
+          {/* Favourite button — visible on the front */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              favorite();
+            }}
+            aria-label={favLabel}
+            aria-pressed={isFav}
+            tabIndex={flipped ? 0 : -1}
+            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "rgba(101,15,35,0.07)" }}
+          >
+            <Heart
+              className="h-5 w-5"
+              fill={isFav ? FAV_RED : "none"}
+              stroke={isFav ? FAV_RED : front.ink}
+              strokeWidth={2.2}
+            />
+          </button>
         </motion.div>
 
-        {/* Double-tap heart burst — nested inside 3D wrapper so it rotates with the card */}
+        {/* Double-tap heart burst — inside the 3D wrapper so it turns with the card */}
         <AnimatePresence>
           {heartBurst > 0 && (
             <motion.div
@@ -227,29 +220,14 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
             >
               <Heart
                 className="h-28 w-28 drop-shadow-2xl"
-                fill={isFav ? "#ff3b6b" : "rgba(255,255,255,0.75)"}
-                stroke={isFav ? "#ff3b6b" : "#ffffff"}
+                fill={isFav ? FAV_RED : "rgba(255,255,255,0.8)"}
+                stroke={isFav ? FAV_RED : "#ffffff"}
                 strokeWidth={1.5}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
-
-      {/* Screen-reader-only favorite toggle (double-tap works for pointer users) */}
-      <Button variant="secondary"
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleFavorite(card.id);
-          setHeartBurst((n) => n + 1);
-        }}
-        aria-label={favLabel}
-        aria-pressed={isFav}
-        className="sr-only focus:not-sr-only focus:absolute focus:right-2 focus:top-2 focus:z-30 focus:whitespace-normal focus:text-xs"
-      >
-        {favLabel}
-      </Button>
     </div>
   );
 }
