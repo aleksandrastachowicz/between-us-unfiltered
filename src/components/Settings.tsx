@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, Sun, Moon, Users, Wifi, Copy, Check } from "lucide-react";
+import { X, Plus, Trash2, Users, Wifi, Copy, Check } from "lucide-react";
 import { useGame, type ThemeId } from "@/lib/store";
 import { useMultiplayer } from "@/lib/multiplayer";
 import { AccountPanel } from "./AccountPanel";
@@ -35,7 +35,7 @@ const t = {
     mpNotFound: "Nie znaleziono pokoju",
     mpShare: "Podaj ten kod partnerowi:",
     guestHint: "Grasz jako gość — zaloguj się powyżej, aby zapisać postęp.",
-    themes: { rose: "Różany Pastel", fairy: "Wróżkowa Zieleń", violet: "Fiolet", spicy: "Spicy Red" },
+    themes: { rose: "Róż", sage: "Szałwia", lavender: "Lawenda" },
   },
   en: {
     settings: "Settings",
@@ -64,21 +64,20 @@ const t = {
     mpNotFound: "Room not found",
     mpShare: "Share this code with your partner:",
     guestHint: "You are a guest — sign in above to save your progress.",
-    themes: { rose: "Rose Pastel", fairy: "Fairy Green", violet: "Violet", spicy: "Spicy Red" },
+    themes: { rose: "Rose", sage: "Sage", lavender: "Lavender" },
   },
 };
 
-const themeSwatch: Record<ThemeId, string[]> = {
-  rose: ["#ff3ea5", "#ff8fd0", "#ffd76e"],
-  fairy: ["#12b981", "#5ff0c0", "#d9f99d"],
-  violet: ["#7c3aed", "#a78bfa", "#22d3ee"],
-  spicy: ["#e0392b", "#ff6a3d", "#ffb347"],
+const themeSwatch: Record<ThemeId, [string, string]> = {
+  rose: ["#F2BCCB", "#9A1A35"],
+  sage: ["#BFCEB5", "#2F4A3A"],
+  lavender: ["#CFC4EC", "#4B2A8C"],
 };
 
 
 export function Settings({ open, onClose }: { open: boolean; onClose: () => void }) {
   const {
-    lang, setLang, theme, setTheme, mode, setMode,
+    lang, setLang, theme, setTheme,
     animations, toggleAnimations,
     hapticsEnabled, toggleHaptics,
     reducedMotion, toggleReducedMotion,
@@ -152,26 +151,6 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                     style={{ background: lang === l ? "var(--accent)" : "transparent", color: lang === l ? "var(--accent-ink)" : "var(--muted-text)" }}
                   >
                     {l}
-                  </button>
-                ))}
-              </div>
-            </Section>
-
-            {/* Appearance (light / dark) — right under language */}
-            <Section title={c.appearance}>
-              <div className="flex rounded-2xl p-1" style={{ background: "var(--panel-2)" }}>
-                {(["light", "dark"] as const).map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setMode(m)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl py-1.5 text-[13px] font-bold transition-all"
-                    style={{
-                      background: mode === m ? "var(--accent)" : "transparent",
-                      color: mode === m ? "var(--accent-ink)" : "var(--muted-text)",
-                    }}
-                  >
-                    {m === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                    {m === "light" ? c.light : c.dark}
                   </button>
                 ))}
               </div>
@@ -287,10 +266,11 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                     style={{ background: "var(--panel-2)", outline: theme === th ? "2px solid var(--accent)" : "2px solid transparent" }}
                   >
                     <span className="text-[13px] font-semibold">{c.themes[th]}</span>
-                    <span className="flex gap-1">
-                      {themeSwatch[th].map((col) => (
-                        <span key={col} className="h-4 w-4 rounded-full" style={{ background: col }} />
-                      ))}
+                    <span
+                      className="flex h-7 w-7 items-center justify-center rounded-full"
+                      style={{ background: themeSwatch[th][0], boxShadow: "inset 0 0 0 1.5px rgba(0,0,0,0.15)" }}
+                    >
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: themeSwatch[th][1] }} />
                     </span>
                   </button>
                 ))}

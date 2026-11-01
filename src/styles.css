@@ -29,7 +29,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 8px);
 
-  --font-sans: "Inter", "Montserrat", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Archivo Black", "Inter", sans-serif;
 
   /* category accents (theme-independent) */
   --color-cat-love: #a21836;
@@ -50,163 +51,64 @@
 }
 
 /* ============================================================
-   THEMES — each ships a light default + a .dark override.
-   Toggle by adding the `dark` class alongside `.theme-*`.
+   THEMES — Róż (default), Szałwia, Lawenda. Light only.
+   Shared brand colours: cherry buttons, deep ink, paper surfaces.
+   Every text colour below passes WCAG AA (4.5:1) on --bg and --panel.
    ============================================================ */
 
-/* ===== ROSE (blush aura) ===== */
 .theme-rose {
-  --bg: #fff1f7;
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-2: #fbe4f0;
-  --text: #2c1626;
-  --muted-text: #9a7089;
-  --border: #f6d8e8;
-  --accent: #ff2f9e;
-  --accent-ink: #ffffff;
+  --bg: #f2bccb;
+  --panel: #fff6f0;
+  --panel-2: #f7dce3;
+  --text: #2b1a22;
+  --ink: #650f23;
+  --muted-text: #89384d;
+  --sub-text: #6e4f59;
+  --border: rgba(101, 15, 35, 0.18);
+  --accent: #9a1a35;
+  --accent-ink: #fff1f4;
+  --chip: #fbe3e6;
+  --chip-ink: #8e0b20;
   --card-surface: #ffffff;
-  --card-ink: #1d1620;
-  --aura-1: #ff8fd0;
-  --aura-2: #ffc2e3;
-  --aura-3: #ffd76e;
-  --aura-4: #ff5aa6;
-  --aura-5: #c9b6ff;
-  --glow: 0 0 24px rgba(255, 47, 158, 0.45);
-}
-.theme-rose.dark {
-  --bg: #190a13;
-  --panel: rgba(46, 22, 38, 0.6);
-  --panel-2: rgba(66, 32, 52, 0.55);
-  --text: #fce8f2;
-  --muted-text: #d1a0be;
-  --border: rgba(255, 143, 208, 0.2);
-  --accent: #ff6bb8;
-  --accent-ink: #190a13;
-  --card-surface: #241220;
-  --card-ink: #fce8f2;
-  --aura-1: #8a205e;
-  --aura-2: #d1479a;
-  --aura-3: #ff6bb8;
-  --aura-4: #4a1638;
-  --aura-5: #6a2a80;
-  --glow: 0 0 26px rgba(255, 107, 184, 0.5);
+  --card-ink: #2b1a22;
+  --glow: none;
 }
 
-/* ===== FAIRY (enchanted green) ===== */
-.theme-fairy {
-  --bg: #eefbf3;
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-2: #ddf4e6;
-  --text: #0f2a1e;
-  --muted-text: #588a72;
-  --border: #cceddb;
-  --accent: #0fb587;
-  --accent-ink: #ffffff;
+.theme-sage {
+  --bg: #bfceb5;
+  --panel: #fff6f0;
+  --panel-2: #e4eddd;
+  --text: #1f2a22;
+  --ink: #22382b;
+  --muted-text: #3f5746;
+  --sub-text: #4f5a52;
+  --border: rgba(34, 56, 43, 0.2);
+  --accent: #2f4a3a;
+  --accent-ink: #fff1e6;
+  --chip: #e4eddd;
+  --chip-ink: #22382b;
   --card-surface: #ffffff;
-  --card-ink: #10281d;
-  --aura-1: #5ff0c0;
-  --aura-2: #b6f5c8;
-  --aura-3: #e6fbb0;
-  --aura-4: #2ec6a0;
-  --aura-5: #a7e8ff;
-  --glow: 0 0 24px rgba(15, 181, 135, 0.45);
-}
-.theme-fairy.dark {
-  --bg: #061710;
-  --panel: rgba(16, 40, 30, 0.6);
-  --panel-2: rgba(24, 56, 42, 0.55);
-  --text: #e7fbf1;
-  --muted-text: #8ec8ac;
-  --border: rgba(52, 224, 161, 0.2);
-  --accent: #3ce8a9;
-  --accent-ink: #061710;
-  --card-surface: #0f261b;
-  --card-ink: #e7fbf1;
-  --aura-1: #0d6a4c;
-  --aura-2: #1cae82;
-  --aura-3: #3ce8a9;
-  --aura-4: #0a4432;
-  --aura-5: #237a5f;
-  --glow: 0 0 26px rgba(60, 232, 169, 0.5);
+  --card-ink: #1f2a22;
+  --glow: none;
 }
 
-/* ===== VIOLET (mystic dusk) ===== */
-.theme-violet {
-  --bg: #f5f1ff;
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-2: #eae1fb;
-  --text: #241a3a;
-  --muted-text: #837498;
-  --border: #e0d5f6;
-  --accent: #7c3aed;
-  --accent-ink: #ffffff;
+.theme-lavender {
+  --bg: #cfc4ec;
+  --panel: #fff6f0;
+  --panel-2: #ece6fa;
+  --text: #221a33;
+  --ink: #2e1a5c;
+  --muted-text: #5b478b;
+  --sub-text: #5a5068;
+  --border: rgba(46, 26, 92, 0.2);
+  --accent: #4b2a8c;
+  --accent-ink: #fff1f4;
+  --chip: #ece6fa;
+  --chip-ink: #2e1a5c;
   --card-surface: #ffffff;
-  --card-ink: #241a3a;
-  --aura-1: #b7a0ff;
-  --aura-2: #d5c6ff;
-  --aura-3: #7fe6f5;
-  --aura-4: #8b5cf6;
-  --aura-5: #ffc2ec;
-  --glow: 0 0 24px rgba(124, 58, 237, 0.45);
+  --card-ink: #221a33;
+  --glow: none;
 }
-.theme-violet.dark {
-  --bg: #0c0819;
-  --panel: rgba(30, 22, 50, 0.6);
-  --panel-2: rgba(46, 34, 74, 0.55);
-  --text: #efeafd;
-  --muted-text: #ab9ecc;
-  --border: rgba(167, 139, 250, 0.22);
-  --accent: #b49bff;
-  --accent-ink: #0c0819;
-  --card-surface: #18122c;
-  --card-ink: #efeafd;
-  --aura-1: #453a8c;
-  --aura-2: #7c3aed;
-  --aura-3: #3fc9e0;
-  --aura-4: #241650;
-  --aura-5: #6a3ad6;
-  --glow: 0 0 26px rgba(180, 155, 255, 0.55);
-}
-
-/* ===== SPICY (ember red) ===== */
-.theme-spicy {
-  --bg: #fff2ee;
-  --panel: rgba(255, 255, 255, 0.72);
-  --panel-2: #ffe0d8;
-  --text: #3a130d;
-  --muted-text: #ab6b5d;
-  --border: #f8d0c6;
-  --accent: #e23422;
-  --accent-ink: #ffffff;
-  --card-surface: #ffffff;
-  --card-ink: #3a130d;
-  --aura-1: #ff6a3d;
-  --aura-2: #ffab7a;
-  --aura-3: #ffcf5c;
-  --aura-4: #e0392b;
-  --aura-5: #ff9ec2;
-  --glow: 0 0 24px rgba(226, 52, 34, 0.45);
-}
-.theme-spicy.dark {
-  --bg: #170807;
-  --panel: rgba(48, 20, 16, 0.6);
-  --panel-2: rgba(68, 28, 22, 0.55);
-  --text: #fbe9e5;
-  --muted-text: #d29a8c;
-  --border: rgba(255, 106, 61, 0.2);
-  --accent: #ff6a54;
-  --accent-ink: #170807;
-  --card-surface: #251210;
-  --card-ink: #fbe9e5;
-  --aura-1: #8a1c12;
-  --aura-2: #d43a24;
-  --aura-3: #ff7a4d;
-  --aura-4: #461009;
-  --aura-5: #6a1d14;
-  --glow: 0 0 26px rgba(255, 106, 84, 0.5);
-}
-
-
 
 @layer base {
   * {

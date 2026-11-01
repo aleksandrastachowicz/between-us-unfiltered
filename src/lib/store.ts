@@ -7,11 +7,16 @@ import {
   type Lang,
   type Question,
 } from "@/data/questions";
-import { type UnfilteredQuestion } from "@/data/unfiltered";
+import { LEVEL_UP_CARD, nextLevel, type UnfilteredQuestion } from "@/data/unfiltered";
+import type { UnfilteredLevel } from "@/data/questions";
 import { nextUnfiltered, primeUnfiltered } from "@/lib/unfilteredClient";
 import { haptic, HAPTIC } from "@/lib/haptics";
 
-export type ThemeId = "rose" | "fairy" | "violet" | "spicy";
+export type ThemeId = "rose" | "sage" | "lavender";
+export const THEMES: ThemeId[] = ["rose", "sage", "lavender"];
+
+/** Unfiltered level → the progress value the question generator expects. */
+const LEVEL_PROGRESS: Record<UnfilteredLevel, number> = { love_spice: 15, after_dark: 50, no_limits: 85 };
 export type Mode = "light" | "dark";
 export type Screen = "deck" | "game";
 export type Tab = "play" | "history" | "favorites" | "insights";
@@ -40,7 +45,10 @@ interface State {
   // session
   screen: Screen;
   currentPlayer: number;
-  progress: number; // relationship_progress 0-100
+  progress: number; // derived from ufLevel, used by the question generator
+  ufLevel: UnfilteredLevel;
+  sinceLevelOffer: number;
+  levelUpOpen: boolean;
   card: DrawnCard | null;
   flipped: boolean;
   discard: Set<string>;
@@ -70,6 +78,9 @@ interface State {
   goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
+  setUfLevel: (l: UnfilteredLevel) => void;
+  acceptLevelUp: () => void;
+  declineLevelUp: () => void;
   toggleFavorite: (id: string) => void;
   setTab: (t: Tab) => void;
   flushGuestSession: () => void;
@@ -129,7 +140,10 @@ export const useGame = create<State>()(
       },
       screen: "deck",
       currentPlayer: 0,
-      progress: 0,
+      progress: LEVEL_PROGRESS.love_spice,
+      ufLevel: "love_spice",
+      sinceLevelOffer: 0,
+      levelUpOpen: false,
       card: null,
       flipped: false,
       discard: new Set<string>(),
@@ -156,7 +170,7 @@ export const useGame = create<State>()(
       startGame: () => {
         const s = get();
         if (s.decks.unfiltered) primeUnfiltered(s.progress);
-        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [], activeTab: "play" });
+        set({ screen: "game", card: null, flipped: false, discard: new Set(), drawCount: 0, currentPlayer: 0, history: [], activeTab: "play", sinceLevelOffer: 0, levelUpOpen: false, progress: LEVEL_PROGRESS[s.ufLevel] });
         get().drawCard();
       },
       backToDecks: () => set({ screen: "deck", activeTab: "play" }),
@@ -165,7 +179,10 @@ export const useGame = create<State>()(
         set({
           players: [],
           currentPlayer: 0,
-          progress: 0,
+          ufLevel: "love_spice",
+          progress: LEVEL_PROGRESS.love_spice,
+          sinceLevelOffer: 0,
+          levelUpOpen: false,
           card: null,
           flipped: false,
           discard: new Set(),
@@ -244,6 +261,13 @@ export const useGame = create<State>()(
             stats: nextStats,
           };
         });
+        // "One Step Deeper": every N cards offer the next Unfiltered level.
+        const after = get();
+        if (after.decks.unfiltered && card && nextLevel(after.ufLevel)) {
+          const n = after.sinceLevelOffer + 1;
+          if (n >= LEVEL_UP_CARD.every) set({ sinceLevelOffer: 0, levelUpOpen: true });
+          else set({ sinceLevelOffer: n });
+        }
         if (get().decks.unfiltered) primeUnfiltered(get().progress);
       },
 
@@ -265,6 +289,17 @@ export const useGame = create<State>()(
         set((s) => ({ flipped: !s.flipped }));
       },
       setProgress: (n) => set({ progress: Math.max(0, Math.min(100, n)) }),
+      setUfLevel: (ufLevel) => {
+        set({ ufLevel, progress: LEVEL_PROGRESS[ufLevel], sinceLevelOffer: 0 });
+        primeUnfiltered(LEVEL_PROGRESS[ufLevel]);
+      },
+      acceptLevelUp: () => {
+        const next = nextLevel(get().ufLevel);
+        haptic(HAPTIC.turn);
+        set({ levelUpOpen: false });
+        if (next) get().setUfLevel(next);
+      },
+      declineLevelUp: () => set({ levelUpOpen: false, sinceLevelOffer: 0 }),
       toggleFavorite: (id) =>
         set((s) => ({
           favorites: s.favorites.includes(id)
@@ -275,12 +310,15 @@ export const useGame = create<State>()(
     }),
     {
       name: "between-us",
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted) => {
         const s = (persisted ?? {}) as Record<string, unknown>;
-        const validThemes: ThemeId[] = ["rose", "fairy", "violet", "spicy"];
-        if (!validThemes.includes(s.theme as ThemeId)) s.theme = "rose";
+        const oldThemes: Record<string, ThemeId> = { fairy: "sage", violet: "lavender", spicy: "rose" };
+        if (typeof s.theme === "string" && oldThemes[s.theme]) s.theme = oldThemes[s.theme];
+        if (!THEMES.includes(s.theme as ThemeId)) s.theme = "rose";
+        if (!["love_spice", "after_dark", "no_limits"].includes(s.ufLevel as string)) s.ufLevel = "love_spice";
+        s.progress = LEVEL_PROGRESS[s.ufLevel as UnfilteredLevel];
         if (s.mode !== "light" && s.mode !== "dark") s.mode = "light";
         const cats = (s.categories ?? {}) as Record<string, boolean>;
         if (typeof cats.plus_deep !== "boolean") cats.plus_deep = true;
@@ -307,6 +345,7 @@ export const useGame = create<State>()(
         decks: s.decks,
         categories: s.categories,
         progress: s.progress,
+        ufLevel: s.ufLevel,
         favorites: s.favorites,
         history: s.history,
         card: s.card,

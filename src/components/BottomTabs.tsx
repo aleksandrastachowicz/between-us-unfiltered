@@ -1,4 +1,4 @@
-import { Play, Clock, Heart, BarChart3 } from "lucide-react";
+import { RectangleVertical, Clock, Heart, BarChart3 } from "lucide-react";
 import { useGame, type Tab } from "@/lib/store";
 
 const labels = {
@@ -12,8 +12,8 @@ export function BottomTabs() {
   const setTab = useGame((s) => s.setTab);
   const l = labels[lang];
 
-  const items: { id: Tab; icon: typeof Play; label: string }[] = [
-    { id: "play", icon: Play, label: l.play },
+  const items: { id: Tab; icon: typeof Clock; label: string }[] = [
+    { id: "play", icon: RectangleVertical, label: l.play },
     { id: "history", icon: Clock, label: l.history },
     { id: "favorites", icon: Heart, label: l.favorites },
     { id: "insights", icon: BarChart3, label: l.insights },
@@ -21,7 +21,8 @@ export function BottomTabs() {
 
   return (
     <nav
-      className="glass mx-auto mt-3 flex w-full max-w-sm items-center justify-around rounded-2xl p-1"
+      className="mx-auto mt-3 flex h-16 w-full items-center justify-around rounded-[22px] px-1.5"
+      style={{ background: "var(--panel)", border: "1.5px solid var(--border)" }}
       aria-label={lang === "pl" ? "Nawigacja" : "Navigation"}
     >
       {items.map((it) => {
@@ -30,15 +31,17 @@ export function BottomTabs() {
         return (
           <button
             key={it.id}
+            type="button"
             onClick={() => setTab(it.id)}
             aria-current={on ? "page" : undefined}
-            className="flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-[11px] font-bold transition-colors"
+            className="flex min-w-0 flex-col items-center gap-[3px] rounded-2xl px-3.5 py-2 text-[10px] transition-colors"
             style={{
               background: on ? "var(--accent)" : "transparent",
               color: on ? "var(--accent-ink)" : "var(--muted-text)",
+              fontWeight: on ? 800 : 700,
             }}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-5 w-5" strokeWidth={2.1} />
             {it.label}
           </button>
         );

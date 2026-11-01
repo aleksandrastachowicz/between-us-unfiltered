@@ -1,48 +1,149 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Settings as Cog, ChevronLeft, Shuffle, Undo2 } from "lucide-react";
+import { ChevronLeft, SlidersHorizontal, Undo2, Check } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { PlayingCard } from "./PlayingCard";
 import { Settings } from "./Settings";
-import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
+import { LEVEL_ORDER, UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { BottomTabs } from "./BottomTabs";
 import { HistoryView } from "./HistoryView";
 import { FavoritesView } from "./FavoritesView";
 import { InsightsView } from "./InsightsView";
+import { LevelUpCard } from "./LevelUpCard";
 import { useAuth } from "@/lib/useAuth";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { Button } from "./ui/button";
+import { DISPLAY_FONT } from "./CardArt";
+
+const ROMAN = ["I", "II", "III"];
 
 const t = {
   pl: {
-    next: "Następna karta", turn: "Tura", progress: "Poziom intymności", draw: "Dobierz kartę", prev: "Poprzednia",
-    resetTitle: "Zresetować talię?",
-    resetGuest: "Grasz jako gość — bieżąca sesja, imiona graczy i postęp zostaną bezpowrotnie usunięte.",
-    resetUser: "Wrócisz do wyboru talii. Bieżąca runda zostanie zakończona, a Twoje dane pozostaną zapisane w chmurze.",
-    resetOk: "Resetuj",
-    cancel: "Anuluj",
+    next: "Następna karta",
+    nowAnswers: "Teraz odpowiada",
+    prev: "Poprzednia karta",
+    back: "Wróć do wyboru talii",
+    settings: "Ustawienia",
+    level: "Poziom Bez filtra",
+    pickLevel: "Wybierz poziom",
+    resetTitle: "Wrócić do wyboru talii?",
+    resetGuest: "Grasz jako gość, więc ta rozmowa, imiona graczy i postęp zostaną usunięte.",
+    resetUser: "Ta runda się zakończy. Twoje dane zostają zapisane w chmurze.",
+    resetOk: "Wróć",
+    cancel: "Zostań",
   },
   en: {
-    next: "Next card", turn: "Turn", progress: "Intimacy level", draw: "Draw a card", prev: "Previous",
-    resetTitle: "Reset deck?",
-    resetGuest: "You are playing as a guest — the current session, player names and progress will be permanently deleted.",
-    resetUser: "You will return to deck selection. The current round ends, but your data stays saved in the cloud.",
-    resetOk: "Reset",
-    cancel: "Cancel",
+    next: "Next card",
+    nowAnswers: "Now answering",
+    prev: "Previous card",
+    back: "Back to deck selection",
+    settings: "Settings",
+    level: "Unfiltered level",
+    pickLevel: "Choose a level",
+    resetTitle: "Back to deck selection?",
+    resetGuest: "You are playing as a guest, so this conversation, player names and progress will be deleted.",
+    resetUser: "This round will end. Your data stays saved in the cloud.",
+    resetOk: "Go back",
+    cancel: "Stay",
   },
 };
 
+function RoundButton({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+      style={{ background: "var(--panel)", color: "var(--ink)" }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Small chip under the player's name: current Unfiltered level, tap to change it (also to go back a level). */
+function LevelChip() {
+  const { lang, ufLevel, setUfLevel } = useGame();
+  const [open, setOpen] = useState(false);
+  const c = t[lang];
+  const idx = LEVEL_ORDER.indexOf(ufLevel);
+  return (
+    <div className="relative mt-1.5">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label={`${c.level}: ${UNFILTERED_LEVELS[ufLevel].label[lang]}. ${c.pickLevel}`}
+        className="flex h-7 items-center gap-1.5 rounded-full px-3"
+        style={{ background: "#17121A" }}
+      >
+        <span className="text-[10px] font-extrabold uppercase tracking-[0.08em]" style={{ color: "#E6C487" }}>
+          {UNFILTERED_LEVELS[ufLevel].label[lang]}
+        </span>
+        {LEVEL_ORDER.map((l, i) => (
+          <span
+            key={l}
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: i <= idx ? "#D9B26F" : "rgba(217,178,111,0.3)" }}
+          />
+        ))}
+      </button>
+      <AnimatePresence>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+            <motion.ul
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="absolute left-1/2 top-9 z-40 w-64 -translate-x-1/2 rounded-2xl p-1.5 text-left"
+              style={{ background: "var(--panel)", boxShadow: "0 18px 40px -16px rgba(0,0,0,0.45)" }}
+            >
+              {LEVEL_ORDER.map((l, i) => {
+                const on = l === ufLevel;
+                return (
+                  <li key={l}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUfLevel(l);
+                        setOpen(false);
+                      }}
+                      className="flex w-full items-start gap-2.5 rounded-xl px-3 py-2.5 text-left"
+                      style={{ background: on ? "var(--panel-2)" : "transparent" }}
+                    >
+                      <span className="mt-0.5 w-6 shrink-0 text-[12px] font-extrabold" style={{ color: "var(--ink)" }}>
+                        {ROMAN[i]}
+                      </span>
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="text-[14px] font-extrabold" style={{ color: "var(--text)" }}>
+                          {UNFILTERED_LEVELS[l].label[lang]}
+                        </span>
+                        <span className="text-[12px] leading-snug" style={{ color: "var(--sub-text)" }}>
+                          {UNFILTERED_LEVELS[l].description[lang]}
+                        </span>
+                      </span>
+                      {on && <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--ink)" }} />}
+                    </button>
+                  </li>
+                );
+              })}
+            </motion.ul>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function GameScreen() {
-  const { lang, card, flipped, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, progress, setProgress, activeTab, flushGuestSession } = useGame();
+  const { lang, card, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, activeTab, flushGuestSession } = useGame();
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const c = t[lang];
-  const level = levelForProgress(progress);
-  const lvlMeta = UNFILTERED_LEVELS[level];
   const canGoBack = history.length > 0;
-
-  const handleBack = () => setConfirmReset(true);
+  const playerName = players.length > 0 ? players[currentPlayer] : null;
 
   const doReset = () => {
     setConfirmReset(false);
@@ -50,80 +151,60 @@ export function GameScreen() {
     if (!user) flushGuestSession();
   };
 
-  const handleNext = () => {
-    if (decks.unfiltered) setProgress(Math.min(100, progress + 4));
-    drawCard();
-  };
-
   return (
     <div
-      className="game-screen relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 sm:px-5"
+      className="game-screen relative mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4"
       style={{
         paddingTop: "max(1rem, env(safe-area-inset-top))",
-        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+        paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
       }}
     >
-      <header className="mb-2 grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
-        <Button variant="secondary" size="icon" aria-label={lang === "pl" ? "Wróć do wyboru talii" : "Back to deck selection"} onClick={handleBack} className="h-11 w-11 rounded-full">
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-        {players.length > 0 ? (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPlayer + players[currentPlayer]}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              className="min-w-0 truncate rounded-full px-3 py-2 text-center text-sm font-bold"
-              style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
-            >
-              {c.turn}: {players[currentPlayer]}
-            </motion.div>
-          </AnimatePresence>
-        ) : (
-          <button
-            onClick={handleBack}
-            className="text-sm font-extrabold tracking-tight"
-            style={{ fontFamily: "Helvetica, Inter, system-ui, sans-serif" }}
-            aria-label={lang === "pl" ? "Wróć do wyboru talii" : "Back to deck selection"}
-          >
-            Between Us
-          </button>
-        )}
-        <Button variant="secondary" size="icon" aria-label={lang === "pl" ? "Ustawienia" : "Settings"} onClick={() => setSettingsOpen(true)} className="h-11 w-11 rounded-full">
-          <Cog className="h-5 w-5" />
-        </Button>
+      <header className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 pt-2">
+        <RoundButton label={c.back} onClick={() => setConfirmReset(true)}>
+          <ChevronLeft className="h-5 w-5" strokeWidth={2.4} />
+        </RoundButton>
+        <div className="flex min-w-0 flex-col items-center">
+          {playerName ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPlayer + playerName}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                className="flex min-w-0 flex-col items-center"
+                aria-live="polite"
+              >
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.22em]" style={{ color: "var(--muted-text)" }}>
+                  {c.nowAnswers}
+                </span>
+                <span className="max-w-full truncate text-[20px] leading-tight" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+                  {playerName}
+                </span>
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <span className="pt-2.5 text-[18px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+              between us
+            </span>
+          )}
+          {decks.unfiltered && activeTab === "play" && <LevelChip />}
+        </div>
+        <RoundButton label={c.settings} onClick={() => setSettingsOpen(true)}>
+          <SlidersHorizontal className="h-5 w-5" strokeWidth={2} />
+        </RoundButton>
       </header>
 
-      {activeTab === "play" && decks.unfiltered && (
-        <div className="mb-4 rounded-2xl p-3" style={{ background: "var(--panel)" }}>
-          <div className="mb-1.5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-xs">
-            <span className="font-bold">{lvlMeta.emoji} {lvlMeta.label[lang]}</span>
-            <span style={{ color: "var(--muted-text)" }}>{c.progress}: {progress}</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={progress}
-            onChange={(e) => setProgress(Number(e.target.value))}
-            className="w-full accent-[var(--accent)]"
-            aria-label={c.progress}
-          />
-        </div>
-      )}
-
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible py-1">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-3">
         {activeTab === "play" && (
           <AnimatePresence mode="wait">
             {card && (
               <motion.div
                 key={card.id}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                initial={{ opacity: 0, scale: 0.94, y: 16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: -20 }}
+                exit={{ opacity: 0, scale: 0.95, y: -16 }}
                 transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                className="w-full px-2 py-2"
+                className="w-full max-w-[340px] px-1"
               >
                 <PlayingCard card={card} />
               </motion.div>
@@ -136,42 +217,32 @@ export function GameScreen() {
       </div>
 
       {activeTab === "play" && (
-      <div className="mt-3 flex shrink-0 items-center gap-3">
-        <AnimatePresence initial={false}>
-          {canGoBack && (
-            <motion.button
-              key="prev"
-              initial={{ opacity: 0, width: 0, scale: 0.9 }}
-              animate={{ opacity: 1, width: "auto", scale: 1 }}
-              exit={{ opacity: 0, width: 0, scale: 0.9 }}
-              onClick={goBack}
-              aria-label={c.prev}
-              className="flex shrink-0 items-center gap-2 overflow-hidden rounded-2xl px-4 py-4 text-sm font-bold"
-              style={{ background: "var(--panel)", color: "var(--text)" }}
-            >
-              <Undo2 className="h-4 w-4" />
-              <span className="hidden sm:inline">{c.prev}</span>
-            </motion.button>
-          )}
-        </AnimatePresence>
-        <button
-          onClick={handleNext}
-          className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-base font-extrabold transition-all"
-          style={{
-            background: flipped ? "var(--accent)" : "var(--panel)",
-            color: flipped ? "var(--accent-ink)" : "var(--text)",
-            boxShadow: flipped ? "0 16px 36px -16px var(--accent)" : "none",
-          }}
-        >
-          <Shuffle className="h-4 w-4" />
-          {flipped ? c.next : c.draw}
-        </button>
-      </div>
+        <div className="flex shrink-0 gap-2.5">
+          <button
+            type="button"
+            onClick={goBack}
+            disabled={!canGoBack}
+            aria-label={c.prev}
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40"
+            style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
+          >
+            <Undo2 className="h-[22px] w-[22px]" strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            onClick={drawCard}
+            className="h-14 flex-1 rounded-[18px] text-[17px]"
+            style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
+          >
+            {c.next}
+          </button>
+        </div>
       )}
 
       <BottomTabs />
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <LevelUpCard />
 
       <ConfirmDialog
         open={confirmReset}

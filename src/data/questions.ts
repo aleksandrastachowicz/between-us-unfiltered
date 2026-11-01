@@ -428,8 +428,8 @@ export const PLUS_CATEGORIES: CategoryId[] = [
 /** Short, display-friendly edition names per deck. */
 export const EDITION_META: Record<DeckId, QuestionText> = {
   basic: { pl: "Podstawowa", en: "Basic" },
-  plus: { pl: "Plus", en: "Plus" },
-  unfiltered: { pl: "Unfiltered", en: "Unfiltered" },
+  plus: { pl: "Love & Spice", en: "Love & Spice" },
+  unfiltered: { pl: "Bez filtra", en: "Unfiltered" },
 };
 
 export function editionForCategory(category: CategoryId | "unfiltered"): DeckId {

@@ -1,63 +1,125 @@
+import { useState } from "react";
 import { motion } from "motion/react";
-import { Heart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Check, UserRound } from "lucide-react";
 import { useGame } from "@/lib/store";
-import { CATEGORY_META, BASIC_CATEGORIES, PLUS_CATEGORIES, type DeckId } from "@/data/questions";
-import { UNFILTERED_LEVELS } from "@/data/unfiltered";
-import { CardArtPreview, patternFor } from "./CardArt";
-import { AccountPanel } from "./AccountPanel";
+import { BASIC_CATEGORIES, PLUS_CATEGORIES, type CategoryId, type DeckId, type UnfilteredLevel } from "@/data/questions";
+import { LEVEL_ORDER, UNFILTERED_LEVELS } from "@/data/unfiltered";
+import { BACK_COLORS, DISPLAY_FONT, DeckArt, patternFor, type PatternKey } from "./CardArt";
+import { Settings } from "./Settings";
 import { useAuth } from "@/lib/useAuth";
 
 const t = {
   pl: {
-    title: "Between Us",
-    sub: "Gra konwersacyjna dla głębokich relacji. Stworzona dla przyjaciół, par i każdego, kto chce naprawdę poznać drugą osobę.",
+    tagline: "Pytania, które zbliżają.",
     pick: "Wybierz talie",
-    basic: "Edycja Podstawowa",
-    basicD: "Codzienna więź, rozwój emocjonalny i refleksja. 5 klasycznych kategorii.",
-    plus: "Edition Plus: Love & Spice",
-    plusD: "Premium — romantyczna więź i zmysłowa, intymna komunikacja.",
-    unf: "Between Us: Unfiltered",
-    unfD: "Progresywna, 3-poziomowa podróż, która dostosowuje się do poziomu intimności.",
-    cats: "Kategorie",
-    levels: "Poziomy intymności",
-    unfNote:
-      "Poziom wybierasz w trakcie gry — steruje intensywnością i wpływa też na pozostałe losowane pytania.",
-    start: "Rozpocznij grę",
+    login: "Zaloguj",
+    account: "Konto i ustawienia",
+    basic: "Podstawowa",
+    basicD: "Miłość, przyjaźń, rozwój, marzenia i emocje. Dla każdego.",
+    plus: "Love & Spice",
+    plusD: "Miłość, bliskość i odrobina pikanterii. Dla par.",
+    unf: "Bez filtra",
+    unfD: "Trzy poziomy, coraz głębiej. Nowe pytania w każdej grze. 18+",
+    startLevel: "Zacznij od poziomu",
+    play: "Zagraj",
     none: "Wybierz przynajmniej jedną talię",
-    adult: "18+",
   },
   en: {
-    title: "Between Us",
-    sub: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
+    tagline: "Questions that bring you closer.",
     pick: "Choose your decks",
-    basic: "Basic Edition",
-    basicD: "Daily connection, emotional growth & reflection. 5 classic categories.",
-    plus: "Edition Plus: Love & Spice",
-    plusD: "Premium — romantic connection meets sensual, intimate communication.",
-    unf: "Between Us: Unfiltered",
-    unfD: "A progressive 3-level journey that adapts to the intimacy of the players.",
-    cats: "Categories",
-    levels: "Intimacy levels",
-    unfNote:
-      "You pick the level during play — it drives intensity and also shapes the other questions drawn.",
-    start: "Start playing",
-    none: "Select at least one deck",
-    adult: "18+",
+    login: "Sign in",
+    account: "Account and settings",
+    basic: "Basic",
+    basicD: "Love, friendship, growth, dreams and emotions. For everyone.",
+    plus: "Love & Spice",
+    plusD: "Love, closeness and a little spice. For couples.",
+    unf: "Unfiltered",
+    unfD: "Three levels, ever deeper. New questions every game. 18+",
+    startLevel: "Start at level",
+    play: "Play",
+    none: "Choose at least one deck",
   },
 };
+
+/** Short chip labels (the full names live in CATEGORY_META). */
+const SHORT: Record<CategoryId, { pl: string; en: string }> = {
+  love: { pl: "Miłość", en: "Love" },
+  friendship: { pl: "Przyjaźń", en: "Friendship" },
+  selfdev: { pl: "Rozwój", en: "Growth" },
+  passions: { pl: "Pasje", en: "Passions" },
+  introspection: { pl: "Introspekcja", en: "Introspection" },
+  plus_love: { pl: "Miłość", en: "Love" },
+  plus_spice: { pl: "Pikantne", en: "Spicy" },
+  plus_deep: { pl: "Głęboka więź", en: "Deep bond" },
+  plus_kinky: { pl: "Kinky", en: "Kinky" },
+};
+
+const ROMAN = ["I", "II", "III"];
+
+function MiniFan({ patterns }: { patterns: PatternKey[] }) {
+  const spots = [
+    { x: 4, y: 8, r: -10 },
+    { x: 30, y: 6, r: 8 },
+    { x: 16, y: 2, r: 0 },
+  ];
+  return (
+    <div className="relative h-[70px] w-[78px] shrink-0" aria-hidden="true">
+      {patterns.slice(0, 3).map((p, i) => (
+        <div
+          key={p + i}
+          className="absolute overflow-hidden rounded-[8px]"
+          style={{
+            left: spots[i].x,
+            top: spots[i].y,
+            width: 44,
+            height: 62,
+            transform: `rotate(${spots[i].r}deg)`,
+            background: BACK_COLORS[p].base,
+            border: "2px solid #FFFFFF",
+            boxShadow: "0 4px 10px -4px rgba(0,0,0,0.35)",
+          }}
+        >
+          <DeckArt pattern={p} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      aria-pressed={on}
+      className="min-h-[32px] rounded-full px-3 text-[12px] font-bold transition-colors"
+      style={
+        on
+          ? { background: "var(--chip)", color: "var(--chip-ink)", border: "1px solid transparent" }
+          : { background: "transparent", color: "var(--sub-text)", border: "1px solid var(--border)" }
+      }
+    >
+      {children}
+    </button>
+  );
+}
 
 function DeckCard({
   id,
   title,
   desc,
-  badge,
+  fan,
   children,
 }: {
   id: DeckId;
   title: string;
   desc: string;
-  badge?: string;
-  children?: React.ReactNode;
+  fan: PatternKey[];
+  children: React.ReactNode;
 }) {
   const active = useGame((s) => s.decks[id]);
   const toggleDeck = useGame((s) => s.toggleDeck);
@@ -69,48 +131,82 @@ function DeckCard({
       aria-label={title}
       onClick={() => toggleDeck(id)}
       onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           toggleDeck(id);
         }
       }}
-      whileTap={{ scale: 0.985 }}
-      className="glass w-full cursor-pointer rounded-3xl p-4 text-left transition-[outline,box-shadow] duration-200 sm:p-6"
+      whileTap={{ scale: 0.99 }}
+      className="flex w-full cursor-pointer flex-col gap-2.5 rounded-[20px] p-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       style={{
-        outline: active ? "2px solid var(--accent)" : "2px solid transparent",
-        boxShadow: active ? "0 18px 40px -22px var(--accent)" : "none",
+        background: "var(--card-surface)",
+        border: active ? "2px solid var(--ink)" : "2px solid var(--border)",
       }}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate text-base font-extrabold tracking-tight sm:text-lg">{title}</h3>
-            {badge && (
-              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
-                {badge}
-              </span>
-            )}
-          </div>
-          <p className="mt-1 text-[13px] leading-snug sm:text-sm" style={{ color: "var(--muted-text)" }}>{desc}</p>
+      <div className="flex items-center gap-3.5">
+        <MiniFan patterns={fan} />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 className="text-[17px] leading-tight" style={{ fontFamily: DISPLAY_FONT, color: "var(--text)" }}>
+            {title}
+          </h3>
+          <p className="text-[12.5px] leading-snug" style={{ color: "var(--sub-text)" }}>
+            {desc}
+          </p>
         </div>
         <span
-          className="mt-1 flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors"
-          style={{ background: active ? "var(--accent)" : "var(--panel-2)" }}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+          style={active ? { background: "var(--ink)" } : { border: "2px solid var(--border)" }}
         >
-          <span
-            className="h-5 w-5 rounded-full bg-white shadow transition-transform duration-200"
-            style={{ transform: active ? "translateX(20px)" : "translateX(0)" }}
-          />
+          {active && <Check className="h-4 w-4" color="#FFFFFF" strokeWidth={3.2} />}
         </span>
       </div>
-      {children}
+      <div className="flex flex-wrap gap-1.5">{children}</div>
     </motion.div>
   );
 }
 
+function AccountButton({ onOpen }: { onOpen: () => void }) {
+  const { user, ready } = useAuth();
+  const lang = useGame((s) => s.lang);
+  const c = t[lang];
+  if (!ready) return <span className="h-11 w-11" />;
+  if (!user) {
+    return (
+      <Link
+        to="/auth"
+        className="flex h-11 items-center gap-2 rounded-full pl-3 pr-4 text-[13px] font-extrabold"
+        style={{ background: "var(--panel-2)", color: "var(--chip-ink)" }}
+      >
+        <UserRound className="h-[18px] w-[18px]" />
+        {c.login}
+      </Link>
+    );
+  }
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const name = (meta.full_name as string) || (meta.name as string) || user.email || "?";
+  const avatar = (meta.avatar_url as string) || (meta.picture as string) || "";
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={c.account}
+      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-[18px]"
+      style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
+    >
+      {avatar ? (
+        <img src={avatar} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
+      ) : (
+        name.trim().charAt(0).toUpperCase()
+      )}
+    </button>
+  );
+}
+
 export function DeckSelector() {
-  const { lang, decks, categories, toggleCategory, startGame, flushGuestSession } = useGame();
+  const { lang, decks, categories, toggleCategory, toggleDeck, ufLevel, setUfLevel, startGame, flushGuestSession } = useGame();
   const { user } = useAuth();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const c = t[lang];
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
 
@@ -119,129 +215,88 @@ export function DeckSelector() {
     startGame();
   };
 
+  const toggleCat = (deck: DeckId, cat: CategoryId) => {
+    if (!decks[deck]) toggleDeck(deck);
+    toggleCategory(cat);
+  };
+
+  const pickLevel = (lvl: UnfilteredLevel) => {
+    if (!decks.unfiltered) toggleDeck("unfiltered");
+    setUfLevel(lvl);
+  };
+
   return (
-    <div className="mx-auto w-full max-w-lg px-4 pb-24 pt-4 sm:px-5 sm:pt-8">
-      <div className="mb-3 text-center sm:mb-6">
-        <div className="mb-1.5 flex items-center justify-center gap-2 sm:mb-2">
-          <Heart className="h-5 w-5" style={{ color: "var(--accent)" }} fill="currentColor" />
-        </div>
-        <h1 className="text-2xl font-extrabold tracking-tight velvet-glow sm:text-4xl">{c.title}</h1>
-        <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-snug sm:mt-2 sm:text-sm" style={{ color: "var(--muted-text)" }}>{c.sub}</p>
-      </div>
+    <div
+      className="mx-auto flex min-h-dvh w-full max-w-lg flex-col"
+      style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+    >
+      <header className="flex items-center justify-between px-5 pt-6">
+        <h1 className="text-[26px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+          between us
+        </h1>
+        <AccountButton onOpen={() => setSettingsOpen(true)} />
+      </header>
+      <p className="px-5 pt-2 text-[14px]" style={{ color: "var(--muted-text)" }}>
+        {c.tagline}
+      </p>
 
-      <div className="mb-4">
-        <AccountPanel variant="hero" />
-      </div>
+      <h2
+        className="px-5 pb-3 pt-6 text-[11px] font-extrabold uppercase tracking-[0.24em]"
+        style={{ color: "var(--muted-text)" }}
+      >
+        {c.pick}
+      </h2>
 
-      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] sm:mb-4 sm:text-xs" style={{ color: "var(--muted-text)" }}>{c.pick}</p>
-
-      <div className="flex flex-col gap-2.5 sm:gap-4">
-        <DeckCard id="basic" title={c.basic} desc={c.basicD}>
-          {decks.basic && (
-            <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
-              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
-                {BASIC_CATEGORIES.map((cat, i) => (
-                  <CardArtPreview key={cat} index={i} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
-                ))}
-              </div>
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
-              <div className="flex flex-wrap gap-2">
-                {BASIC_CATEGORIES.map((cat) => {
-                  const on = categories[cat];
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => toggleCategory(cat)}
-                      className="rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
-                      style={{
-                        background: on ? `var(--color-cat-${cat})` : "var(--panel-2)",
-                        color: on ? "#fff" : "var(--muted-text)",
-                        opacity: on ? 1 : 0.7,
-                      }}
-                    >
-                      {CATEGORY_META[cat].label[lang]}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+      <div className="flex flex-col gap-3 px-4 pb-36">
+        <DeckCard id="basic" title={c.basic} desc={c.basicD} fan={["friendship", "introspection", "love"]}>
+          {BASIC_CATEGORIES.map((cat) => (
+            <Chip key={cat} on={decks.basic && categories[cat]} onClick={() => toggleCat("basic", cat)}>
+              {SHORT[cat][lang]}
+            </Chip>
+          ))}
         </DeckCard>
 
-        <DeckCard id="plus" title={c.plus} desc={c.plusD}>
-          {decks.plus && (
-            <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
-              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
-                {PLUS_CATEGORIES.map((cat, i) => (
-                  <CardArtPreview key={cat} index={i} pattern={patternFor(cat)} label={CATEGORY_META[cat].label[lang]} />
-                ))}
-              </div>
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.cats}</p>
-              <div className="flex flex-wrap gap-2">
-                {PLUS_CATEGORIES.map((cat) => {
-                  const on = categories[cat];
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => toggleCategory(cat)}
-                      className="rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
-                      style={{
-                        background: on ? `var(--color-cat-${cat})` : "var(--panel-2)",
-                        color: on ? "#fff" : "var(--muted-text)",
-                        opacity: on ? 1 : 0.7,
-                      }}
-                    >
-                      {CATEGORY_META[cat].label[lang]}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+        <DeckCard id="plus" title={c.plus} desc={c.plusD} fan={["plus_spice", "plus_kinky", "plus_love"]}>
+          {PLUS_CATEGORIES.map((cat) => (
+            <Chip key={cat} on={decks.plus && categories[cat]} onClick={() => toggleCat("plus", cat)}>
+              {SHORT[cat][lang]}
+            </Chip>
+          ))}
         </DeckCard>
-        <DeckCard id="unfiltered" title={c.unf} desc={c.unfD} badge={c.adult}>
-          {decks.unfiltered && (
-            <div className="mt-4 border-t pt-4" onClick={(e) => e.stopPropagation()}>
-              <div className="mb-4 flex gap-3 overflow-x-auto pb-1">
-                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl, i) => (
-                  <CardArtPreview
-                    key={lvl}
-                    index={i}
-                    pattern={patternFor("unfiltered", lvl)}
-                    label={`${UNFILTERED_LEVELS[lvl].emoji} ${UNFILTERED_LEVELS[lvl].label[lang]}`}
-                  />
-                ))}
-              </div>
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{c.levels}</p>
-              <div className="flex flex-wrap gap-2">
-                {(Object.keys(UNFILTERED_LEVELS) as (keyof typeof UNFILTERED_LEVELS)[]).map((lvl) => (
-                  <span
-                    key={lvl}
-                    className="rounded-full px-3 py-1.5 text-xs font-semibold"
-                    style={{ background: "var(--panel-2)", color: "var(--muted-text)" }}
-                  >
-                    {UNFILTERED_LEVELS[lvl].emoji} {UNFILTERED_LEVELS[lvl].label[lang]}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-3 text-xs leading-snug" style={{ color: "var(--muted-text)" }}>
-                {c.unfNote}
-              </p>
-            </div>
-          )}
-        </DeckCard>
-      </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 px-5 pb-6 pt-3" style={{ background: "linear-gradient(to top, var(--bg), transparent)" }}>
-        <button
-          disabled={!anyDeck}
-          onClick={handleStart}
-          className="mx-auto block w-full max-w-lg rounded-2xl py-4 text-base font-extrabold transition-all disabled:opacity-40"
-          style={{ background: "var(--accent)", color: "var(--accent-ink)", boxShadow: "0 16px 36px -16px var(--accent)" }}
+        <DeckCard
+          id="unfiltered"
+          title={c.unf}
+          desc={c.unfD}
+          fan={[patternFor("unfiltered", "after_dark"), patternFor("unfiltered", "no_limits"), patternFor("unfiltered", "love_spice")]}
         >
-          {anyDeck ? c.start : c.none}
-        </button>
+          <span className="sr-only">{c.startLevel}</span>
+          {LEVEL_ORDER.map((lvl, i) => (
+            <Chip key={lvl} on={decks.unfiltered && ufLevel === lvl} onClick={() => pickLevel(lvl)}>
+              {ROMAN[i]} · {UNFILTERED_LEVELS[lvl].label[lang]}
+            </Chip>
+          ))}
+        </DeckCard>
       </div>
+
+      <div
+        className="fixed inset-x-0 bottom-0 z-20"
+        style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}
+      >
+        <div className="mx-auto w-full max-w-lg px-4 pt-3.5" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
+          <button
+            type="button"
+            disabled={!anyDeck}
+            onClick={handleStart}
+            className="h-14 w-full rounded-[18px] text-[18px] transition-opacity disabled:opacity-50"
+            style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
+          >
+            {anyDeck ? c.play : c.none}
+          </button>
+        </div>
+      </div>
+
+      <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }

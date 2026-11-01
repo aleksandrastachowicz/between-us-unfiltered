@@ -57,16 +57,6 @@ function Rings() {
   );
 }
 
-function SunRays() {
-  const cx = 110, cy = 330, R = 520, n = 16, step = Math.PI / n;
-  let d = "";
-  for (let i = 0; i < n; i++) {
-    const a0 = Math.PI + i * step, a1 = a0 + step / 2;
-    d += `M${cx} ${cy} L${(cx + R * Math.cos(a0)).toFixed(1)} ${(cy + R * Math.sin(a0)).toFixed(1)} L${(cx + R * Math.cos(a1)).toFixed(1)} ${(cy + R * Math.sin(a1)).toFixed(1)} Z `;
-  }
-  return <path d={d} fill="#BFD8F8" />;
-}
-
 function StarField({ id, base, dot }: { id: string; base: string; dot: string }) {
   return (
     <>
@@ -147,10 +137,17 @@ function Motif({ pattern, uid }: { pattern: PatternKey; uid: string }) {
     case "passions":
       return (
         <>
-          <rect width="220" height="308" fill="#9EC5F5" />
-          <SunRays />
-          <circle cx="110" cy="330" r="96" fill="#F9C84A" />
-          <circle cx="110" cy="330" r="70" fill="#FF8A3D" />
+          <defs>
+            <pattern id={id("p")} width="22" height="22" patternUnits="userSpaceOnUse">
+              <rect width="22" height="22" fill="#9EC5F5" />
+              <rect width="9" height="22" fill="#F4F8FF" />
+            </pattern>
+            <filter id={id("f")} x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={1} seed={3} />
+              <feDisplacementMap in="SourceGraphic" scale={34} />
+            </filter>
+          </defs>
+          <rect x="-40" y="-40" width="300" height="390" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
         </>
       );
     case "introspection":
@@ -436,6 +433,6 @@ export function FrontSymbol({ symbol, color, size = 22 }: { symbol: FrontStyle["
         </svg>
       );
     case "moon":
-      return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2 a10 10 0 1 0 0 20 a8 8 0 1 1 0 -20z" fill={color} /></svg>;
+      return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3.2 A9.5 9.5 0 1 0 20.5 18 A7.5 7.5 0 1 1 15 3.2 Z" fill={color} /></svg>;
   }
 }
