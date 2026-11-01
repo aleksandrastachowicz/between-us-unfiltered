@@ -157,10 +157,8 @@ function AuthPage() {
         </div>
 
         <div className="pb-7 pt-10">
-          <h1 className="text-[44px] leading-[0.95]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
-            between
-            <br />
-            us
+          <h1 className="whitespace-nowrap text-[38px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+            between us
           </h1>
           <p className="mt-3 text-[16px]" style={{ color: "var(--muted-text)" }}>
             {c.tagline}
