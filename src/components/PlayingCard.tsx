@@ -192,6 +192,10 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       }
     : {};
   const face: React.CSSProperties = { backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" };
+  // Safari sometimes lets the hidden side shine through a 3D flip. Each side gets its own layer
+  // (translateZ) and the side facing away is switched off the moment the card is edge-on.
+  const side = (visible: boolean): React.CSSProperties =>
+    use3d ? { visibility: visible ? "visible" : "hidden", transition: "visibility 0s linear 140ms" } : {};
   const fade = (visible: boolean): React.CSSProperties =>
     use3d ? {} : { opacity: visible ? 1 : 0, transition: "opacity 260ms ease-out" };
 
@@ -227,6 +231,8 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           style={{
             ...face,
             ...fade(!flipped),
+            ...side(!flipped),
+            transform: use3d ? "translateZ(1px)" : undefined,
             boxShadow: isFav ? `${shadow}, 0 0 0 3px ${FAV_RED}` : shadow,
             pointerEvents: flipped ? "none" : "auto",
           }}
@@ -241,7 +247,8 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           style={{
             ...face,
             ...fade(flipped),
-            transform: use3d ? "rotateY(180deg)" : undefined,
+            ...side(flipped),
+            transform: use3d ? "rotateY(180deg) translateZ(1px)" : undefined,
             background: front.bg,
             boxShadow: shadow,
             containerType: "inline-size",

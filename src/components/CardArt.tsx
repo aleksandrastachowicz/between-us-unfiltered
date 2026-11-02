@@ -1,4 +1,5 @@
-import { memo, useId } from "react";
+import { memo } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { motion } from "motion/react";
 import type { CategoryId } from "@/data/questions";
 import type { UnfilteredQuestion } from "@/data/unfiltered";
@@ -259,19 +260,37 @@ function Motif({ pattern, uid }: { pattern: PatternKey; uid: string }) {
   }
 }
 
-/** Full-bleed artwork of a card back (no text). */
+/**
+ * Full-bleed artwork of a card back (no text).
+ * Drawn once per pattern into an image: phones (iPhone above all) then only move a ready picture
+ * instead of re-drawing the SVG filters on every frame of a flip or swipe.
+ */
+const artCache = new Map<PatternKey, string>();
+function artUrl(pattern: PatternKey) {
+  let url = artCache.get(pattern);
+  if (!url) {
+    const svg = renderToStaticMarkup(
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 308" width="440" height="616" preserveAspectRatio="xMidYMid slice">
+        <Motif pattern={pattern} uid="a" />
+      </svg>,
+    );
+    url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    artCache.set(pattern, url);
+  }
+  return url;
+}
+
 export const DeckArt = memo(function DeckArt({ pattern }: { pattern: PatternKey }) {
-  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   return (
-    <svg
-      viewBox="0 0 220 308"
-      preserveAspectRatio="xMidYMid slice"
-      className="absolute inset-0 h-full w-full"
+    <img
+      src={artUrl(pattern)}
+      alt=""
       aria-hidden="true"
+      draggable={false}
+      decoding="sync"
+      className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover"
       data-card-pattern={pattern}
-    >
-      <Motif pattern={pattern} uid={uid} />
-    </svg>
+    />
   );
 });
 
