@@ -21,14 +21,14 @@ const T: Record<"pl" | "en", Copy> = {
   pl: {
     eyebrow: "",
     title: "Zanim zaczniecie",
-    hook: "Każda bliskość zaczyna się od pytania.",
+    hook: "Każda dobra rozmowa zaczyna się od pytania.",
     hookD:
-      "Te karty pomagają zadać te, na które zwykle brakuje odwagi albo okazji. Wystarczy jedna, żeby zwykły wieczór zamienił się w rozmowę, którą zapamiętacie.",
+      "Te karty pomagają zadać pytania, na które zwykle brakuje odwagi albo okazji. Czasem wystarczy jedna karta, żeby zobaczyć kogoś z zupełnie nowej strony.",
     stepsTitle: "Jak grać",
     steps: [
       ["Wybierzcie talię,", "która pasuje do Waszego nastroju."],
       ["Odkryjcie kartę", "i odpowiedzcie szczerze, tak jak czujecie."],
-      ["Przesuńcie kartę,", "gdy będziecie gotowi na kolejną."],
+      ["Przesuńcie kartę w lewo,", "gdy będziecie gotowi na kolejną. W prawo wraca poprzednia."],
     ],
     rulesTitle: "Nasza umowa",
     rules: [
@@ -43,14 +43,14 @@ const T: Record<"pl" | "en", Copy> = {
   en: {
     eyebrow: "",
     title: "Before you start",
-    hook: "Every closeness starts with a question.",
+    hook: "Every good conversation starts with a question.",
     hookD:
-      "These cards help you ask the ones you usually lack the courage or the moment for. One card is enough to turn an ordinary evening into a conversation you will remember.",
+      "These cards help you ask the questions you usually lack the courage or the moment for. Sometimes one card is enough to see someone in a whole new light.",
     stepsTitle: "How to play",
     steps: [
       ["Choose a deck", "that matches your mood."],
       ["Reveal a card", "and answer honestly, the way you feel."],
-      ["Swipe the card", "when you are ready for the next one."],
+      ["Swipe the card left", "when you are ready for the next one. Swipe right to go back."],
     ],
     rulesTitle: "Our agreement",
     rules: [
