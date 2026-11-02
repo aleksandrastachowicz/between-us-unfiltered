@@ -1,44 +1,64 @@
 import { motion, AnimatePresence } from "motion/react";
-import { X } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { useGame } from "@/lib/store";
 import { DISPLAY_FONT } from "./CardArt";
 
-const T = {
+type Copy = {
+  eyebrow: string;
+  title: string;
+  hook: string;
+  hookD: string;
+  stepsTitle: string;
+  steps: [title: string, body: string][];
+  rulesTitle: string;
+  rules: string[];
+  outro: string;
+  start: string;
+  close: string;
+};
+
+const T: Record<"pl" | "en", Copy> = {
   pl: {
-    eyebrow: "Zanim zaczniecie",
-    title: "Zasady",
-    promise: "To, co mówimy w grze, zostaje między nami.",
-    promiseD:
-      "Stąd nazwa. Nic, co ktoś opowie podczas gry, nie wychodzi poza Wasze grono, chyba że wszyscy się na to zgodzą.",
-    rules: [
-      ["Odkryj kartę", "Osoba, której jest kolej, czyta pytanie i odpowiada. Gra się we dwoje albo w większym gronie."],
-      ["Odpowiedz albo przejdź dalej", "Nie trzeba odpowiadać na każde pytanie. Możesz po prostu przejść do następnej karty, bez tłumaczenia się."],
-      ["„A Ty?”", "Chcesz usłyszeć drugą stronę? Zapytaj „A Ty?”, a pytanie wróci do osoby, która je zadała."],
-      ["Bez oceniania", "Każdy ma swoje doświadczenia. Słuchamy, zamiast komentować czy wyśmiewać."],
-      ["Szanujemy granice", "Jeśli ktoś nie chce o czymś mówić, przyjmujemy to bez naciskania."],
-      ["Rozmowa, nie rywalizacja", "Nie ma wygranych ani przegranych. Chodzi o to, żeby lepiej się poznać."],
-      ["Bądźcie obecni", "Odłóżcie inne telefony i powiadomienia. Zostaje tylko ten z grą."],
+    eyebrow: "",
+    title: "Zanim zaczniecie",
+    hook: "Każda bliskość zaczyna się od pytania.",
+    hookD:
+      "Te karty pomagają zadać te, na które zwykle brakuje odwagi albo okazji. Wystarczy jedna, żeby zwykły wieczór zamienił się w rozmowę, którą zapamiętacie.",
+    stepsTitle: "Jak grać",
+    steps: [
+      ["Wybierzcie talię,", "która pasuje do Waszego nastroju."],
+      ["Odkryjcie kartę", "i odpowiedzcie szczerze, tak jak czujecie."],
+      ["Przesuńcie kartę,", "gdy będziecie gotowi na kolejną."],
     ],
-    tips: "Przesuń kartę w lewo, żeby wylosować następną, w prawo, żeby wrócić. Odkrytą kartę stuknij dwa razy, żeby zapisać ją w ulubionych.",
+    rulesTitle: "Nasza umowa",
+    rules: [
+      "Mówisz tyle, ile chcesz. Każde pytanie możesz pominąć.",
+      "Słuchamy z ciekawością, bez oceniania.",
+      "Co tu padnie, zostaje między nami.",
+    ],
+    outro: "Gotowi zobaczyć, co jest między Wami?",
     start: "Zaczynamy",
     close: "Zamknij",
   },
   en: {
-    eyebrow: "Before you start",
-    title: "The rules",
-    promise: "What we say in the game stays between us.",
-    promiseD:
-      "That's where the name comes from. Nothing anyone shares during the game leaves your circle unless everyone agrees.",
-    rules: [
-      ["Reveal a card", "Whoever's turn it is reads the question and answers. Play as a pair or in a bigger group."],
-      ["Answer or move on", "You don't have to answer every question. Just go to the next card, no explanation needed."],
-      ["“What about you?”", "Want to hear the other side? Ask “What about you?” and the question goes back to whoever asked it."],
-      ["No judgment", "Everyone has their own story. We listen instead of commenting or laughing."],
-      ["Respect boundaries", "If someone doesn't want to talk about something, we accept it without pushing."],
-      ["Conversation, not competition", "There are no winners or losers. It's about getting to know each other."],
-      ["Be present", "Put other phones and notifications away. Only the one with the game stays."],
+    eyebrow: "",
+    title: "Before you start",
+    hook: "Every closeness starts with a question.",
+    hookD:
+      "These cards help you ask the ones you usually lack the courage or the moment for. One card is enough to turn an ordinary evening into a conversation you will remember.",
+    stepsTitle: "How to play",
+    steps: [
+      ["Choose a deck", "that matches your mood."],
+      ["Reveal a card", "and answer honestly, the way you feel."],
+      ["Swipe the card", "when you are ready for the next one."],
     ],
-    tips: "Swipe a card left for the next one, right to go back. Double-tap a revealed card to save it to favourites.",
+    rulesTitle: "Our agreement",
+    rules: [
+      "Share as much as you want. You can skip any question.",
+      "We listen with curiosity, without judging.",
+      "What is said here stays between us.",
+    ],
+    outro: "Ready to see what's between you?",
     start: "Let's play",
     close: "Close",
   },
@@ -69,11 +89,8 @@ export function RulesSheet({ open, onClose }: { open: boolean; onClose: () => vo
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <div className="flex items-start justify-between gap-3 px-5 pt-6 lg:px-8 lg:pt-8">
+            <div className="flex items-center justify-between gap-3 px-5 pt-5 lg:px-8 lg:pt-8">
               <div className="flex flex-col gap-1">
-                <p className="text-[12px] font-extrabold uppercase tracking-[0.22em] lg:text-[13px]" style={{ color: "var(--sub-text)" }}>
-                  {c.eyebrow}
-                </p>
                 <h2 id="rules-title" className="text-[30px] leading-none lg:text-[40px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
                   {c.title}
                 </h2>
@@ -89,40 +106,55 @@ export function RulesSheet({ open, onClose }: { open: boolean; onClose: () => vo
               </button>
             </div>
 
-            <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-5 lg:px-8">
-              <div className="rounded-[20px] p-4 lg:p-5" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
-                <p className="text-[19px] leading-snug lg:text-[22px]" style={{ fontFamily: DISPLAY_FONT }}>
-                  {c.promise}
+            <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-3 pt-4 lg:gap-5 lg:px-8 lg:pt-5">
+              <div className="rounded-[20px] p-4 lg:p-6" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
+                <p className="text-[22px] leading-snug lg:text-[26px]" style={{ fontFamily: DISPLAY_FONT }}>
+                  {c.hook}
                 </p>
-                <p className="mt-2 text-[14px] leading-relaxed lg:text-[15px]" style={{ opacity: 0.92 }}>
-                  {c.promiseD}
+                <p className="mt-2 text-[16px] leading-snug lg:text-[17px]" style={{ opacity: 0.94 }}>
+                  {c.hookD}
                 </p>
               </div>
 
-              <ol className="flex flex-col gap-3">
-                {c.rules.map(([title, body], i) => (
-                  <li key={title} className="flex gap-3.5">
-                    <span
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px]"
-                      style={{ background: "var(--chip)", color: "var(--chip-ink)", fontFamily: DISPLAY_FONT }}
-                      aria-hidden="true"
-                    >
-                      {i + 1}
-                    </span>
-                    <div className="flex flex-col gap-0.5 pt-1">
-                      <p className="text-[16px] font-extrabold lg:text-[17px]" style={{ color: "var(--text)" }}>{title}</p>
-                      <p className="text-[14px] leading-relaxed lg:text-[15px]" style={{ color: "var(--sub-text)" }}>{body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <div className="flex flex-col gap-3">
+                <h3 className="text-[12px] font-extrabold uppercase tracking-[0.22em] lg:text-[13px]" style={{ color: "var(--sub-text)" }}>
+                  {c.stepsTitle}
+                </h3>
+                <ol className="flex flex-col gap-3">
+                  {c.steps.map(([title, body], i) => (
+                    <li key={title} className="flex items-start gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[14px]" style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }} aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <p className="pt-1 text-[15px] leading-snug lg:text-[16px]" style={{ color: "var(--sub-text)" }}>
+                        <strong className="font-extrabold" style={{ color: "var(--text)" }}>{title}</strong> {body}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
 
-              <p className="rounded-[16px] px-4 py-3 text-[13px] leading-relaxed lg:text-[14px]" style={{ background: "var(--panel-2)", color: "var(--sub-text)" }}>
-                {c.tips}
-              </p>
+              <div className="flex flex-col gap-2.5 rounded-[20px] p-4 lg:gap-3 lg:p-5" style={{ background: "var(--panel-2)" }}>
+                <h3 className="text-[12px] font-extrabold uppercase tracking-[0.22em] lg:text-[13px]" style={{ color: "var(--sub-text)" }}>
+                  {c.rulesTitle}
+                </h3>
+                <ol className="flex flex-col gap-2">
+                  {c.rules.map((r) => (
+                    <li key={r} className="flex items-start gap-3">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full" style={{ background: "var(--chip)", color: "var(--chip-ink)" }} aria-hidden="true">
+                        <Heart className="h-3.5 w-3.5" fill="currentColor" strokeWidth={0} />
+                      </span>
+                      <p className="pt-0.5 text-[15px] font-semibold leading-snug lg:text-[16px]" style={{ color: "var(--text)" }}>{r}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
 
-            <div className="px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 lg:px-8 lg:pb-8">
+            <div className="flex flex-col gap-2 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 lg:px-8 lg:pb-8">
+              <p className="text-center text-[15px] font-bold lg:text-[16px]" style={{ color: "var(--ink)" }}>
+                {c.outro}
+              </p>
               <button
                 type="button"
                 onClick={onClose}

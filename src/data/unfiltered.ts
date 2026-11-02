@@ -1,4 +1,4 @@
-// Between Us — Unfiltered (18+): three levels of curated, non-explicit questions.
+// Between Us — Unfiltered: three levels of curated, non-explicit questions.
 // Level names: Iskra / Spark → Bliżej / Closer → Bez tajemnic / No Secrets.
 // AI generates fresh questions (see supabase/functions/generate-unfiltered); this curated
 // pool (~60 per level) is the fallback and the style reference sent to the AI.
