@@ -167,7 +167,7 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-[min(42rem,calc(100vw-260px))] md:[--card-max:580px] md:[--chrome:228px] md:[--controls-max:360px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--card-max:580px] md:[--chrome:290px] md:[--controls-max:calc(var(--card-w)_-_8px)]"
       style={{
         // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
         ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
