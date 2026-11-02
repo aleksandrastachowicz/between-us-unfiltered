@@ -10,6 +10,7 @@ import { Settings } from "./Settings";
 import { RulesSheet } from "./RulesSheet";
 import { InstallBanner } from "./InstallApp";
 import { useAuth } from "@/lib/useAuth";
+import { Logo } from "./Logo";
 
 const t = {
   pl: {
@@ -240,8 +241,8 @@ export function DeckSelector() {
       style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
     >
       <header className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-0">
-        <h1 className="text-[28px] leading-none md:text-[36px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
-          between us
+        <h1 className="text-[28px] leading-none md:text-[36px]" style={{ color: "var(--ink)" }}>
+          <Logo />
         </h1>
         <AccountButton onOpen={() => setSettingsOpen(true)} />
       </header>

@@ -5,6 +5,7 @@ import { useGame, type DrawnCard } from "@/lib/store";
 import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
 import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { CardArt, DISPLAY_FONT, FRONT_STYLES, FrontSymbol, patternFor } from "./CardArt";
+import { Logo } from "./Logo";
 
 const FAV_RED = "#C1121F";
 
@@ -281,9 +282,7 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           </div>
 
           <div className="flex shrink-0 flex-col items-center gap-1.5" style={{ color: front.foot }}>
-            <span className="tracking-[0.04em]" style={{ fontFamily: DISPLAY_FONT, fontSize: "clamp(12px, 3.8cqw, 16px)" }}>
-              between us
-            </span>
+            <Logo heart="currentColor" style={{ fontSize: "clamp(12px, 3.8cqw, 16px)", letterSpacing: "0.04em" }} />
             <span className="font-semibold uppercase tracking-[0.2em]" style={{ fontSize: "clamp(9.5px, 2.9cqw, 13px)" }}>
               {categoryLabel} · {edition}
             </span>

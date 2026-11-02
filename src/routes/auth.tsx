@@ -5,6 +5,7 @@ import { lovable } from "@/integrations/lovable";
 import { useGame } from "@/lib/store";
 import { GoogleGlyph } from "@/components/GoogleSignInButton";
 import { DISPLAY_FONT } from "@/components/CardArt";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [
@@ -157,8 +158,8 @@ function AuthPage() {
         </div>
 
         <div className="pb-7 pt-10">
-          <h1 className="whitespace-nowrap text-[38px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
-            between us
+          <h1 className="whitespace-nowrap text-[38px] leading-none" style={{ color: "var(--ink)" }}>
+            <Logo />
           </h1>
           <p className="mt-3 text-[16px]" style={{ color: "var(--muted-text)" }}>
             {c.tagline}

@@ -1,7 +1,7 @@
 const SITE = "https://between-us-card-game.lovable.app";
 const TITLE = "Between Us — pytania, które zbliżają";
 const DESC = "Karciana gra do rozmów dla par, przyjaciół i rodzin. Po polsku i po angielsku. Questions that bring you closer.";
-const IMAGE = `${SITE}/og-image.png`;
+const IMAGE = `${SITE}/og-image.png?v=3`;
 
 /** Link preview (Messenger, WhatsApp, iMessage, Slack, X…): title, text and the 1200×630 brand image. */
 export const SHARE_META = [

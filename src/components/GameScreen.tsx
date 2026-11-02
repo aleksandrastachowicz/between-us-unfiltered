@@ -14,6 +14,7 @@ import { RulesSheet } from "./RulesSheet";
 import { useAuth } from "@/lib/useAuth";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { DISPLAY_FONT } from "./CardArt";
+import { Logo } from "./Logo";
 
 const ROMAN = ["I", "II", "III"];
 
@@ -229,8 +230,8 @@ export function GameScreen() {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <span className="flex h-12 items-center text-[18px] leading-none tracking-[-0.01em] md:h-11 md:text-[17px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
-              between us
+            <span className="flex h-12 items-center text-[18px] leading-none tracking-[-0.01em] md:h-11 md:text-[17px]" style={{ color: "var(--ink)" }}>
+              <Logo />
             </span>
           )}
           {decks.unfiltered && activeTab === "play" && <LevelChip />}
