@@ -48,6 +48,12 @@
 
 :root {
   --radius: 1.5rem;
+  /* Light-only design: keep phones from auto-darkening or recolouring the app. */
+  color-scheme: only light;
+  /* Defaults = Róż, so the page edges, overscroll and status bar match before a theme class applies. */
+  --bg: #f2bccb;
+  --text: #2b1a22;
+  --border: rgba(101, 15, 35, 0.18);
 }
 
 /* ============================================================

@@ -67,6 +67,8 @@ STRICT RULES:
   Address the player as "Ty" with capital letters (Ty, Ci, Cię, Twój).
   Prefer gender-neutral phrasing (e.g. "Co sprawia, że…", "Jak…", "Kiedy ostatnio…"); if a gendered verb is unavoidable, write "zrobiłeś/aś", "pewien/pewna".
   No calques from English (e.g. avoid "podróż", "wewnętrzny żart", "być poważnym wobec kogoś").
+  Superlatives of longer adjectives use "najbardziej": "najbardziej zwariowany", "najbardziej seksowny", "najbardziej bolesny"
+  (never "najzwariowańszy", "najseksowniejszy", "najboleśniejszy"). Write numbers as words ("pięć", not "5").
 - English (en) is a natural translation of the meaning, not word-for-word.
 - Vary topics and phrasing; avoid clichés. Do not repeat or closely paraphrase anything in the avoid list.
 - Assign an "intensity" integer within [${meta.intensity[0]}, ${meta.intensity[1]}].`;

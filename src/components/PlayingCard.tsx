@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion, type PanInfo } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Heart } from "lucide-react";
 import { useGame, type DrawnCard } from "@/lib/store";
 import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
@@ -17,7 +17,12 @@ function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
 }
 
 export function PlayingCard({ card }: { card: DrawnCard }) {
-  const { lang, flipped, flip, animations, reducedMotion, favorites, toggleFavorite } = useGame();
+  const { lang, flipped, flip, drawCard, goBack, history, animations, reducedMotion, favorites, toggleFavorite } = useGame();
+  // Swipe left: next card. Swipe right: back to the previous card. Same gesture on phone, tablet and with a mouse.
+  const [dx, setDx] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const drag = useRef<{ x: number; y: number; id: number; horizontal: boolean | null } | null>(null);
+  const swiped = useRef(false);
   const isFav = favorites.includes(card.id);
   const [heartBurst, setHeartBurst] = useState(0);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -48,7 +53,8 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       const primaryText = box.querySelector<HTMLElement>("[data-primary-question]");
       const secondaryText = box.querySelector<HTMLElement>("[data-secondary-question]");
       if (!primaryText || !secondaryText) return;
-      for (let size = 26; size >= 15; size--) {
+      const max = Math.round(Math.min(38, Math.max(24, box.clientWidth * 0.095)));
+      for (let size = max; size >= 15; size--) {
         primaryText.style.fontSize = `${size}px`;
         secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.58))}px`;
         if (box.scrollHeight <= box.clientHeight + 1) break;
@@ -65,20 +71,63 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     if (clickTimer.current) clearTimeout(clickTimer.current);
   }, []);
 
-  const onDragEnd = (_: unknown, info: PanInfo) => {
-    if (Math.abs(info.offset.x) > 70 || Math.abs(info.offset.y) > 70) {
-      if (!flipped) flip();
-    }
-  };
-
   const favorite = () => {
     toggleFavorite(card.id);
     setHeartBurst((n) => n + 1);
   };
 
+  const onPointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest("button[aria-pressed]:not([role])")) return;
+    drag.current = { x: e.clientX, y: e.clientY, id: e.pointerId, horizontal: null };
+    swiped.current = false;
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    const mx = e.clientX - d.x;
+    const my = e.clientY - d.y;
+    if (d.horizontal === null && Math.hypot(mx, my) > 8) {
+      d.horizontal = Math.abs(mx) > Math.abs(my);
+      if (d.horizontal) {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        setDragging(true);
+      }
+    }
+    if (d.horizontal) {
+      swiped.current = true;
+      // Nothing to go back to: resist a right swipe instead of following the finger.
+      setDx(mx > 0 && history.length === 0 ? mx * 0.25 : mx);
+    }
+  };
+  const onPointerEnd = (e: React.PointerEvent) => {
+    const d = drag.current;
+    drag.current = null;
+    if (!d || !d.horizontal) return;
+    setDragging(false);
+    const mx = e.clientX - d.x;
+    if (mx < -90) {
+      setDx(-(window.innerWidth + 200));
+      window.setTimeout(() => drawCard(), 240);
+    } else if (mx > 90 && history.length > 0) {
+      setDx(window.innerWidth + 200);
+      window.setTimeout(() => goBack(), 240);
+    } else {
+      setDx(0);
+    }
+  };
+
   const handleTap = () => {
+    if (swiped.current) {
+      swiped.current = false;
+      return;
+    }
+    // Hidden card: reveal at once, no waiting (the flip must feel instant on every device).
+    if (!flipped) {
+      flip();
+      return;
+    }
+    // Revealed card: a double tap adds it to favourites, a single tap turns it back.
     if (clickTimer.current) {
-      // double-tap → favorite
       clearTimeout(clickTimer.current);
       clickTimer.current = null;
       favorite();
@@ -87,72 +136,102 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
     clickTimer.current = setTimeout(() => {
       clickTimer.current = null;
       flip();
-    }, 220);
+    }, 240);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       flip();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      drawCard();
+    } else if (e.key === "ArrowLeft" && history.length > 0) {
+      e.preventDefault();
+      goBack();
     }
   };
 
   const shadow = "0 24px 48px -20px rgba(101,15,35,0.45)";
+  // Scale the small symbol with the card (bigger cards on tablets and desktops).
+  const [symbolSize, setSymbolSize] = useState(24);
+  useEffect(() => {
+    const box = questionRef.current;
+    if (!box) return;
+    const ro = new ResizeObserver(() => setSymbolSize(Math.round(Math.min(34, Math.max(22, box.clientWidth * 0.08)))));
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+
+  // One flip for every device: a plain CSS 3D rotation (GPU-friendly, the same on iOS, Android and desktop).
+  // With reduced motion (app setting or system setting) the two faces cross-fade instead.
+  const flipStyle: React.CSSProperties = use3d
+    ? {
+        transformStyle: "preserve-3d",
+        WebkitTransformStyle: "preserve-3d",
+        transform: `rotateY(${flipped ? 180 : 0}deg)`,
+        transition: "transform 620ms cubic-bezier(0.22, 0.9, 0.24, 1)",
+      }
+    : {};
+  const face: React.CSSProperties = { backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" };
+  const fade = (visible: boolean): React.CSSProperties =>
+    use3d ? {} : { opacity: visible ? 1 : 0, transition: "opacity 260ms ease-out" };
 
   return (
-    <div className="playing-card relative mx-auto select-none" style={{ perspective: use3d ? 1600 : undefined, aspectRatio: "5 / 7" }}>
-      <motion.div
-        className="preserve-3d transform-gpu will-change-transform relative h-full w-full cursor-pointer rounded-[28px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-        style={{ willChange: "transform" }}
+    <div
+      className="playing-card relative mx-auto select-none"
+      style={{
+        perspective: use3d ? 1400 : undefined,
+        aspectRatio: "5 / 7",
+        touchAction: "pan-y",
+        transform: dx ? `translateX(${dx}px) rotate(${use3d ? dx * 0.04 : 0}deg)` : undefined,
+        transition: dragging ? "none" : "transform 260ms cubic-bezier(0.22, 0.9, 0.24, 1)",
+      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+    >
+      <div
+        className="relative h-full w-full cursor-pointer rounded-[28px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        style={{ ...flipStyle, WebkitTapHighlightColor: "transparent" }}
         role="button"
         tabIndex={0}
         aria-pressed={flipped}
         aria-label={flipLabel}
         onKeyDown={handleKeyDown}
         onClick={handleTap}
-        drag={use3d}
-        dragSnapToOrigin
-        dragElastic={0.14}
-        onDragEnd={onDragEnd}
-        animate={{ rotateY: use3d && flipped ? 180 : 0, opacity: 1 }}
-        transition={
-          use3d
-            ? { type: "spring", stiffness: 140, damping: 18, mass: 0.9 }
-            : { duration: 0.18, ease: "easeOut" }
-        }
-        whileTap={use3d ? { scale: 0.98 } : undefined}
       >
         {/* BACK — shown first */}
-        <motion.div
-          className="backface-hidden transform-gpu absolute inset-0 overflow-hidden rounded-[28px]"
+        <div
+          className="absolute inset-0 overflow-hidden rounded-[28px]"
           style={{
+            ...face,
+            ...fade(!flipped),
             boxShadow: isFav ? `${shadow}, 0 0 0 3px ${FAV_RED}` : shadow,
-            willChange: "transform",
             pointerEvents: flipped ? "none" : "auto",
           }}
           aria-hidden={flipped}
-          animate={{ opacity: use3d ? 1 : flipped ? 0 : 1 }}
-          transition={{ duration: use3d ? 0 : 0.18 }}
         >
           <CardArt pattern={pattern} edition={edition} category={categoryLabel} hint={hint} />
-        </motion.div>
+        </div>
 
         {/* FRONT — calm: one symbol, the question in the middle, a quiet footer */}
-        <motion.div
-          className="backface-hidden transform-gpu absolute inset-0 flex flex-col items-center overflow-hidden rounded-[28px] px-[9%] pb-[7%] pt-[8%] text-center"
+        <div
+          className="absolute inset-0 flex flex-col items-center overflow-hidden rounded-[28px] px-[9%] pb-[7%] pt-[8%] text-center"
           style={{
-            transform: use3d ? "rotateY(180deg)" : "none",
+            ...face,
+            ...fade(flipped),
+            transform: use3d ? "rotateY(180deg)" : undefined,
             background: front.bg,
             boxShadow: shadow,
-            willChange: "transform",
+            containerType: "inline-size",
             pointerEvents: flipped ? "auto" : "none",
           }}
           aria-hidden={!flipped}
-          animate={{ opacity: use3d ? 1 : flipped ? 1 : 0 }}
-          transition={{ duration: use3d ? 0 : 0.18 }}
         >
           <div className="shrink-0">
-            <FrontSymbol symbol={front.symbol} color={front.symbolColor} size={24} />
+            <FrontSymbol symbol={front.symbol} color={front.symbolColor} size={symbolSize} />
           </div>
 
           <div
@@ -176,10 +255,10 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
           </div>
 
           <div className="flex shrink-0 flex-col items-center gap-1.5" style={{ color: front.foot }}>
-            <span className="text-[12px] tracking-[0.04em]" style={{ fontFamily: DISPLAY_FONT }}>
+            <span className="tracking-[0.04em]" style={{ fontFamily: DISPLAY_FONT, fontSize: "clamp(12px, 3.8cqw, 16px)" }}>
               between us
             </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.2em]">
+            <span className="font-semibold uppercase tracking-[0.2em]" style={{ fontSize: "clamp(9.5px, 2.9cqw, 13px)" }}>
               {categoryLabel} · {edition}
             </span>
           </div>
@@ -204,30 +283,33 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
               strokeWidth={2.2}
             />
           </button>
-        </motion.div>
+        </div>
 
         {/* Double-tap heart burst — inside the 3D wrapper so it turns with the card */}
         <AnimatePresence>
           {heartBurst > 0 && (
-            <motion.div
+            <div
               key={heartBurst}
               className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
-              style={{ transform: `rotateY(${use3d && flipped ? 180 : 0}deg) translateZ(4px)`, backfaceVisibility: "hidden" }}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1.05, 1.1, 1.2] }}
-              transition={{ duration: 0.7, times: [0, 0.25, 0.55, 1], ease: "easeOut" }}
-              onAnimationComplete={() => setHeartBurst(0)}
+              style={{ ...face, transform: `rotateY(${use3d && flipped ? 180 : 0}deg) translateZ(4px)` }}
             >
-              <Heart
-                className="h-28 w-28 drop-shadow-2xl"
-                fill={isFav ? FAV_RED : "rgba(255,255,255,0.8)"}
-                stroke={isFav ? FAV_RED : "#ffffff"}
-                strokeWidth={1.5}
-              />
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: [0, 1, 1, 0], scale: [0.6, 1.05, 1.1, 1.2] }}
+                transition={{ duration: 0.7, times: [0, 0.25, 0.55, 1], ease: "easeOut" }}
+                onAnimationComplete={() => setHeartBurst(0)}
+              >
+                <Heart
+                  className="h-28 w-28 drop-shadow-2xl"
+                  fill={isFav ? FAV_RED : "rgba(255,255,255,0.8)"}
+                  stroke={isFav ? FAV_RED : "#ffffff"}
+                  strokeWidth={1.5}
+                />
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }

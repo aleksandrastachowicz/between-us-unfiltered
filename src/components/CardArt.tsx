@@ -288,12 +288,12 @@ function CardBack({
 }) {
   const c = BACK_COLORS[pattern];
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ background: c.base }}>
+    <div className="relative h-full w-full overflow-hidden" style={{ background: c.base, containerType: "inline-size" }}>
       <DeckArt pattern={pattern} />
       <div className="relative z-10 flex h-full flex-col items-center justify-between px-[7%] pb-[6%] pt-[7%] text-center">
         <span
-          className="rounded-full px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.3em]"
-          style={{ background: PLAQUE, color: c.accent }}
+          className="rounded-full px-[1.2em] py-[0.55em] font-extrabold uppercase tracking-[0.3em]"
+          style={{ background: PLAQUE, color: c.accent, fontSize: "clamp(10px, 3.2cqw, 14px)" }}
         >
           {edition}
         </span>
@@ -302,12 +302,12 @@ function CardBack({
           style={{ background: PLAQUE }}
         >
           <span
-            className="text-balance text-[22px] uppercase leading-[1.05]"
-            style={{ fontFamily: DISPLAY_FONT, color: c.accent }}
+            className="text-balance uppercase leading-[1.05]"
+            style={{ fontFamily: DISPLAY_FONT, color: c.accent, fontSize: "clamp(20px, 7.4cqw, 34px)" }}
           >
             {category}
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: c.hint }}>
+          <span className="font-bold uppercase tracking-[0.22em]" style={{ color: c.hint, fontSize: "clamp(10px, 3.2cqw, 14px)" }}>
             {hint}
           </span>
         </div>

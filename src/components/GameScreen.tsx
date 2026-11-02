@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, SlidersHorizontal, Undo2, Check } from "lucide-react";
 import { useGame } from "@/lib/store";
@@ -53,7 +53,7 @@ function RoundButton({ label, onClick, children }: { label: string; onClick: () 
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full lg:h-14 lg:w-14 [&_svg]:h-6 [&_svg]:w-6 lg:[&_svg]:h-7 lg:[&_svg]:w-7"
       style={{ background: "var(--panel)", color: "var(--ink)" }}
     >
       {children}
@@ -74,16 +74,16 @@ function LevelChip() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={`${c.level}: ${UNFILTERED_LEVELS[ufLevel].label[lang]}. ${c.pickLevel}`}
-        className="flex h-7 items-center gap-1.5 rounded-full px-3"
+        className="flex h-8 items-center gap-1.5 rounded-full px-3.5 lg:h-10 lg:gap-2 lg:px-4"
         style={{ background: "#17121A" }}
       >
-        <span className="text-[10px] font-extrabold uppercase tracking-[0.08em]" style={{ color: "#E6C487" }}>
+        <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] lg:text-[13px]" style={{ color: "#E6C487" }}>
           {UNFILTERED_LEVELS[ufLevel].label[lang]}
         </span>
         {LEVEL_ORDER.map((l, i) => (
           <span
             key={l}
-            className="h-1.5 w-1.5 rounded-full"
+            className="h-2 w-2 rounded-full lg:h-2.5 lg:w-2.5"
             style={{ background: i <= idx ? "#D9B26F" : "rgba(217,178,111,0.3)" }}
           />
         ))}
@@ -144,6 +144,13 @@ export function GameScreen() {
   const c = t[lang];
   const canGoBack = history.length > 0;
   const playerName = players.length > 0 ? players[currentPlayer] : null;
+  // A fresh key every time a card is shown (also when going back), so a card that just flew away is never reused.
+  const seq = useRef(0);
+  const lastCard = useRef(card);
+  if (lastCard.current !== card) {
+    lastCard.current = card;
+    seq.current += 1;
+  }
 
   const doReset = () => {
     setConfirmReset(false);
@@ -153,7 +160,7 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 lg:max-w-xl"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:360px]"
       style={{
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
@@ -174,16 +181,16 @@ export function GameScreen() {
                 className="flex min-w-0 flex-col items-center"
                 aria-live="polite"
               >
-                <span className="text-[10px] font-extrabold uppercase tracking-[0.22em]" style={{ color: "var(--muted-text)" }}>
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.22em] lg:text-[13px]" style={{ color: "var(--muted-text)" }}>
                   {c.nowAnswers}
                 </span>
-                <span className="max-w-full truncate text-[20px] leading-tight" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+                <span className="max-w-full truncate text-[22px] leading-tight lg:text-[30px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
                   {playerName}
                 </span>
               </motion.div>
             </AnimatePresence>
           ) : (
-            <span className="pt-2.5 text-[18px] leading-none" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+            <span className="pt-3 text-[20px] leading-none lg:pt-4 lg:text-[28px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
               between us
             </span>
           )}
@@ -199,13 +206,13 @@ export function GameScreen() {
           <AnimatePresence mode="wait">
             {card && (
               <motion.div
-                key={card.id}
+                key={`${card.id}-${seq.current}`}
                 initial={{ opacity: 0, scale: 0.94, y: 16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -16 }}
-                transition={{ type: "spring", stiffness: 200, damping: 22 }}
+                exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                transition={{ type: "spring", stiffness: 260, damping: 26 }}
                 className="px-1"
-                style={{ width: "min(100%, 400px, calc((100dvh - 290px) * 5 / 7))" }}
+                style={{ width: "min(100%, 480px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))" }}
               >
                 <PlayingCard card={card} />
               </motion.div>
@@ -224,15 +231,15 @@ export function GameScreen() {
             onClick={goBack}
             disabled={!canGoBack}
             aria-label={c.prev}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 lg:h-16 lg:w-16 lg:rounded-[20px]"
             style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
           >
-            <Undo2 className="h-[22px] w-[22px]" strokeWidth={2.2} />
+            <Undo2 className="h-6 w-6 lg:h-7 lg:w-7" strokeWidth={2.2} />
           </button>
           <button
             type="button"
             onClick={drawCard}
-            className="h-14 flex-1 rounded-[18px] text-[17px]"
+            className="h-14 flex-1 rounded-[18px] text-[19px] lg:h-16 lg:rounded-[20px] lg:text-[22px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {c.next}

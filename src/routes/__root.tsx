@@ -1,3 +1,4 @@
+import { SHARE_META } from "@/lib/shareMeta";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -78,16 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Between Us — Conversation Game for Deep Connections" },
-      { name: "description", content: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Between Us — Conversation Game for Deep Connections" },
-      { property: "og:description", content: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Between Us — Conversation Game for Deep Connections" },
-      { name: "twitter:description", content: "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other." },
+      // Light-only design: stop phones (Android "auto dark", Samsung Internet, iOS) from recolouring the app.
+      { name: "color-scheme", content: "only light" },
+      { name: "theme-color", content: "#F2BCCB" },
+      ...SHARE_META,
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

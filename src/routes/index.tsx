@@ -1,32 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ClientOnly } from "@tanstack/react-router";
 import { BetweenUsApp } from "@/components/BetweenUsApp";
+import { SHARE_META } from "@/lib/shareMeta";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { title: "Between Us — Conversation Game for Deep Connections" },
-      {
-        name: "description",
-        content:
-          "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
-      },
-      { property: "og:title", content: "Between Us — Conversation Game for Deep Connections" },
-      {
-        property: "og:description",
-        content:
-          "A conversation game for deep connections. Designed for friends, couples, and anyone wanting to truly know each other.",
-      },
-    ],
+    meta: SHARE_META,
   }),
   component: Index,
 });
 
 function Index() {
   return (
-    <ClientOnly fallback={<div style={{ minHeight: "100dvh", background: "#fcf7fb" }} />}>
+    <ClientOnly fallback={<div style={{ minHeight: "100dvh", background: "#F2BCCB" }} />}>
       <BetweenUsApp />
     </ClientOnly>
   );

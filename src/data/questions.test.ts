@@ -27,9 +27,9 @@ describe("Bilingual question integrity", () => {
 
   it.each([
     ["Jaką obietnicę chcesz złożyć sobie w tym roku?", "What promise do you want to make to yourself this year?"],
-    ["Jaki jest jeden sposób okazywania miłości, którego inni by się nie spodziewali?", "What's one unexpected way you show love?"],
+    ["W jaki zaskakujący sposób okazujesz miłość?", "What's one unexpected way you show love?"],
     ["Jakiej formy bliskości brakuje Ci najbardziej?", "What kind of closeness do you miss the most?"],
-    ["Co oznacza dla Ciebie kochanie samego/samej siebie?", "What does self-love mean to you?"],
+    ["Co dla Ciebie znaczy kochać siebie?", "What does self-love mean to you?"],
     ["Czy chcesz jeszcze raz przeżyć swoją pierwszą miłość?", "If you could experience your first love again, would you?"],
   ])("preserves the reviewed meaning of %s", (pl, en) => {
     expect(QUESTIONS.find((q) => q.pl === pl)?.en).toBe(en);

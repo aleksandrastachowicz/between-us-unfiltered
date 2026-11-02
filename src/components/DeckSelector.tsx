@@ -96,7 +96,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
         onClick();
       }}
       aria-pressed={on}
-      className="min-h-[32px] rounded-full px-3 text-[12px] font-bold transition-colors"
+      className="min-h-[34px] rounded-full px-3.5 text-[13px] font-bold transition-colors md:min-h-[38px] md:text-[14px] lg:min-h-[42px] lg:px-4 lg:text-[15px]"
       style={
         on
           ? { background: "var(--chip)", color: "var(--chip-ink)", border: "1px solid transparent" }
@@ -138,30 +138,34 @@ function DeckCard({
         }
       }}
       whileTap={{ scale: 0.99 }}
-      className="flex w-full cursor-pointer flex-col gap-2.5 rounded-[20px] p-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] md:h-full md:gap-4 md:p-5"
+      className="flex w-full cursor-pointer flex-col gap-2.5 rounded-[20px] p-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] md:h-full md:gap-4 md:p-5 lg:rounded-[28px] lg:p-7"
       style={{
         background: "var(--card-surface)",
         border: active ? "2px solid var(--ink)" : "2px solid var(--border)",
       }}
     >
-      <div className="flex items-center gap-3.5">
-        <MiniFan patterns={fan} />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h3 className="text-[17px] leading-tight" style={{ fontFamily: DISPLAY_FONT, color: "var(--text)" }}>
+      <div className="relative flex items-center gap-3.5 lg:flex-col lg:items-stretch lg:gap-5">
+        <div className="shrink-0 lg:flex lg:h-[176px] lg:items-center lg:justify-center lg:rounded-[18px]" style={{ background: "transparent" }}>
+          <div className="lg:origin-center lg:scale-[2]">
+            <MiniFan patterns={fan} />
+          </div>
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-1 lg:gap-2 lg:pr-0">
+          <h3 className="text-[18px] leading-tight md:text-[20px] lg:text-[26px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--text)" }}>
             {title}
           </h3>
-          <p className="text-[12.5px] leading-snug" style={{ color: "var(--sub-text)" }}>
+          <p className="text-[13.5px] leading-snug md:text-[15px] lg:text-[17px] lg:leading-relaxed" style={{ color: "var(--sub-text)" }}>
             {desc}
           </p>
         </div>
         <span
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          style={active ? { background: "var(--ink)" } : { border: "2px solid var(--border)" }}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full lg:absolute lg:right-0 lg:top-0 lg:h-10 lg:w-10"
+          style={active ? { background: "var(--ink)" } : { border: "2px solid var(--border)", background: "var(--card-surface)" }}
         >
-          {active && <Check className="h-4 w-4" color="#FFFFFF" strokeWidth={3.2} />}
+          {active && <Check className="h-[18px] w-[18px] lg:h-6 lg:w-6" color="#FFFFFF" strokeWidth={3.2} />}
         </span>
       </div>
-      <div className="flex flex-wrap gap-1.5">{children}</div>
+      <div className="flex flex-wrap gap-1.5 lg:gap-2">{children}</div>
     </motion.div>
   );
 }
@@ -175,10 +179,10 @@ function AccountButton({ onOpen }: { onOpen: () => void }) {
     return (
       <Link
         to="/auth"
-        className="flex h-11 items-center gap-2 rounded-full pl-3 pr-4 text-[13px] font-extrabold"
+        className="flex h-11 items-center gap-2 rounded-full pl-3 pr-4 text-[14px] font-extrabold lg:h-14 lg:gap-2.5 lg:pl-5 lg:pr-6 lg:text-[17px]"
         style={{ background: "var(--panel-2)", color: "var(--chip-ink)" }}
       >
-        <UserRound className="h-[18px] w-[18px]" />
+        <UserRound className="h-5 w-5 lg:h-6 lg:w-6" />
         {c.login}
       </Link>
     );
@@ -191,7 +195,7 @@ function AccountButton({ onOpen }: { onOpen: () => void }) {
       type="button"
       onClick={onOpen}
       aria-label={c.account}
-      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-[18px]"
+      className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-[18px] lg:h-14 lg:w-14 lg:text-[24px]"
       style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
     >
       {avatar ? (
@@ -227,27 +231,27 @@ export function DeckSelector() {
 
   return (
     <div
-      className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl lg:max-w-5xl"
+      className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl lg:max-w-6xl lg:justify-center"
       style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
     >
-      <header className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-14">
-        <h1 className="text-[26px] leading-none md:text-[44px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+      <header className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-14 lg:pt-0">
+        <h1 className="text-[28px] leading-none md:text-[44px] lg:text-[60px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
           between us
         </h1>
         <AccountButton onOpen={() => setSettingsOpen(true)} />
       </header>
-      <p className="px-5 pt-2 text-[14px] md:px-8 md:pt-3 md:text-[18px]" style={{ color: "var(--muted-text)" }}>
+      <p className="px-5 pt-2 text-[15px] md:px-8 md:pt-3 md:text-[19px] lg:pt-4 lg:text-[22px]" style={{ color: "var(--muted-text)" }}>
         {c.tagline}
       </p>
 
       <h2
-        className="px-5 pb-3 pt-6 text-[11px] font-extrabold uppercase tracking-[0.24em] md:px-8 md:pb-4 md:pt-12 md:text-[12px]"
+        className="px-5 pb-3 pt-6 text-[12px] font-extrabold uppercase tracking-[0.24em] md:px-8 md:pb-4 md:pt-12 md:text-[13px] lg:pb-5 lg:pt-14 lg:text-[14px]"
         style={{ color: "var(--muted-text)" }}
       >
         {c.pick}
       </h2>
 
-      <div className="flex flex-col gap-3 px-4 pb-36 md:grid md:grid-cols-2 lg:grid-cols-3 md:items-stretch md:gap-5 md:px-8 md:pb-8">
+      <div className="flex flex-col gap-3 px-4 pb-36 md:grid md:grid-cols-2 lg:grid-cols-3 md:items-stretch md:gap-5 md:px-8 md:pb-8 lg:gap-7 lg:pb-10">
         <DeckCard id="basic" title={c.basic} desc={c.basicD} fan={["friendship", "introspection", "love"]}>
           {BASIC_CATEGORIES.map((cat) => (
             <Chip key={cat} on={decks.basic && categories[cat]} onClick={() => toggleCat("basic", cat)}>
@@ -283,12 +287,12 @@ export function DeckSelector() {
         className="fixed inset-x-0 bottom-0 z-20 border-t bg-[var(--bg)] md:static md:border-t-0 md:bg-transparent"
         style={{ borderColor: "var(--border)" }}
       >
-        <div className="mx-auto w-full max-w-lg px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3.5 md:max-w-sm md:px-0 md:pb-16 md:pt-4">
+        <div className="mx-auto w-full max-w-lg px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3.5 md:max-w-sm md:px-0 md:pb-16 md:pt-4 lg:max-w-md lg:pb-0">
           <button
             type="button"
             disabled={!anyDeck}
             onClick={handleStart}
-            className="h-14 w-full rounded-[18px] text-[18px] transition-opacity disabled:opacity-50"
+            className="h-14 w-full rounded-[18px] text-[19px] transition-opacity disabled:opacity-50 lg:h-16 lg:rounded-[20px] lg:text-[22px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {anyDeck ? c.play : c.none}

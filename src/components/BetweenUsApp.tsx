@@ -21,6 +21,14 @@ export function BetweenUsApp() {
     setHapticsEnabled(hapticsEnabled);
   }, [hapticsEnabled]);
 
+  // Match the browser bar and page edges to the chosen theme.
+  useEffect(() => {
+    const bg = { rose: "#F2BCCB", sage: "#BFCEB5", lavender: "#CFC4EC" }[theme] ?? "#F2BCCB";
+    document.body.style.backgroundColor = bg;
+    document.documentElement.style.backgroundColor = bg;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", bg);
+  }, [theme]);
+
   if (!ready) return null;
 
   return (
