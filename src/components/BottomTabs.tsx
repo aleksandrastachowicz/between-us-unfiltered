@@ -21,7 +21,7 @@ export function BottomTabs() {
 
   return (
     <nav
-      className="mt-2 flex h-[70px] w-full shrink-0 items-center justify-around rounded-[22px] px-1.5 md:h-14 md:rounded-[18px] md:px-2"
+      className="mt-2 flex h-[70px] w-full shrink-0 items-center justify-around rounded-[22px] px-1.5 max-md:[@media(max-height:740px)]:h-[58px] md:h-14 md:rounded-[18px] md:px-2"
       style={{ background: "var(--panel)", border: "1.5px solid var(--border)" }}
       aria-label={lang === "pl" ? "Nawigacja" : "Navigation"}
     >
@@ -34,7 +34,7 @@ export function BottomTabs() {
             type="button"
             onClick={() => setTab(it.id)}
             aria-current={on ? "page" : undefined}
-            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors md:flex-row md:gap-2 md:rounded-xl md:px-4 md:py-2 md:text-[13px] md:[&_svg]:h-[18px] md:[&_svg]:w-[18px]"
+            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors max-md:[@media(max-height:740px)]:gap-0.5 max-md:[@media(max-height:740px)]:py-1.5 max-md:[@media(max-height:740px)]:text-[11px] max-md:[@media(max-height:740px)]:[&_svg]:h-5 max-md:[@media(max-height:740px)]:[&_svg]:w-5 md:flex-row md:gap-2 md:rounded-xl md:px-4 md:py-2 md:text-[13px] md:[&_svg]:h-[18px] md:[&_svg]:w-[18px]"
             style={{
               background: on ? "var(--accent)" : "transparent",
               color: on ? "var(--accent-ink)" : "var(--muted-text)",

@@ -148,9 +148,11 @@ function useStageScale() {
   const [stage, setStage] = useState<{ z: number; h: number } | null>(null);
   useEffect(() => {
     const update = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      if (w < 1024) return setStage(null);
+      const w = document.documentElement.clientWidth;
+      const h = document.documentElement.clientHeight;
+      // Only real desktops: a mouse, no touch screen. Phones and tablets keep their own layout.
+      const desktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches && navigator.maxTouchPoints === 0;
+      if (!desktop || w < 1024) return setStage(null);
       const z = Math.max(1, Math.min(h / BASE_H, w / BASE_W, 1.7));
       setStage(z > 1.02 ? { z, h: h / z } : null);
     };
@@ -193,11 +195,11 @@ export function GameScreen() {
   return (
     <>
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-5 [--chrome:330px] md:max-w-2xl md:[--card-max:580px] md:[--chrome:290px] md:[--controls-max:calc(var(--card-w)_-_8px)]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-5 [--chrome:290px] max-md:[@media(max-height:740px)]:[--chrome:244px] md:max-w-2xl md:[--card-max:580px] md:[--chrome:290px] md:[--controls-max:calc(var(--card-w)_-_8px)]"
       style={{
         // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
         ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((var(--vh, 100dvh) - var(--chrome, 300px)) * 5 / 7))",
-        ["--controls-w" as string]: "min(100%, var(--controls-max, 9999px), max(340px, min(460px, calc((var(--vh, 100dvh) - var(--chrome, 300px)) * 5 / 7))))",
+        ["--controls-w" as string]: "min(100%, var(--controls-max, 9999px), max(240px, calc(var(--card-w) - 8px)))",
         ...(stage ? { zoom: stage.z, height: `${stage.h}px`, ["--vh" as string]: `${stage.h}px` } : {}),
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
@@ -238,7 +240,7 @@ export function GameScreen() {
         </RoundButton>
       </header>
 
-      <div className={`flex min-h-0 flex-1 flex-col items-center py-4 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
+      <div className={`flex min-h-0 flex-1 flex-col items-center py-4 max-md:[@media(max-height:740px)]:py-3 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
         {activeTab === "play" && (
           <AnimatePresence mode="popLayout" initial={false}>
             {card && (
@@ -258,13 +260,13 @@ export function GameScreen() {
           </AnimatePresence>
         )}
         {activeTab === "play" && (
-        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-7" style={{ width: "var(--controls-w)" }}>
+        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-7 max-md:[@media(max-height:740px)]:mt-4" style={{ width: "var(--controls-w)" }}>
           <button
             type="button"
             onClick={goBack}
             disabled={!canGoBack}
             aria-label={c.prev}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 md:h-12 md:w-12 md:rounded-2xl md:[&_svg]:h-5 md:[&_svg]:w-5"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 max-md:[@media(max-height:740px)]:h-12 max-md:[@media(max-height:740px)]:w-12 md:h-12 md:w-12 md:rounded-2xl md:[&_svg]:h-5 md:[&_svg]:w-5"
             style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
           >
             <Undo2 className="h-6 w-6" strokeWidth={2.2} />
@@ -272,7 +274,7 @@ export function GameScreen() {
           <button
             type="button"
             onClick={drawCard}
-            className="h-14 flex-1 rounded-[18px] text-[19px] md:h-12 md:rounded-2xl md:text-[17px]"
+            className="h-14 flex-1 rounded-[18px] text-[19px] max-md:[@media(max-height:740px)]:h-12 max-md:[@media(max-height:740px)]:text-[17px] md:h-12 md:rounded-2xl md:text-[17px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {c.next}
