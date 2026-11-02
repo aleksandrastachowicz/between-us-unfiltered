@@ -91,7 +91,7 @@ export function RulesSheet({ open, onClose }: { open: boolean; onClose: () => vo
           >
             <div className="flex items-center justify-between gap-3 px-5 pt-5 lg:px-8 lg:pt-8">
               <div className="flex flex-col gap-1">
-                <h2 id="rules-title" className="text-[30px] leading-none lg:text-[40px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+                <h2 id="rules-title" className="text-[30px] leading-none lg:text-[38px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
                   {c.title}
                 </h2>
               </div>
@@ -108,10 +108,10 @@ export function RulesSheet({ open, onClose }: { open: boolean; onClose: () => vo
 
             <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-3 pt-4 lg:gap-5 lg:px-8 lg:pt-5">
               <div className="rounded-[20px] p-4 lg:p-6" style={{ background: "var(--accent)", color: "var(--accent-ink)" }}>
-                <p className="text-[22px] leading-snug lg:text-[26px]" style={{ fontFamily: DISPLAY_FONT }}>
+                <p className="text-[22px] leading-snug lg:text-[24px]" style={{ fontFamily: DISPLAY_FONT }}>
                   {c.hook}
                 </p>
-                <p className="mt-2 text-[16px] leading-snug lg:text-[17px]" style={{ opacity: 0.94 }}>
+                <p className="mt-2 text-[16px] leading-snug lg:text-[15px]" style={{ opacity: 0.94 }}>
                   {c.hookD}
                 </p>
               </div>

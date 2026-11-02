@@ -21,8 +21,8 @@ export function BottomTabs() {
 
   return (
     <nav
-      className="mx-auto mt-3 flex h-[70px] w-full items-center justify-around rounded-[22px] px-1.5 lg:mt-4 lg:h-20 lg:rounded-[26px]"
-      style={{ background: "var(--panel)", border: "1.5px solid var(--border)" }}
+      className="mx-auto mt-3 flex h-[70px] items-center justify-around rounded-[22px] px-1.5"
+      style={{ width: "var(--controls-w, 100%)", background: "var(--panel)", border: "1.5px solid var(--border)" }}
       aria-label={lang === "pl" ? "Nawigacja" : "Navigation"}
     >
       {items.map((it) => {
@@ -34,14 +34,14 @@ export function BottomTabs() {
             type="button"
             onClick={() => setTab(it.id)}
             aria-current={on ? "page" : undefined}
-            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors lg:px-6 lg:text-[14px]"
+            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors"
             style={{
               background: on ? "var(--accent)" : "transparent",
               color: on ? "var(--accent-ink)" : "var(--muted-text)",
               fontWeight: on ? 800 : 700,
             }}
           >
-            <Icon className="h-6 w-6 lg:h-7 lg:w-7" strokeWidth={2.1} />
+            <Icon className="h-6 w-6" strokeWidth={2.1} />
             {it.label}
           </button>
         );

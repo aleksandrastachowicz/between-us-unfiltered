@@ -29,21 +29,21 @@ export function QuestionRow({ card, player }: { card: DrawnCard; player?: string
 
   return (
     <li
-      className="flex items-center gap-3.5 rounded-[20px] p-3.5 lg:gap-5 lg:p-5"
+      className="flex items-center gap-3.5 rounded-[20px] p-3.5 lg:gap-4 lg:p-4"
       style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}
     >
       <div
-        className="relative h-[58px] w-[42px] shrink-0 overflow-hidden rounded-[9px] lg:h-[78px] lg:w-[56px] lg:rounded-[12px]"
+        className="relative h-[58px] w-[42px] shrink-0 overflow-hidden rounded-[9px] lg:h-[64px] lg:w-[46px]"
         style={{ background: BACK_COLORS[pattern].base }}
         aria-hidden="true"
       >
         <DeckArt pattern={pattern} />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="text-[15px] font-bold leading-snug md:text-[16px] lg:text-[18px]" style={{ color: "var(--text)" }}>
+        <p className="text-[15px] font-bold leading-snug md:text-[16px]" style={{ color: "var(--text)" }}>
           {primary}
         </p>
-        <p className="text-[13px] leading-snug lg:text-[15px]" style={{ color: "var(--sub-text)" }}>
+        <p className="text-[13px] leading-snug lg:text-[14px]" style={{ color: "var(--sub-text)" }}>
           {secondary}
         </p>
         {meta && (
@@ -52,25 +52,25 @@ export function QuestionRow({ card, player }: { card: DrawnCard; player?: string
           </p>
         )}
       </div>
-      <div className="flex shrink-0 flex-col gap-1 lg:flex-row lg:gap-2">
+      <div className="flex shrink-0 flex-col gap-1">
         <button
           type="button"
           onClick={() => toggleFavorite(card.id)}
           aria-label={l.fav}
           aria-pressed={isFav}
-          className="flex h-11 w-11 items-center justify-center rounded-full lg:h-12 lg:w-12"
+          className="flex h-11 w-11 items-center justify-center rounded-full"
           style={{ background: "var(--panel-2)" }}
         >
-          <Heart className="h-5 w-5 lg:h-6 lg:w-6" fill={isFav ? FAV_RED : "none"} stroke={isFav ? FAV_RED : "var(--ink)"} strokeWidth={2.2} />
+          <Heart className="h-5 w-5" fill={isFav ? FAV_RED : "none"} stroke={isFav ? FAV_RED : "var(--ink)"} strokeWidth={2.2} />
         </button>
         <button
           type="button"
           onClick={() => void shareOrDownloadStory(card, lang)}
           aria-label={l.share}
-          className="flex h-11 w-11 items-center justify-center rounded-full lg:h-12 lg:w-12"
+          className="flex h-11 w-11 items-center justify-center rounded-full"
           style={{ background: "var(--panel-2)", color: "var(--ink)" }}
         >
-          <Share2 className="h-5 w-5 lg:h-6 lg:w-6" strokeWidth={2.1} />
+          <Share2 className="h-5 w-5" strokeWidth={2.1} />
         </button>
       </div>
     </li>
@@ -86,7 +86,7 @@ export function ViewHeader({ eyebrow, title }: { eyebrow?: string; title: string
           {eyebrow}
         </p>
       )}
-      <h2 className="text-[28px] leading-none lg:text-[40px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+      <h2 className="text-[28px] leading-none lg:text-[32px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
         {title}
       </h2>
     </div>
@@ -96,7 +96,7 @@ export function ViewHeader({ eyebrow, title }: { eyebrow?: string; title: string
 export function EmptyState({ children }: { children: React.ReactNode }) {
   return (
     <p
-      className="rounded-[20px] p-6 text-center text-[15px] leading-relaxed lg:p-8 lg:text-[17px]"
+      className="rounded-[20px] p-6 text-center text-[15px] leading-relaxed lg:text-[16px]"
       style={{ background: "var(--panel)", color: "var(--sub-text)" }}
     >
       {children}

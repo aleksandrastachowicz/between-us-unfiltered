@@ -53,15 +53,15 @@ export function InsightsView() {
       {stats.totalDraws === 0 ? (
         <EmptyState>{c.empty}</EmptyState>
       ) : (
-        <div className="flex flex-col gap-3 lg:gap-4">
-          <div className="grid grid-cols-2 gap-3 lg:gap-4">
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Stat label={c.total} value={String(stats.totalDraws)} />
             <Stat label={c.favs} value={String(favorites.length)} />
             <Stat label={c.top} value={entries[0] ? label(entries[0][0]) : "–"} small />
             <Stat label={c.level} value={decks.unfiltered ? UNFILTERED_LEVELS[ufLevel].label[lang] : "–"} small />
           </div>
 
-          <div className="rounded-[20px] p-4 lg:p-6" style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}>
+          <div className="rounded-[20px] p-4 lg:p-5" style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}>
             <p className="mb-4 text-[12px] font-extrabold uppercase tracking-[0.2em] lg:text-[13px]" style={{ color: "var(--muted-text)" }}>
               {c.cats}
             </p>
@@ -72,10 +72,10 @@ export function InsightsView() {
                 return (
                   <li key={key} className="flex flex-col gap-1.5">
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="text-[14px] font-bold lg:text-[16px]" style={{ color: "var(--text)" }}>{label(key)}</span>
-                      <span className="text-[13px] font-extrabold tabular-nums lg:text-[15px]" style={{ color: "var(--sub-text)" }}>{pct}%</span>
+                      <span className="text-[14px] font-bold" style={{ color: "var(--text)" }}>{label(key)}</span>
+                      <span className="text-[13px] font-extrabold tabular-nums" style={{ color: "var(--sub-text)" }}>{pct}%</span>
                     </div>
-                    <div className="h-2.5 overflow-hidden rounded-full lg:h-3" style={{ background: "var(--panel-2)" }}>
+                    <div className="h-2.5 overflow-hidden rounded-full" style={{ background: "var(--panel-2)" }}>
                       <div className="h-full rounded-full" style={{ width: `${w}%`, background: color(key) }} />
                     </div>
                   </li>
@@ -94,7 +94,7 @@ function Stat({ label, value, small }: { label: string; value: string; small?: b
     <div className="flex flex-col gap-1.5 rounded-[20px] p-4 lg:p-5" style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}>
       <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] lg:text-[12px]" style={{ color: "var(--muted-text)" }}>{label}</p>
       <p
-        className={small ? "text-[18px] leading-tight lg:text-[22px]" : "text-[32px] leading-none lg:text-[42px]"}
+        className={small ? "text-[18px] leading-tight lg:text-[20px]" : "text-[32px] leading-none"}
         style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}
       >
         {value}

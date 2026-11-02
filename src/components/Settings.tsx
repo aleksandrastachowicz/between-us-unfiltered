@@ -147,22 +147,22 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
             role="dialog"
             aria-modal="true"
             aria-label={c.settings}
-            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col gap-5 overflow-y-auto px-4 pb-8 sm:max-w-md lg:max-w-lg lg:gap-6 lg:px-8"
+            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col gap-5 overflow-y-auto px-4 pb-8 sm:max-w-md lg:px-6"
             style={{ background: "var(--bg)", paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 32 }}
           >
-            <div className="flex items-center justify-between pt-2 lg:pt-6">
-              <h2 className="text-[28px] leading-none lg:text-[38px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+            <div className="flex items-center justify-between pt-2 lg:pt-4">
+              <h2 className="text-[28px] leading-none lg:text-[30px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
                 {c.settings}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label={c.close}
-                className="flex h-12 w-12 items-center justify-center rounded-full lg:h-14 lg:w-14"
+                className="flex h-12 w-12 items-center justify-center rounded-full"
                 style={{ background: "var(--panel)", color: "var(--ink)" }}
               >
                 <X className="h-6 w-6" strokeWidth={2.4} />

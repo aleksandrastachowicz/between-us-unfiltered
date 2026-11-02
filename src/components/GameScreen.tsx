@@ -54,7 +54,7 @@ function RoundButton({ label, onClick, children }: { label: string; onClick: () 
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full lg:h-14 lg:w-14 [&_svg]:h-6 [&_svg]:w-6 lg:[&_svg]:h-7 lg:[&_svg]:w-7"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6"
       style={{ background: "var(--panel)", color: "var(--ink)" }}
     >
       {children}
@@ -75,16 +75,16 @@ function LevelChip() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={`${c.level}: ${UNFILTERED_LEVELS[ufLevel].label[lang]}. ${c.pickLevel}`}
-        className="flex h-8 items-center gap-1.5 rounded-full px-3.5 lg:h-10 lg:gap-2 lg:px-4"
+        className="flex h-8 items-center gap-1.5 rounded-full px-3.5"
         style={{ background: "#17121A" }}
       >
-        <span className="text-[11px] font-extrabold uppercase tracking-[0.08em] lg:text-[13px]" style={{ color: "#E6C487" }}>
+        <span className="text-[11px] font-extrabold uppercase tracking-[0.08em]" style={{ color: "#E6C487" }}>
           {UNFILTERED_LEVELS[ufLevel].label[lang]}
         </span>
         {LEVEL_ORDER.map((l, i) => (
           <span
             key={l}
-            className="h-2 w-2 rounded-full lg:h-2.5 lg:w-2.5"
+            className="h-2 w-2 rounded-full"
             style={{ background: i <= idx ? "#D9B26F" : "rgba(217,178,111,0.3)" }}
           />
         ))}
@@ -167,8 +167,11 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:350px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:280px]"
       style={{
+        // One size system: the card is the hero; the buttons and tabs line up with its width.
+        ["--card-w" as string]: "min(100%, 520px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
+        ["--controls-w" as string]: "min(100%, max(340px, min(520px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
       }}
@@ -188,16 +191,16 @@ export function GameScreen() {
                 className="flex min-w-0 flex-col items-center"
                 aria-live="polite"
               >
-                <span className="text-[11px] font-extrabold uppercase tracking-[0.22em] lg:text-[13px]" style={{ color: "var(--muted-text)" }}>
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.22em]" style={{ color: "var(--muted-text)" }}>
                   {c.nowAnswers}
                 </span>
-                <span className="max-w-full truncate text-[22px] leading-tight lg:text-[30px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+                <span className="max-w-full truncate text-[22px] leading-tight lg:text-[24px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
                   {playerName}
                 </span>
               </motion.div>
             </AnimatePresence>
           ) : (
-            <span className="pt-3 text-[20px] leading-none lg:pt-4 lg:text-[28px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+            <span className="pt-3 text-[20px] leading-none lg:text-[22px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
               between us
             </span>
           )}
@@ -220,7 +223,7 @@ export function GameScreen() {
                 exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.14 } }}
                 transition={{ type: "spring", stiffness: 300, damping: 24, mass: 0.8 }}
                 className="px-1"
-                style={{ width: "min(100%, 480px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))" }}
+                style={{ width: "var(--card-w)" }}
               >
                 <PlayingCard card={card} />
               </motion.div>
@@ -233,21 +236,21 @@ export function GameScreen() {
       </div>
 
       {activeTab === "play" && (
-        <div className="flex shrink-0 gap-2.5">
+        <div className="mx-auto flex shrink-0 gap-2.5" style={{ width: "var(--controls-w)" }}>
           <button
             type="button"
             onClick={goBack}
             disabled={!canGoBack}
             aria-label={c.prev}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 lg:h-16 lg:w-16 lg:rounded-[20px]"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40"
             style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
           >
-            <Undo2 className="h-6 w-6 lg:h-7 lg:w-7" strokeWidth={2.2} />
+            <Undo2 className="h-6 w-6" strokeWidth={2.2} />
           </button>
           <button
             type="button"
             onClick={drawCard}
-            className="h-14 flex-1 rounded-[18px] text-[19px] lg:h-16 lg:rounded-[20px] lg:text-[22px]"
+            className="h-14 flex-1 rounded-[18px] text-[19px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {c.next}
