@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, SlidersHorizontal, Undo2, Check } from "lucide-react";
 import { useGame } from "@/lib/store";
@@ -137,11 +137,36 @@ function LevelChip() {
   );
 }
 
+
+/**
+ * Large screens get the same composition as a ~800×660 window, scaled up as a whole.
+ * Everything (card, buttons, tabs, header) keeps the proportions approved on tablet and laptop.
+ */
+const BASE_H = 660;
+const BASE_W = 820;
+function useStageScale() {
+  const [stage, setStage] = useState<{ z: number; h: number } | null>(null);
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (w < 1024) return setStage(null);
+      const z = Math.max(1, Math.min(h / BASE_H, w / BASE_W, 1.7));
+      setStage(z > 1.02 ? { z, h: h / z } : null);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return stage;
+}
+
 export function GameScreen() {
   const { lang, card, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, activeTab, flushGuestSession, seenRules, setSeenRules } = useGame();
   const [rulesOpen, setRulesOpen] = useState(!seenRules);
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const stage = useStageScale();
   const [confirmReset, setConfirmReset] = useState(false);
   const c = t[lang];
   const canGoBack = history.length > 0;
@@ -166,12 +191,14 @@ export function GameScreen() {
   };
 
   return (
+    <>
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--card-max:580px] md:[--chrome:290px] md:[--controls-max:calc(var(--card-w)_-_8px)]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-5 [--chrome:330px] md:max-w-2xl md:[--card-max:580px] md:[--chrome:290px] md:[--controls-max:calc(var(--card-w)_-_8px)]"
       style={{
         // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
-        ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
-        ["--controls-w" as string]: "min(100%, var(--controls-max, 9999px), max(340px, min(460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
+        ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((var(--vh, 100dvh) - var(--chrome, 300px)) * 5 / 7))",
+        ["--controls-w" as string]: "min(100%, var(--controls-max, 9999px), max(340px, min(460px, calc((var(--vh, 100dvh) - var(--chrome, 300px)) * 5 / 7))))",
+        ...(stage ? { zoom: stage.z, height: `${stage.h}px`, ["--vh" as string]: `${stage.h}px` } : {}),
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
       }}
@@ -258,6 +285,7 @@ export function GameScreen() {
       </div>
 
       <BottomTabs />
+    </div>
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <LevelUpCard />
@@ -278,6 +306,6 @@ export function GameScreen() {
         onCancel={() => setConfirmReset(false)}
         onConfirm={doReset}
       />
-    </div>
+    </>
   );
 }
