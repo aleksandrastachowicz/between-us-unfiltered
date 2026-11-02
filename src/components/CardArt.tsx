@@ -73,6 +73,71 @@ function StarField({ id, base, dot }: { id: string; base: string; dot: string })
   );
 }
 
+
+/* ---------- Smooth "hand-drawn" waves ----------
+ * The wavy backs used to be an SVG displacement filter. That filter steps in tiny stairs (it works in
+ * 8-bit colour), which looks pixelated on sharp phone screens. Here the same idea is drawn as real
+ * curves: every shape is bent by a soft, seeded wave field, so the edges stay crisp at any size. */
+type Pt = [number, number];
+function waveField(seed: number, freq: number, scale: number) {
+  let a = seed * 9301 + 49297;
+  const rnd = () => ((a = (a * 233280 + 49297) % 1000003), a / 1000003);
+  const make = () =>
+    Array.from({ length: 4 }, (_, i) => {
+      const ang = rnd() * Math.PI * 2;
+      const k = freq * Math.PI * 2 * (0.35 + rnd() * 0.4);
+      return { kx: Math.cos(ang) * k, ky: Math.sin(ang) * k, ph: rnd() * Math.PI * 2, w: 1 / (i + 1) };
+    });
+  const wx = make();
+  const wy = make();
+  const total = wx.reduce((t, w) => t + w.w, 0);
+  const val = (ws: typeof wx, x: number, y: number) =>
+    ws.reduce((t, w) => t + Math.sin(x * w.kx + y * w.ky + w.ph) * w.w, 0) / total;
+  return ([x, y]: Pt): Pt => [x + val(wx, x, y) * scale * 0.3, y + val(wy, x, y) * scale * 0.3];
+}
+function bentPath(poly: Pt[], bend: (p: Pt) => Pt, step = 2.5) {
+  const out: Pt[] = [];
+  for (let i = 0; i < poly.length; i++) {
+    const [x1, y1] = poly[i];
+    const [x2, y2] = poly[(i + 1) % poly.length];
+    const n = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / step));
+    for (let j = 0; j < n; j++) out.push(bend([x1 + ((x2 - x1) * j) / n, y1 + ((y2 - y1) * j) / n]));
+  }
+  return "M" + out.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L") + "Z";
+}
+const rectPoly = (x: number, y: number, w: number, h: number, rot = 0): Pt[] => {
+  const c = Math.cos(rot), s = Math.sin(rot);
+  return ([[x, y], [x + w, y], [x + w, y + h], [x, y + h]] as Pt[]).map(([px, py]) => [px * c - py * s, px * s + py * c]);
+};
+function WavyShapes({ shapes, seed, freq, scale }: { shapes: { poly: Pt[]; fill: string }[]; seed: number; freq: number; scale: number }) {
+  const bend = waveField(seed, freq, scale);
+  return (
+    <>
+      {shapes.map((sh, i) => (
+        <path key={i} d={bentPath(sh.poly, bend)} fill={sh.fill} />
+      ))}
+    </>
+  );
+}
+function selfdevShapes() {
+  const colors = ["#F6E8D6", "#F6A3BE", "#B7CB8F", "#86A170"];
+  const rot = (-28 * Math.PI) / 180;
+  const shapes: { poly: Pt[]; fill: string }[] = [];
+  for (let k = -12; k < 12; k++) shapes.push({ poly: rectPoly(-260, k * 34, 620, 34.6, rot), fill: colors[((k % 4) + 4) % 4] });
+  return shapes;
+}
+function passionsShapes() {
+  const shapes: { poly: Pt[]; fill: string }[] = [{ poly: rectPoly(-40, -40, 300, 390), fill: "#9EC5F5" }];
+  for (let x = -44; x < 260; x += 22) shapes.push({ poly: rectPoly(x, -40, 9, 390), fill: "#F4F8FF" });
+  return shapes;
+}
+function checkerShapes() {
+  const shapes: { poly: Pt[]; fill: string }[] = [{ poly: rectPoly(-40, -40, 300, 390), fill: "#F5A9B8" }];
+  for (let y = -64; y < 350; y += 32)
+    for (let x = -64; x < 260; x += 32) if (((x + y) / 32) % 2 === 0) shapes.push({ poly: rectPoly(x, y, 32, 32), fill: "#AD0A23" });
+  return shapes;
+}
+
 function Motif({ pattern, uid }: { pattern: PatternKey; uid: string }) {
   const id = (name: string) => `${name}-${uid}`;
   switch (pattern) {
@@ -118,58 +183,13 @@ function Motif({ pattern, uid }: { pattern: PatternKey; uid: string }) {
       );
     }
     case "selfdev":
-      return (
-        <>
-          <defs>
-            <pattern id={id("p")} width="40" height="136" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
-              <rect width="40" height="34" fill="#F6E8D6" />
-              <rect y="34" width="40" height="34" fill="#F6A3BE" />
-              <rect y="68" width="40" height="34" fill="#B7CB8F" />
-              <rect y="102" width="40" height="34" fill="#86A170" />
-            </pattern>
-            <filter id={id("f")} x="-30%" y="-30%" width="160%" height="160%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves={1} seed={12} />
-              <feDisplacementMap in="SourceGraphic" scale={120} />
-            </filter>
-          </defs>
-          <rect x="-80" y="-80" width="380" height="470" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
-        </>
-      );
+      return <WavyShapes shapes={selfdevShapes()} seed={12} freq={0.005} scale={120} />;
     case "passions":
-      return (
-        <>
-          <defs>
-            <pattern id={id("p")} width="22" height="22" patternUnits="userSpaceOnUse">
-              <rect width="22" height="22" fill="#9EC5F5" />
-              <rect width="9" height="22" fill="#F4F8FF" />
-            </pattern>
-            <filter id={id("f")} x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={1} seed={3} />
-              <feDisplacementMap in="SourceGraphic" scale={34} />
-            </filter>
-          </defs>
-          <rect x="-40" y="-40" width="300" height="390" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
-        </>
-      );
+      return <WavyShapes shapes={passionsShapes()} seed={3} freq={0.018} scale={34} />;
     case "introspection":
       return <Rings />;
     case "plus_love":
-      return (
-        <>
-          <defs>
-            <pattern id={id("p")} width="64" height="64" patternUnits="userSpaceOnUse">
-              <rect width="64" height="64" fill="#F5A9B8" />
-              <rect width="32" height="32" fill="#AD0A23" />
-              <rect x="32" y="32" width="32" height="32" fill="#AD0A23" />
-            </pattern>
-            <filter id={id("f")} x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.007" numOctaves={1} seed={9} />
-              <feDisplacementMap in="SourceGraphic" scale={44} />
-            </filter>
-          </defs>
-          <rect x="-40" y="-40" width="300" height="390" fill={`url(#${id("p")})`} filter={`url(#${id("f")})`} />
-        </>
-      );
+      return <WavyShapes shapes={checkerShapes()} seed={9} freq={0.007} scale={44} />;
     case "plus_spice":
       return (
         <>
