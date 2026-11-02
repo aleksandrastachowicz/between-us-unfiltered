@@ -1,4 +1,4 @@
-const SITE = "https://between-us-unfiltered.lovable.app";
+const SITE = "https://between-us-cards-game.lovable.app";
 const TITLE = "Between Us — pytania, które zbliżają";
 const DESC = "Karciana gra do rozmów dla par, przyjaciół i rodzin. Po polsku i po angielsku. Questions that bring you closer.";
 const IMAGE = `${SITE}/og-image.png`;

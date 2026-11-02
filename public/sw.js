@@ -1,7 +1,7 @@
 // Between Us service worker: makes the app installable and lets it open without a connection.
 // Pages: network first (always the newest version), cached copy when offline.
 // Built files (/assets/…, hashed names) and icons: cache first. Fonts: cached after first use.
-const VERSION = "bu-v1";
+const VERSION = "bu-v2";
 const SHELL = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/og-image.png"];
 
 self.addEventListener("install", (event) => {
@@ -28,8 +28,11 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put("/", copy));
+          // Keep only a real, working page as the offline copy (never an error page).
+          if (res.ok && url.pathname === "/") {
+            const copy = res.clone();
+            caches.open(VERSION).then((c) => c.put("/", copy));
+          }
           return res;
         })
         .catch(() => caches.match("/").then((r) => r || Response.error())),
