@@ -270,7 +270,7 @@ function artUrl(pattern: PatternKey) {
   let url = artCache.get(pattern);
   if (!url) {
     const svg = renderToStaticMarkup(
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 308" width="440" height="616" preserveAspectRatio="xMidYMid slice">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 308" width="1100" height="1540" preserveAspectRatio="xMidYMid slice">
         <Motif pattern={pattern} uid="a" />
       </svg>,
     );
