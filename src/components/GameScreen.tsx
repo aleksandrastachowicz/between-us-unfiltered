@@ -167,11 +167,11 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--chrome:335px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--chrome:335px] lg:[--card-max:580px] lg:[--chrome:228px] lg:[--controls-max:380px]"
       style={{
         // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
-        ["--card-w" as string]: "min(100%, 460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
-        ["--controls-w" as string]: "min(100%, max(340px, min(460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
+        ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
+        ["--controls-w" as string]: "min(100%, var(--controls-max, 9999px), max(340px, min(460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
       }}
@@ -231,13 +231,13 @@ export function GameScreen() {
           </AnimatePresence>
         )}
         {activeTab === "play" && (
-        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-8" style={{ width: "var(--controls-w)" }}>
+        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-8 lg:mt-7" style={{ width: "var(--controls-w)" }}>
           <button
             type="button"
             onClick={goBack}
             disabled={!canGoBack}
             aria-label={c.prev}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 lg:h-12 lg:w-12 lg:rounded-2xl"
             style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
           >
             <Undo2 className="h-6 w-6" strokeWidth={2.2} />
@@ -245,7 +245,7 @@ export function GameScreen() {
           <button
             type="button"
             onClick={drawCard}
-            className="h-14 flex-1 rounded-[18px] text-[19px]"
+            className="h-14 flex-1 rounded-[18px] text-[19px] lg:h-12 lg:rounded-2xl lg:text-[17px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {c.next}

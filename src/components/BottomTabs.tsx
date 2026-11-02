@@ -21,7 +21,7 @@ export function BottomTabs() {
 
   return (
     <nav
-      className="mt-2 flex h-[70px] w-full shrink-0 items-center justify-around rounded-[22px] px-1.5"
+      className="mt-2 flex h-[70px] w-full shrink-0 items-center justify-around rounded-[22px] px-1.5 lg:fixed lg:left-8 lg:top-1/2 lg:mt-0 lg:h-auto lg:w-[92px] lg:-translate-y-1/2 lg:flex-col lg:justify-center lg:gap-1.5 lg:px-2 lg:py-2.5"
       style={{ background: "var(--panel)", border: "1.5px solid var(--border)" }}
       aria-label={lang === "pl" ? "Nawigacja" : "Navigation"}
     >
@@ -34,7 +34,7 @@ export function BottomTabs() {
             type="button"
             onClick={() => setTab(it.id)}
             aria-current={on ? "page" : undefined}
-            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors"
+            className="flex min-w-0 flex-col items-center gap-1 rounded-2xl px-3.5 py-2 text-[12px] transition-colors lg:w-full lg:px-1 lg:py-2.5"
             style={{
               background: on ? "var(--accent)" : "transparent",
               color: on ? "var(--accent-ink)" : "var(--muted-text)",
