@@ -11,6 +11,7 @@ import { RulesSheet } from "./RulesSheet";
 import { InstallBanner } from "./InstallApp";
 import { useAuth } from "@/lib/useAuth";
 import { Logo } from "./Logo";
+import { useStageScale } from "@/lib/useStageScale";
 
 const t = {
   pl: {
@@ -230,15 +231,20 @@ export function DeckSelector() {
     toggleCategory(cat);
   };
 
+  // Big desktop screens: the same layout as a laptop, scaled up as a whole (see useStageScale).
+  const stage = useStageScale(1100, 720);
+
   const pickLevel = (lvl: UnfilteredLevel) => {
     if (!decks.unfiltered) toggleDeck("unfiltered");
     setUfLevel(lvl);
   };
 
+  const zoom = stage ? { zoom: stage.z } : {};
   return (
+    <>
     <div
       className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-xl md:justify-center md:pb-[150px] lg:max-w-5xl"
-      style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+      style={{ paddingTop: "max(1rem, env(safe-area-inset-top))", ...zoom, ...(stage ? { minHeight: `${stage.h}px` } : {}) }}
     >
       <header className="flex items-center justify-between px-5 pt-6 md:px-8 md:pt-0">
         <h1 className="text-[28px] leading-none md:text-[36px]" style={{ color: "var(--ink)" }}>
@@ -291,9 +297,10 @@ export function DeckSelector() {
         </DeckCard>
       </div>
 
+    </div>
       <div
         className="fixed inset-x-0 bottom-0 z-20 border-t bg-[var(--bg)]"
-        style={{ borderColor: "var(--border)" }}
+        style={{ borderColor: "var(--border)", ...zoom }}
       >
         <div className="mx-auto w-full max-w-lg px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3.5 md:max-w-sm md:px-0 md:pb-5">
           <button
@@ -318,6 +325,6 @@ export function DeckSelector() {
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <RulesSheet open={rulesOpen} onClose={() => setRulesOpen(false)} />
-    </div>
+    </>
   );
 }
