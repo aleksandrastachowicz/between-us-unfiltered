@@ -1,27 +1,31 @@
 import { useGame } from "@/lib/store";
 import { CATEGORY_META, type CategoryId } from "@/data/questions";
-import { UNFILTERED_LEVELS, levelForProgress } from "@/data/unfiltered";
+import { UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { GuestBanner } from "./GuestBanner";
+import { EmptyState, ViewHeader } from "./QuestionRow";
+import { DISPLAY_FONT, FRONT_STYLES, patternFor } from "./CardArt";
 
 const t = {
   pl: {
     title: "Statystyki",
-    empty: "Zagraj kilka rund, żeby zobaczyć swoje statystyki.",
+    eyebrow: "Wasze rozmowy",
+    empty: "Zagrajcie kilka kart, a tu zobaczycie, o czym rozmawiacie najczęściej.",
     total: "Wylosowane karty",
-    rounds: "Rozegrane rundy",
     favs: "Ulubione pytania",
-    depth: "Głębokość relacji",
-    cats: "Najczęściej losowane kategorie",
-    unfiltered: "Unfiltered",
+    top: "Najczęstszy temat",
+    level: "Poziom Bez filtra",
+    cats: "O czym rozmawiacie",
+    unfiltered: "Bez filtra",
   },
   en: {
     title: "Insights",
-    empty: "Play a few rounds to see your stats.",
+    eyebrow: "Your conversations",
+    empty: "Play a few cards and you will see what you talk about most.",
     total: "Cards drawn",
-    rounds: "Rounds played",
-    favs: "Favorite questions",
-    depth: "Relationship depth",
-    cats: "Most drawn categories",
+    favs: "Favourite questions",
+    top: "Top topic",
+    level: "Unfiltered level",
+    cats: "What you talk about",
     unfiltered: "Unfiltered",
   },
 };
@@ -30,75 +34,71 @@ export function InsightsView() {
   const lang = useGame((s) => s.lang);
   const stats = useGame((s) => s.stats);
   const favorites = useGame((s) => s.favorites);
-  const history = useGame((s) => s.history);
-  const progress = useGame((s) => s.progress);
+  const ufLevel = useGame((s) => s.ufLevel);
+  const decks = useGame((s) => s.decks);
   const c = t[lang];
-
-  const level = levelForProgress(progress);
-  const lvlMeta = UNFILTERED_LEVELS[level];
 
   const entries = Object.entries(stats.categoryCounts).sort((a, b) => b[1] - a[1]);
   const max = entries[0]?.[1] ?? 1;
 
-  function catLabel(key: string): string {
-    if (key === "unfiltered") return c.unfiltered;
-    const meta = CATEGORY_META[key as CategoryId];
-    return meta ? meta.label[lang] : key;
-  }
-  function catColor(key: string): string {
-    if (key === "unfiltered") return "var(--accent)";
-    return `var(--color-cat-${key})`;
-  }
+  const label = (key: string) =>
+    key === "unfiltered" ? c.unfiltered : CATEGORY_META[key as CategoryId]?.label[lang] ?? key;
+  const color = (key: string) =>
+    key === "unfiltered" ? "#A3101E" : FRONT_STYLES[patternFor(key as CategoryId)]?.symbolColor ?? "var(--accent)";
 
   return (
-    <div className="px-1 pb-4 pt-2">
+    <section className="w-full max-w-2xl self-center pb-4">
+      <ViewHeader eyebrow={c.eyebrow} title={c.title} />
       <GuestBanner />
-      <h2 className="mb-3 text-lg font-extrabold">{c.title}</h2>
-
       {stats.totalDraws === 0 ? (
-        <p className="rounded-2xl p-4 text-sm" style={{ background: "var(--panel)", color: "var(--muted-text)" }}>
-          {c.empty}
-        </p>
+        <EmptyState>{c.empty}</EmptyState>
       ) : (
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Stat label={c.total} value={stats.totalDraws} />
-            <Stat label={c.rounds} value={history.length + 1} />
-            <Stat label={c.favs} value={favorites.length} />
-            <Stat label={c.depth} value={`${lvlMeta.emoji} ${progress}%`} />
+        <div className="flex flex-col gap-3 lg:gap-4">
+          <div className="grid grid-cols-2 gap-3 lg:gap-4">
+            <Stat label={c.total} value={String(stats.totalDraws)} />
+            <Stat label={c.favs} value={String(favorites.length)} />
+            <Stat label={c.top} value={entries[0] ? label(entries[0][0]) : "–"} small />
+            <Stat label={c.level} value={decks.unfiltered ? UNFILTERED_LEVELS[ufLevel].label[lang] : "–"} small />
           </div>
 
-          <div className="glass rounded-2xl p-4">
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>
+          <div className="rounded-[20px] p-4 lg:p-6" style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}>
+            <p className="mb-4 text-[12px] font-extrabold uppercase tracking-[0.2em] lg:text-[13px]" style={{ color: "var(--muted-text)" }}>
               {c.cats}
             </p>
-            <div className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-3.5">
               {entries.map(([key, count]) => {
                 const pct = Math.round((count / stats.totalDraws) * 100);
-                const w = Math.max(6, Math.round((count / max) * 100));
+                const w = Math.max(4, Math.round((count / max) * 100));
                 return (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className="w-28 shrink-0 truncate text-xs font-semibold">{catLabel(key)}</span>
-                    <div className="relative h-2 flex-1 overflow-hidden rounded-full" style={{ background: "var(--panel-2)" }}>
-                      <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${w}%`, background: catColor(key) }} />
+                  <li key={key} className="flex flex-col gap-1.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[14px] font-bold lg:text-[16px]" style={{ color: "var(--text)" }}>{label(key)}</span>
+                      <span className="text-[13px] font-extrabold tabular-nums lg:text-[15px]" style={{ color: "var(--sub-text)" }}>{pct}%</span>
                     </div>
-                    <span className="w-10 shrink-0 text-right text-[11px] font-bold tabular-nums" style={{ color: "var(--muted-text)" }}>{pct}%</span>
-                  </div>
+                    <div className="h-2.5 overflow-hidden rounded-full lg:h-3" style={{ background: "var(--panel-2)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${w}%`, background: color(key) }} />
+                    </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number | string }) {
+function Stat({ label, value, small }: { label: string; value: string; small?: boolean }) {
   return (
-    <div className="glass rounded-2xl p-3">
-      <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--muted-text)" }}>{label}</p>
-      <p className="mt-1 text-xl font-extrabold">{value}</p>
+    <div className="flex flex-col gap-1.5 rounded-[20px] p-4 lg:p-5" style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}>
+      <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] lg:text-[12px]" style={{ color: "var(--muted-text)" }}>{label}</p>
+      <p
+        className={small ? "text-[18px] leading-tight lg:text-[22px]" : "text-[32px] leading-none lg:text-[42px]"}
+        style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}
+      >
+        {value}
+      </p>
     </div>
   );
 }

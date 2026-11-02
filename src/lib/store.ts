@@ -55,6 +55,8 @@ interface State {
   drawCount: number;
   history: { card: DrawnCard; currentPlayer: number }[];
   favorites: string[];
+  /** Full card text for every favourite, so favourites survive new sessions (and AI questions). */
+  favoriteCards: Record<string, DrawnCard>;
   activeTab: Tab;
   stats: {
     totalDraws: number;
@@ -150,6 +152,7 @@ export const useGame = create<State>()(
       drawCount: 0,
       history: [],
       favorites: [],
+      favoriteCards: {},
       activeTab: "play",
       stats: { totalDraws: 0, categoryCounts: {} },
 
@@ -301,16 +304,29 @@ export const useGame = create<State>()(
       },
       declineLevelUp: () => set({ levelUpOpen: false, sinceLevelOffer: 0 }),
       toggleFavorite: (id) =>
-        set((s) => ({
-          favorites: s.favorites.includes(id)
-            ? s.favorites.filter((f) => f !== id)
-            : [...s.favorites, id],
-        })),
+        set((s) => {
+          if (s.favorites.includes(id)) {
+            const rest = { ...s.favoriteCards };
+            delete rest[id];
+            return { favorites: s.favorites.filter((f) => f !== id), favoriteCards: rest };
+          }
+          const found =
+            (s.card?.id === id ? s.card : undefined) ??
+            s.history.find((h) => h.card.id === id)?.card ??
+            (() => {
+              const q = QUESTIONS.find((x) => x.id === id);
+              return q ? ({ id: q.id, pl: q.pl, en: q.en, category: q.category } as DrawnCard) : undefined;
+            })();
+          return {
+            favorites: [...s.favorites, id],
+            favoriteCards: found ? { ...s.favoriteCards, [id]: found } : s.favoriteCards,
+          };
+        }),
       setTab: (activeTab) => set({ activeTab }),
     }),
     {
       name: "between-us",
-      version: 4,
+      version: 5,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted) => {
         const s = (persisted ?? {}) as Record<string, unknown>;
@@ -327,6 +343,7 @@ export const useGame = create<State>()(
         if (typeof s.hapticsEnabled !== "boolean") s.hapticsEnabled = true;
         if (typeof s.reducedMotion !== "boolean") s.reducedMotion = false;
         if (!Array.isArray(s.favorites)) s.favorites = [];
+        if (!s.favoriteCards || typeof s.favoriteCards !== "object") s.favoriteCards = {};
         if (!Array.isArray(s.history)) s.history = [];
         const st = s.stats as { totalDraws?: number; categoryCounts?: Record<string, number> } | undefined;
         if (!st || typeof st.totalDraws !== "number") {
@@ -347,6 +364,7 @@ export const useGame = create<State>()(
         progress: s.progress,
         ufLevel: s.ufLevel,
         favorites: s.favorites,
+        favoriteCards: s.favoriteCards,
         history: s.history,
         card: s.card,
         currentPlayer: s.currentPlayer,
