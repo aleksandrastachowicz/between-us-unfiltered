@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from "@tanstack/react-router";
-import { X, Plus, Users, Wifi, Copy, Check, LogOut, UserRound } from "lucide-react";
+import { X, Plus, Users, Wifi, Copy, Check, LogOut, UserRound, BookOpen, ChevronRight } from "lucide-react";
 import { useGame, THEMES, type ThemeId } from "@/lib/store";
 import { useMultiplayer } from "@/lib/multiplayer";
 import { useAuth, signOut } from "@/lib/useAuth";
 import type { Lang } from "@/data/questions";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { RulesSheet } from "./RulesSheet";
 import { DISPLAY_FONT } from "./CardArt";
 
 const t = {
@@ -43,6 +44,8 @@ const t = {
     anim: "Animacje 3D",
     reduced: "Ogranicz ruch",
     haptics: "Wibracje",
+    rules: "Zasady gry",
+    rulesD: "Jak grać i co zostaje między nami",
   },
   en: {
     settings: "Settings",
@@ -77,6 +80,8 @@ const t = {
     anim: "3D animations",
     reduced: "Reduce motion",
     haptics: "Vibration",
+    rules: "Game rules",
+    rulesD: "How to play and what stays between us",
   },
 };
 
@@ -99,6 +104,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
   const [mpInput, setMpInput] = useState("");
   const [mpCopied, setMpCopied] = useState(false);
   const [confirmOut, setConfirmOut] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const { code: mpCode, status: mpStatus, createRoom, joinRoom, leaveRoom, error: mpError } = useMultiplayer();
   const c = t[lang];
 
@@ -203,6 +209,21 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
                 </div>
               )}
             </Section>
+
+            {/* Rules */}
+            <button
+              type="button"
+              onClick={() => setRulesOpen(true)}
+              className="flex min-h-[64px] items-center gap-3 rounded-[20px] px-4 text-left lg:px-5"
+              style={{ background: "var(--card-surface)", border: "1px solid var(--border)" }}
+            >
+              <BookOpen className="h-6 w-6 shrink-0" style={{ color: "var(--ink)" }} />
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-[16px] font-bold lg:text-[17px]" style={{ color: "var(--text)" }}>{c.rules}</span>
+                <span className="text-[13px] lg:text-[14px]" style={{ color: "var(--sub-text)" }}>{c.rulesD}</span>
+              </span>
+              <ChevronRight className="h-5 w-5 shrink-0" style={{ color: "var(--ink)" }} />
+            </button>
 
             {/* Language and theme */}
             <Section title={c.langTheme}>
@@ -375,6 +396,7 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
             </Section>
           </motion.aside>
 
+          <RulesSheet open={rulesOpen} onClose={() => setRulesOpen(false)} />
           <ConfirmDialog
             open={confirmOut}
             title={c.outTitle}

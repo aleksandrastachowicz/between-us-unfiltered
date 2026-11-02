@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Heart } from "lucide-react";
 import { useGame, type DrawnCard } from "@/lib/store";
 import { CATEGORY_META, EDITION_META, editionForCategory } from "@/data/questions";
@@ -21,13 +21,14 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   // Swipe left: next card. Swipe right: back to the previous card. Same gesture on phone, tablet and with a mouse.
   const [dx, setDx] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const drag = useRef<{ x: number; y: number; id: number; horizontal: boolean | null } | null>(null);
+  const [pressed, setPressed] = useState(false);
+  const drag = useRef<{ x: number; y: number; id: number; horizontal: boolean | null; t: number; lx: number; lt: number; v: number } | null>(null);
   const swiped = useRef(false);
   const isFav = favorites.includes(card.id);
   const [heartBurst, setHeartBurst] = useState(0);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const systemReducedMotion = useReducedMotion();
-  const use3d = animations && !reducedMotion && !systemReducedMotion;
+  // The flip is the heart of the game, so it plays on every phone. Only the in-app "Ogranicz ruch" setting turns it into a fade.
+  const use3d = animations && !reducedMotion;
   const questionRef = useRef<HTMLDivElement>(null);
 
   const pattern = patternFor(card.category, card.unfilteredLevel);
@@ -78,8 +79,10 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
 
   const onPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest("button[aria-pressed]:not([role])")) return;
-    drag.current = { x: e.clientX, y: e.clientY, id: e.pointerId, horizontal: null };
+    const now = performance.now();
+    drag.current = { x: e.clientX, y: e.clientY, id: e.pointerId, horizontal: null, t: now, lx: e.clientX, lt: now, v: 0 };
     swiped.current = false;
+    setPressed(true);
   };
   const onPointerMove = (e: React.PointerEvent) => {
     const d = drag.current;
@@ -93,8 +96,13 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         setDragging(true);
       }
     }
+    if (d.horizontal !== null) setPressed(false);
     if (d.horizontal) {
       swiped.current = true;
+      const now = performance.now();
+      if (now > d.lt) d.v = (e.clientX - d.lx) / (now - d.lt);
+      d.lx = e.clientX;
+      d.lt = now;
       // Nothing to go back to: resist a right swipe instead of following the finger.
       setDx(mx > 0 && history.length === 0 ? mx * 0.25 : mx);
     }
@@ -102,15 +110,19 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
   const onPointerEnd = (e: React.PointerEvent) => {
     const d = drag.current;
     drag.current = null;
+    setPressed(false);
     if (!d || !d.horizontal) return;
     setDragging(false);
     const mx = e.clientX - d.x;
-    if (mx < -90) {
+    // A quick flick counts even when it is short.
+    const flickLeft = d.v < -0.45 && mx < -35;
+    const flickRight = d.v > 0.45 && mx > 35;
+    if (mx < -90 || flickLeft) {
       setDx(-(window.innerWidth + 200));
-      window.setTimeout(() => drawCard(), 240);
-    } else if (mx > 90 && history.length > 0) {
+      window.setTimeout(() => drawCard(), 170);
+    } else if ((mx > 90 || flickRight) && history.length > 0) {
       setDx(window.innerWidth + 200);
-      window.setTimeout(() => goBack(), 240);
+      window.setTimeout(() => goBack(), 170);
     } else {
       setDx(0);
     }
@@ -170,7 +182,8 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         transformStyle: "preserve-3d",
         WebkitTransformStyle: "preserve-3d",
         transform: `rotateY(${flipped ? 180 : 0}deg)`,
-        transition: "transform 620ms cubic-bezier(0.22, 0.9, 0.24, 1)",
+        // A soft overshoot so the card "lands" like a real one.
+        transition: "transform 700ms cubic-bezier(0.3, 1.28, 0.5, 1)",
       }
     : {};
   const face: React.CSSProperties = { backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" };
@@ -184,13 +197,14 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
         perspective: use3d ? 1400 : undefined,
         aspectRatio: "5 / 7",
         touchAction: "pan-y",
-        transform: dx ? `translateX(${dx}px) rotate(${use3d ? dx * 0.04 : 0}deg)` : undefined,
-        transition: dragging ? "none" : "transform 260ms cubic-bezier(0.22, 0.9, 0.24, 1)",
+        transform: `translateX(${dx}px) rotate(${use3d ? dx * 0.05 : 0}deg) scale(${pressed ? 0.97 : 1})`,
+        transition: dragging ? "none" : "transform 280ms cubic-bezier(0.22, 0.9, 0.24, 1)",
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerEnd}
       onPointerCancel={onPointerEnd}
+      onPointerLeave={() => setPressed(false)}
     >
       <div
         className="relative h-full w-full cursor-pointer rounded-[28px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"

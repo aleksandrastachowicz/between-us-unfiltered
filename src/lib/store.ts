@@ -77,6 +77,8 @@ interface State {
   startGame: () => void;
   backToDecks: () => void;
   drawCard: () => void;
+  seenRules: boolean;
+  setSeenRules: (v: boolean) => void;
   goBack: () => void;
   flip: () => void;
   setProgress: (n: number) => void;
@@ -153,6 +155,7 @@ export const useGame = create<State>()(
       history: [],
       favorites: [],
       favoriteCards: {},
+      seenRules: false,
       activeTab: "play",
       stats: { totalDraws: 0, categoryCounts: {} },
 
@@ -274,6 +277,8 @@ export const useGame = create<State>()(
         if (get().decks.unfiltered) primeUnfiltered(get().progress);
       },
 
+      setSeenRules: (seenRules) => set({ seenRules }),
+
       goBack: () => {
         const s = get();
         if (s.history.length === 0) return;
@@ -365,6 +370,7 @@ export const useGame = create<State>()(
         ufLevel: s.ufLevel,
         favorites: s.favorites,
         favoriteCards: s.favoriteCards,
+        seenRules: s.seenRules,
         history: s.history,
         card: s.card,
         currentPlayer: s.currentPlayer,

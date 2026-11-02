@@ -7,6 +7,7 @@ import { BASIC_CATEGORIES, PLUS_CATEGORIES, type CategoryId, type DeckId, type U
 import { LEVEL_ORDER, UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { BACK_COLORS, DISPLAY_FONT, DeckArt, patternFor, type PatternKey } from "./CardArt";
 import { Settings } from "./Settings";
+import { RulesSheet } from "./RulesSheet";
 import { useAuth } from "@/lib/useAuth";
 
 const t = {
@@ -23,6 +24,7 @@ const t = {
     unfD: "Trzy poziomy, coraz głębiej. Nowe pytania w każdej grze. 18+",
     startLevel: "Zacznij od poziomu",
     play: "Zagraj",
+    rules: "Jak grać? Zasady",
     none: "Wybierz przynajmniej jedną talię",
   },
   en: {
@@ -38,6 +40,7 @@ const t = {
     unfD: "Three levels, ever deeper. New questions every game. 18+",
     startLevel: "Start at level",
     play: "Play",
+    rules: "How to play: the rules",
     none: "Choose at least one deck",
   },
 };
@@ -211,6 +214,7 @@ export function DeckSelector() {
   const { lang, decks, categories, toggleCategory, toggleDeck, ufLevel, setUfLevel, startGame, flushGuestSession } = useGame();
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const c = t[lang];
   const anyDeck = decks.basic || decks.plus || decks.unfiltered;
 
@@ -251,7 +255,7 @@ export function DeckSelector() {
         {c.pick}
       </h2>
 
-      <div className="flex flex-col gap-3 px-4 pb-36 md:grid md:grid-cols-2 lg:grid-cols-3 md:items-stretch md:gap-5 md:px-8 md:pb-8 lg:gap-7 lg:pb-10">
+      <div className="flex flex-col gap-3 px-4 pb-44 md:grid md:grid-cols-2 lg:grid-cols-3 md:items-stretch md:gap-5 md:px-8 md:pb-8 lg:gap-7 lg:pb-10">
         <DeckCard id="basic" title={c.basic} desc={c.basicD} fan={["friendship", "introspection", "love"]}>
           {BASIC_CATEGORIES.map((cat) => (
             <Chip key={cat} on={decks.basic && categories[cat]} onClick={() => toggleCat("basic", cat)}>
@@ -297,10 +301,19 @@ export function DeckSelector() {
           >
             {anyDeck ? c.play : c.none}
           </button>
+          <button
+            type="button"
+            onClick={() => setRulesOpen(true)}
+            className="mt-1 h-11 w-full text-[14px] font-extrabold underline underline-offset-4 md:text-[15px] lg:text-[16px]"
+            style={{ color: "var(--ink)" }}
+          >
+            {c.rules}
+          </button>
         </div>
       </div>
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <RulesSheet open={rulesOpen} onClose={() => setRulesOpen(false)} />
     </div>
   );
 }

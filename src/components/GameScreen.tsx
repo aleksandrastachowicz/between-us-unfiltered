@@ -10,6 +10,7 @@ import { HistoryView } from "./HistoryView";
 import { FavoritesView } from "./FavoritesView";
 import { InsightsView } from "./InsightsView";
 import { LevelUpCard } from "./LevelUpCard";
+import { RulesSheet } from "./RulesSheet";
 import { useAuth } from "@/lib/useAuth";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { DISPLAY_FONT } from "./CardArt";
@@ -137,7 +138,8 @@ function LevelChip() {
 }
 
 export function GameScreen() {
-  const { lang, card, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, activeTab, flushGuestSession } = useGame();
+  const { lang, card, drawCard, goBack, history, backToDecks, players, currentPlayer, decks, activeTab, flushGuestSession, seenRules, setSeenRules } = useGame();
+  const [rulesOpen, setRulesOpen] = useState(!seenRules);
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -147,10 +149,15 @@ export function GameScreen() {
   // A fresh key every time a card is shown (also when going back), so a card that just flew away is never reused.
   const seq = useRef(0);
   const lastCard = useRef(card);
+  // Which way the deck moves: forward (new card comes in from the right) or back (from the left).
+  const dir = useRef<1 | -1>(1);
+  const lastHistory = useRef(history.length);
   if (lastCard.current !== card) {
+    dir.current = history.length < lastHistory.current ? -1 : 1;
     lastCard.current = card;
     seq.current += 1;
   }
+  lastHistory.current = history.length;
 
   const doReset = () => {
     setConfirmReset(false);
@@ -160,7 +167,7 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:360px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:350px]"
       style={{
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
@@ -203,14 +210,15 @@ export function GameScreen() {
 
       <div className={`flex min-h-0 flex-1 flex-col items-center py-3 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
         {activeTab === "play" && (
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout" initial={false}>
             {card && (
               <motion.div
                 key={`${card.id}-${seq.current}`}
-                initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                custom={dir.current}
+                initial={{ opacity: 0, x: 70 * dir.current, rotate: 4 * dir.current, scale: 0.94 }}
+                animate={{ opacity: 1, x: 0, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.14 } }}
+                transition={{ type: "spring", stiffness: 300, damping: 24, mass: 0.8 }}
                 className="px-1"
                 style={{ width: "min(100%, 480px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))" }}
               >
@@ -251,6 +259,13 @@ export function GameScreen() {
 
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <LevelUpCard />
+      <RulesSheet
+        open={rulesOpen}
+        onClose={() => {
+          setRulesOpen(false);
+          setSeenRules(true);
+        }}
+      />
 
       <ConfirmDialog
         open={confirmReset}

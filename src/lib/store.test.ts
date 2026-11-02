@@ -19,3 +19,4 @@ it("offers a level up every 8 cards and moves level", () => {
   useGame.getState().setUfLevel("love_spice");
   expect(useGame.getState().progress).toBe(15);
 });
+
