@@ -1,0 +1,20 @@
+{
+  "name": "Between Us — pytania, które zbliżają",
+  "short_name": "Between Us",
+  "description": "Karciana gra do rozmów dla par, przyjaciół i rodzin. Po polsku i po angielsku.",
+  "lang": "pl",
+  "dir": "ltr",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F2BCCB",
+  "theme_color": "#F2BCCB",
+  "categories": ["lifestyle", "entertainment", "social"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

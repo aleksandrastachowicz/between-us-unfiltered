@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGame } from "@/lib/store";
 import { setHapticsEnabled } from "@/lib/haptics";
+import { registerServiceWorker } from "@/lib/pwa";
 import { usePlayerProfileSync } from "@/lib/profile";
 import { DeckSelector } from "./DeckSelector";
 import { GameScreen } from "./GameScreen";
@@ -15,6 +16,7 @@ export function BetweenUsApp() {
   useEffect(() => {
     useGame.persist.rehydrate();
     setReady(true);
+    registerServiceWorker();
   }, []);
 
   useEffect(() => {

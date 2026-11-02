@@ -8,6 +8,7 @@ import { useAuth, signOut } from "@/lib/useAuth";
 import type { Lang } from "@/data/questions";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { RulesSheet } from "./RulesSheet";
+import { InstallCard } from "./InstallApp";
 import { DISPLAY_FONT } from "./CardArt";
 
 const t = {
@@ -44,6 +45,7 @@ const t = {
     anim: "Animacje 3D",
     reduced: "Ogranicz ruch",
     haptics: "Wibracje",
+    app: "Aplikacja na telefon",
     rules: "Zasady gry",
     rulesD: "Jak grać i co zostaje między nami",
   },
@@ -80,6 +82,7 @@ const t = {
     anim: "3D animations",
     reduced: "Reduce motion",
     haptics: "Vibration",
+    app: "App on your phone",
     rules: "Game rules",
     rulesD: "How to play and what stays between us",
   },
@@ -267,6 +270,11 @@ export function Settings({ open, onClose }: { open: boolean; onClose: () => void
               <p className="mt-2 px-1 text-[13px] font-semibold" style={{ color: "var(--muted-text)" }}>
                 {c.themes[theme]}
               </p>
+            </Section>
+
+            {/* Install as an app */}
+            <Section title={c.app}>
+              <InstallCard />
             </Section>
 
             {/* Players */}

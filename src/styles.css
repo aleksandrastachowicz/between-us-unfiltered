@@ -133,6 +133,9 @@
   }
   body {
     min-height: 100dvh;
+    /* Feels like an app: no rubber-band pull or pull-to-refresh, no grey tap flash. */
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

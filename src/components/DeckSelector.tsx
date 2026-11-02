@@ -8,6 +8,7 @@ import { LEVEL_ORDER, UNFILTERED_LEVELS } from "@/data/unfiltered";
 import { BACK_COLORS, DISPLAY_FONT, DeckArt, patternFor, type PatternKey } from "./CardArt";
 import { Settings } from "./Settings";
 import { RulesSheet } from "./RulesSheet";
+import { InstallBanner } from "./InstallApp";
 import { useAuth } from "@/lib/useAuth";
 
 const t = {
@@ -247,6 +248,8 @@ export function DeckSelector() {
       <p className="px-5 pt-2 text-[15px] md:px-8 md:pt-3 md:text-[19px] lg:pt-4 lg:text-[22px]" style={{ color: "var(--muted-text)" }}>
         {c.tagline}
       </p>
+
+      <InstallBanner />
 
       <h2
         className="px-5 pb-3 pt-6 text-[12px] font-extrabold uppercase tracking-[0.24em] md:px-8 md:pb-4 md:pt-12 md:text-[13px] lg:pb-5 lg:pt-14 lg:text-[14px]"
