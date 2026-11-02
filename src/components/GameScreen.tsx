@@ -54,7 +54,7 @@ function RoundButton({ label, onClick, children }: { label: string; onClick: () 
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6 md:h-11 md:w-11 md:[&_svg]:h-5 md:[&_svg]:w-5"
       style={{ background: "var(--panel)", color: "var(--ink)" }}
     >
       {children}
@@ -167,7 +167,7 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--chrome:335px] lg:[--card-max:580px] lg:[--chrome:228px] lg:[--controls-max:380px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-[min(42rem,calc(100vw-260px))] md:[--card-max:580px] md:[--chrome:228px] md:[--controls-max:360px]"
       style={{
         // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
         ["--card-w" as string]: "min(100%, var(--card-max, 460px), calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
@@ -200,7 +200,7 @@ export function GameScreen() {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <span className="pt-3 text-[20px] leading-none lg:text-[22px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
+            <span className="flex h-12 items-center text-[18px] leading-none tracking-[-0.01em] md:h-11 md:text-[17px]" style={{ fontFamily: DISPLAY_FONT, color: "var(--ink)" }}>
               between us
             </span>
           )}
@@ -231,13 +231,13 @@ export function GameScreen() {
           </AnimatePresence>
         )}
         {activeTab === "play" && (
-        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-8 lg:mt-7" style={{ width: "var(--controls-w)" }}>
+        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-7" style={{ width: "var(--controls-w)" }}>
           <button
             type="button"
             onClick={goBack}
             disabled={!canGoBack}
             aria-label={c.prev}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 lg:h-12 lg:w-12 lg:rounded-2xl"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-opacity disabled:opacity-40 md:h-12 md:w-12 md:rounded-2xl md:[&_svg]:h-5 md:[&_svg]:w-5"
             style={{ background: "var(--panel)", border: "1.5px solid var(--border)", color: "var(--ink)" }}
           >
             <Undo2 className="h-6 w-6" strokeWidth={2.2} />
@@ -245,7 +245,7 @@ export function GameScreen() {
           <button
             type="button"
             onClick={drawCard}
-            className="h-14 flex-1 rounded-[18px] text-[19px] lg:h-12 lg:rounded-2xl lg:text-[17px]"
+            className="h-14 flex-1 rounded-[18px] text-[19px] md:h-12 md:rounded-2xl md:text-[17px]"
             style={{ background: "var(--accent)", color: "var(--accent-ink)", fontFamily: DISPLAY_FONT }}
           >
             {c.next}
