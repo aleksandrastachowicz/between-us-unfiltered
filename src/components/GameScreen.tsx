@@ -167,11 +167,11 @@ export function GameScreen() {
 
   return (
     <div
-      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:300px] lg:max-w-2xl lg:[--chrome:280px]"
+      className="game-screen relative mx-auto flex h-dvh w-full max-w-lg flex-col px-4 [--chrome:330px] md:max-w-2xl md:[--chrome:335px]"
       style={{
-        // One size system: the card is the hero; the buttons and tabs line up with its width.
-        ["--card-w" as string]: "min(100%, 520px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
-        ["--controls-w" as string]: "min(100%, max(340px, min(520px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
+        // The card is the hero; the buttons line up with its width, the tab bar spans the screen.
+        ["--card-w" as string]: "min(100%, 460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))",
+        ["--controls-w" as string]: "min(100%, max(340px, min(460px, calc((100dvh - var(--chrome, 300px)) * 5 / 7))))",
         paddingTop: "max(1rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
       }}
@@ -211,7 +211,7 @@ export function GameScreen() {
         </RoundButton>
       </header>
 
-      <div className={`flex min-h-0 flex-1 flex-col items-center py-3 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
+      <div className={`flex min-h-0 flex-1 flex-col items-center py-4 ${activeTab === "play" ? "justify-center" : "justify-start overflow-y-auto"}`}>
         {activeTab === "play" && (
           <AnimatePresence mode="popLayout" initial={false}>
             {card && (
@@ -230,13 +230,8 @@ export function GameScreen() {
             )}
           </AnimatePresence>
         )}
-        {activeTab === "history" && <HistoryView />}
-        {activeTab === "favorites" && <FavoritesView />}
-        {activeTab === "insights" && <InsightsView />}
-      </div>
-
-      {activeTab === "play" && (
-        <div className="mx-auto flex shrink-0 gap-2.5" style={{ width: "var(--controls-w)" }}>
+        {activeTab === "play" && (
+        <div className="mt-6 flex shrink-0 gap-2.5 md:mt-8" style={{ width: "var(--controls-w)" }}>
           <button
             type="button"
             onClick={goBack}
@@ -256,7 +251,11 @@ export function GameScreen() {
             {c.next}
           </button>
         </div>
-      )}
+        )}
+        {activeTab === "history" && <HistoryView />}
+        {activeTab === "favorites" && <FavoritesView />}
+        {activeTab === "insights" && <InsightsView />}
+      </div>
 
       <BottomTabs />
 

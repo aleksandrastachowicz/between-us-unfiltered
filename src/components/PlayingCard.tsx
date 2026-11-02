@@ -54,11 +54,16 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       const primaryText = box.querySelector<HTMLElement>("[data-primary-question]");
       const secondaryText = box.querySelector<HTMLElement>("[data-secondary-question]");
       if (!primaryText || !secondaryText) return;
-      const max = Math.round(Math.min(38, Math.max(24, box.clientWidth * 0.095)));
-      for (let size = max; size >= 15; size--) {
+      // Size follows the length of the question, so a long one reads calmly instead of filling the card,
+      // and it still shrinks further if it would not fit.
+      const len = primary.length;
+      const lengthFactor = len <= 45 ? 1 : len <= 70 ? 0.88 : len <= 95 ? 0.78 : 0.7;
+      const max = Math.round(Math.min(38, Math.max(24, box.clientWidth * 0.095)) * lengthFactor);
+      for (let size = max; size >= 14; size--) {
         primaryText.style.fontSize = `${size}px`;
-        secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.58))}px`;
-        if (box.scrollHeight <= box.clientHeight + 1) break;
+        secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.62))}px`;
+        // Leave some air around the text instead of filling the card edge to edge.
+        if (primaryText.offsetHeight + secondaryText.offsetHeight + 12 <= box.clientHeight * 0.9) break;
       }
     };
     const observer = new ResizeObserver(fit);

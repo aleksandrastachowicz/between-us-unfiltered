@@ -21,8 +21,8 @@ export function BottomTabs() {
 
   return (
     <nav
-      className="mx-auto mt-3 flex h-[70px] items-center justify-around rounded-[22px] px-1.5"
-      style={{ width: "var(--controls-w, 100%)", background: "var(--panel)", border: "1.5px solid var(--border)" }}
+      className="mt-2 flex h-[70px] w-full shrink-0 items-center justify-around rounded-[22px] px-1.5"
+      style={{ background: "var(--panel)", border: "1.5px solid var(--border)" }}
       aria-label={lang === "pl" ? "Nawigacja" : "Navigation"}
     >
       {items.map((it) => {
