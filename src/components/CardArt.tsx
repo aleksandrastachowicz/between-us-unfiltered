@@ -439,6 +439,16 @@ export const FRONT_STYLES: Record<PatternKey, FrontStyle> = {
   uf_no_limits: { bg: "#FFF9F2", ink: "#4A1726", sub: "#816661", foot: "#856A64", symbol: "moon", symbolColor: "#B0852F" },
 };
 
+/** The card-front symbol as an SVG image URL, for drawing it outside React (e.g. on a canvas). */
+export function frontSymbolUrl(pattern: PatternKey, size = 120) {
+  const st = FRONT_STYLES[pattern];
+  const svg = renderToStaticMarkup(<FrontSymbol symbol={st.symbol} color={st.symbolColor} size={size} />).replace(
+    "<svg ",
+    '<svg xmlns="http://www.w3.org/2000/svg" ',
+  );
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 export function FrontSymbol({ symbol, color, size = 22 }: { symbol: FrontStyle["symbol"]; color: string; size?: number }) {
   switch (symbol) {
     case "heart":

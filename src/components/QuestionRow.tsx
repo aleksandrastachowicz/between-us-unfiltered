@@ -1,4 +1,4 @@
-import { Heart, Share2 } from "lucide-react";
+import { Download, Heart } from "lucide-react";
 import type { DrawnCard } from "@/lib/store";
 import { useGame } from "@/lib/store";
 import { CATEGORY_META } from "@/data/questions";
@@ -13,7 +13,7 @@ export function categoryName(card: DrawnCard, lang: "pl" | "en") {
   return CATEGORY_META[card.category]?.label[lang] ?? "";
 }
 
-/** One saved question: a tiny card back, the question, who answered, favourite + share. */
+/** One saved question: a tiny card back, the question, who answered, favourite + save as image. */
 export function QuestionRow({ card, player }: { card: DrawnCard; player?: string }) {
   const lang = useGame((s) => s.lang);
   const favorites = useGame((s) => s.favorites);
@@ -24,8 +24,8 @@ export function QuestionRow({ card, player }: { card: DrawnCard; player?: string
   const secondary = lang === "pl" ? card.en : card.pl;
   const meta = [player, categoryName(card, lang)].filter(Boolean).join(" · ");
   const l = lang === "pl"
-    ? { fav: isFav ? "Usuń z ulubionych" : "Dodaj do ulubionych", share: "Udostępnij jako obrazek" }
-    : { fav: isFav ? "Remove from favourites" : "Add to favourites", share: "Share as an image" };
+    ? { fav: isFav ? "Usuń z ulubionych" : "Dodaj do ulubionych", share: "Zapisz jako obrazek" }
+    : { fav: isFav ? "Remove from favourites" : "Add to favourites", share: "Save as an image" };
 
   return (
     <li
@@ -70,7 +70,7 @@ export function QuestionRow({ card, player }: { card: DrawnCard; player?: string
           className="flex h-11 w-11 items-center justify-center rounded-full"
           style={{ background: "var(--panel-2)", color: "var(--ink)" }}
         >
-          <Share2 className="h-5 w-5" strokeWidth={2.1} />
+          <Download className="h-5 w-5" strokeWidth={2.1} />
         </button>
       </div>
     </li>
