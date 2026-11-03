@@ -17,6 +17,11 @@ function categoryLabelFor(card: DrawnCard, lang: "pl" | "en") {
   return CATEGORY_META[card.category].label[lang];
 }
 
+/** Lets a long gendered form like "zrobiłeś/aś" wrap after the slash instead of running off the card. */
+function breakAfterSlash(text: string) {
+  return text.replace(/\//g, "/\u200B");
+}
+
 export function PlayingCard({ card }: { card: DrawnCard }) {
   const { lang, flipped, flip, drawCard, goBack, history, animations, reducedMotion, favorites, toggleFavorite } = useGame();
   // Swipe left: next card. Swipe right: back to the previous card. Same gesture on phone, tablet and with a mouse.
@@ -60,11 +65,31 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
       const len = primary.length;
       const lengthFactor = len <= 45 ? 1 : len <= 70 ? 0.88 : len <= 95 ? 0.78 : 0.7;
       const max = Math.round(Math.min(38, Math.max(24, box.clientWidth * 0.095)) * lengthFactor);
-      for (let size = max; size >= 14; size--) {
+      // A word longer than the line (e.g. "chciałbyś/chciałabyś") must not be cut at the card edge,
+      // so the width counts too, not only the height.
+      const wide = (el: HTMLElement) => Math.max(el.scrollWidth, el.offsetWidth) > box.clientWidth + 1;
+      primaryText.style.overflowWrap = "normal";
+      secondaryText.style.overflowWrap = "normal";
+      let fits = false;
+      for (let size = max; size >= 12; size--) {
         primaryText.style.fontSize = `${size}px`;
-        secondaryText.style.fontSize = `${Math.max(12, Math.round(size * 0.62))}px`;
-        // Leave some air around the text instead of filling the card edge to edge.
-        if (primaryText.offsetHeight + secondaryText.offsetHeight + 12 <= box.clientHeight * 0.9) break;
+        secondaryText.style.fontSize = `${Math.max(size < 16 ? 10 : 12, Math.round(size * 0.62))}px`;
+        // Leave some air around the text instead of filling the card edge to edge,
+        // unless the screen is so small that every pixel is needed.
+        const room = box.clientHeight * (size < 16 ? 1 : 0.9);
+        if (
+          !wide(primaryText) &&
+          !wide(secondaryText) &&
+          primaryText.offsetHeight + secondaryText.offsetHeight + 12 <= room
+        ) {
+          fits = true;
+          break;
+        }
+      }
+      // Last resort on very small screens: break the long word rather than hide part of it.
+      if (!fits) {
+        primaryText.style.overflowWrap = "anywhere";
+        secondaryText.style.overflowWrap = "anywhere";
       }
     };
     const observer = new ResizeObserver(fit);
@@ -270,14 +295,14 @@ export function PlayingCard({ card }: { card: DrawnCard }) {
               className="text-balance leading-[1.2]"
               style={{ fontFamily: DISPLAY_FONT, fontSize: 26, color: front.ink }}
             >
-              {primary}
+              {breakAfterSlash(primary)}
             </p>
             <p
               data-secondary-question
               className="text-balance font-medium leading-[1.38]"
               style={{ fontSize: 15, color: front.sub }}
             >
-              {secondary}
+              {breakAfterSlash(secondary)}
             </p>
           </div>
 
