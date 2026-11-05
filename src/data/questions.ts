@@ -328,6 +328,14 @@ const plusLove: QuestionText[] = [
   { pl: "Wolisz świetną chemię przy różnych wartościach, czy te same wartości bez iskry?", en: "Would you rather have great chemistry but different values, or the same values but no spark?" },
   { pl: "Czy chcesz jeszcze raz przeżyć swoją pierwszą miłość?", en: "If you could experience your first love again, would you?" },
   { pl: "Co ludzie idealizują w związkach, choć w rzeczywistości wcale nie jest takie piękne?", en: "What's one thing about relationships that people romanticize but isn't actually that great?" },
+  { pl: "Jaki drobny gest sprawia, że od razu robi Ci się ciepło?", en: "Which small gesture instantly warms your heart?" },
+  { pl: "Które wspólne wspomnienie wraca do Ciebie najczęściej?", en: "Which memory of us comes back to you most often?" },
+  { pl: "Co w naszej relacji zaskoczyło Cię najbardziej?", en: "What has surprised you most about our relationship?" },
+  { pl: "Jak wygląda nasz idealnie zwyczajny dzień?", en: "What does our perfectly ordinary day look like?" },
+  { pl: "Co sprawia, że przy mnie czujesz się jak w domu?", en: "What makes you feel at home with me?" },
+  { pl: "Jaką tradycję moglibyśmy stworzyć tylko dla nas?", en: "What tradition could we create just for the two of us?" },
+  { pl: "Jak najlepiej godzić się po kłótni?", en: "What's the best way for us to make up after an argument?" },
+  { pl: "Za co chcesz mi dziś podziękować?", en: "What would you like to thank me for today?" },
 ];
 
 const plusSpice: QuestionText[] = [
@@ -366,6 +374,10 @@ const plusSpice: QuestionText[] = [
   { pl: "Jakie spojrzenie ode mnie mówi Ci więcej niż jakiekolwiek słowa?", en: "What kind of look from me tells you more than any words could?" },
   { pl: "Co mam robić częściej, kiedy jesteśmy sami?", en: "What do you wish I did more often when we are alone?" },
   { pl: "Kiedy ostatnio poczułeś/aś między nami autentyczne, elektryzujące napięcie?", en: "When did you last feel a real spark of tension between us?" },
+  { pl: "Jaki dotyk i w którym miejscu działa na Ciebie najmocniej?", en: "Which touch, and where, turns you on the most?" },
+  { pl: "Co robię, po czym od razu masz ochotę na więcej?", en: "What do I do that instantly makes you want more?" },
+  { pl: "Od czego wolisz zacząć: pocałunków, szeptu czy dotyku szyi?", en: "Where do you like to start: kissing, whispering or touch on the neck?" },
+  { pl: "Co w naszej ostatniej bliskości podobało Ci się najbardziej?", en: "What did you enjoy most about our last time together?" },
 ];
 
 const plusDeep: QuestionText[] = [
@@ -381,6 +393,18 @@ const plusDeep: QuestionText[] = [
   { pl: "Jak prosisz o wsparcie, kiedy go potrzebujesz?", en: "How do you ask for support?" },
   { pl: "Co pomaga Ci otworzyć się, gdy jest Ci trudno?", en: "What helps you open up when things feel hard?" },
   { pl: "Jaka wspólna chwila zbliżyła nas najbardziej?", en: "What shared moment brought us closest together?" },
+  { pl: "Kiedy czujesz się przy mnie w pełni sobą?", en: "When do you feel completely yourself around me?" },
+  { pl: "Jak mogę Cię wspierać w trudny dzień?", en: "How can I support you on a hard day?" },
+  { pl: "O czym warto, żebyśmy rozmawiali częściej?", en: "What should we talk about more often?" },
+  { pl: "Co z dzieciństwa wpływa na to, jak dziś kochasz?", en: "What from your childhood shapes the way you love today?" },
+  { pl: "Jaka wartość w związku jest dla Ciebie nie do ruszenia?", en: "Which value in a relationship is non-negotiable for you?" },
+  { pl: "Czego o sobie uczysz się dzięki naszej relacji?", en: "What do you learn about yourself through our relationship?" },
+  { pl: "Co daje Ci poczucie bezpieczeństwa, kiedy jest trudno?", en: "What gives you a sense of safety when things get hard?" },
+  { pl: "Co ostatnio zajmuje Twoje myśli najbardziej?", en: "What has been on your mind the most lately?" },
+  { pl: "Jakie moje słowa wzmacniają Cię najbardziej?", en: "Which of my words strengthen you the most?" },
+  { pl: "Jak chcesz, żebyśmy razem świętowali ważne chwile?", en: "How do you want us to celebrate the big moments together?" },
+  { pl: "Co z naszej relacji chcesz zachować na zawsze?", en: "What from our relationship do you want to keep forever?" },
+  { pl: "Po czym poznajesz, że potrzebujesz chwili dla siebie?", en: "How do you know when you need a moment to yourself?" },
 ];
 
 const plusKinky: QuestionText[] = [
@@ -396,6 +420,18 @@ const plusKinky: QuestionText[] = [
   { pl: "Co dodaje Ci pewności, by wyrazić swoje pragnienia?", en: "What gives you confidence to express your desires?" },
   { pl: "Jaka niespodzianka od partnera wprawiłaby Cię w zachwyt?", en: "What kind of surprise from a partner would thrill you?" },
   { pl: "Gdzie dla Ciebie kończy się ekscytacja, a zaczyna dyskomfort?", en: "Where do you draw the line between what excites you and what feels comfortable?" },
+  { pl: "Jaką fantazję trzymasz dotąd dla siebie?", en: "Which fantasy have you kept to yourself so far?" },
+  { pl: "Co sądzisz o zasłoniętych oczach albo rękach związanych miękkim szalem?", en: "What do you think about a blindfold, or hands tied with a soft scarf?" },
+  { pl: "Jaka rola albo przebranie Cię kusi?", en: "Which role or costume tempts you?" },
+  { pl: "Jaką nową rzecz w sypialni chcesz wypróbować jako pierwszą?", en: "What new thing in the bedroom do you want to try first?" },
+  { pl: "Czy chcesz kiedyś zagrać scenę, którą wcześniej razem ustalimy?", en: "Would you ever want to act out a scene we plan together beforehand?" },
+  { pl: "Wolisz prowadzić czy dać się poprowadzić?", en: "Do you prefer to lead, or to be led?" },
+  { pl: "Jakie słowo bezpieczeństwa wybierzemy, żeby iść dalej bez obaw?", en: "Which safe word shall we choose, so we can explore without worry?" },
+  { pl: "Co sądzisz o bliskości w miejscu, w którym trzeba być cicho?", en: "How do you feel about intimacy somewhere you have to stay quiet?" },
+  { pl: "Jaka prośba lub polecenie szeptane do ucha rozgrzewa Cię najbardziej?", en: "What whispered request or command turns you on the most?" },
+  { pl: "Co byś czuł/a, gdyby jedno z nas decydowało o wszystkim przez cały wieczór?", en: "How would you feel if one of us made all the decisions for a whole evening?" },
+  { pl: "Jakie akcesoria lub zabawki Cię ciekawią?", en: "Which toys or accessories intrigue you?" },
+  { pl: "Czego potrzebujesz po intensywnym wieczorze, żeby czuć się zaopiekowany/a?", en: "What do you need after an intense evening to feel cared for?" },
 ];
 
 export const QUESTIONS: Question[] = [
